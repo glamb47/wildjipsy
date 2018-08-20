@@ -1,0 +1,109 @@
+{%- paginate customer.addresses by 6 -%}
+
+<div class="container mb-12" js-Addresses>
+
+    <!-- PAGE HEADER -->
+    <div class="page-header py-14 text-center text-md-left">
+
+        <a href="/account" class="return-link text-light">
+            <span class="glyph-icon">&larr;</span> {{ 'customer.account.return' | t }}
+        </a>
+        <h1 class="text-bold mt-14 mb-2">{{ 'customer.addresses.title' | t }}</h1>
+        <a href="#" class="h4 text-primary" ng-click="vm.newAddressDialog()">
+            {{ 'customer.addresses.add_new' | t }}
+        </a>
+
+    </div>
+    <!-- / PAGE HEADER -->
+
+    <!-- CUSTOMER ADDRESSES -->
+    <div class="row addresses">
+
+        {%- for address in customer.addresses -%}
+
+            <div class="col-12 col-sm-6 col-md-3">
+
+                <!-- ADDRESS -->
+                <div class="address mb-12 p-8">
+
+                    {%- if address == customer.default_address -%}
+
+                        <!-- DEFAULT ADDRESS BADGE -->
+                        <div class="default-badge align-top-center h6 text-light text-uppercase text-bold text-nowrap">
+                            {{ 'customer.addresses.default' | t }}
+                        </div>
+                        <!-- / DEFAULT ADDRESS BADGE -->
+
+                    {%- endif -%}
+
+                    <!-- ADDRESS NAME -->
+                    <h4 class="text-uppercase text-bold">
+                        {{ address.first_name | capitalize }} {{ address.last_name | capitalize }}
+                    </h4>
+                    <!-- / ADDRESS NAME -->
+
+                    <hr class="my-6">
+
+                    <!-- ADDRESS DETAIL -->
+                    <div class="address-detail mb-4">
+                        <div class="text-truncate">{{ address.company }}</div>
+                        <div class="text-truncate"> {{ address.street }}</div>
+                        <div class="text-truncate"> {{ address.city | capitalize }}</div>
+
+                        {%- if address.province_code -%}
+                            <div class="text-truncate">{{ address.province_code | upcase }}</div>
+                        {%- endif -%}
+
+                        <div class="text-truncate"> {{ address.zip | upcase }}</div>
+                        <div class="text-truncate"> {{ address.country }}</div>
+                        <div class="text-truncate"> {{ address.phone }}</div>
+                    </div>
+                    <!-- / ADDRESS DETAIL -->
+
+                    <!-- ADDRESS BUTTONS -->
+                    <div class="buttons">
+                        <button class="btn btn-primary m-1 text-uppercase" ng-click="vm.editAddressDialog({{ address.id }})">
+                            {{ 'customer.addresses.edit' | t }}
+                        </button>
+
+                        <button class="btn btn-secondary text-uppercase m-1" ng-click="vm.deleteAddressConfirm({{ address.id }})">
+                            {{ 'customer.addresses.delete' | t }}
+                        </button>
+                    </div>
+                    <!-- / ADDRESS BUTTONS -->
+
+                </div>
+                <!-- / ADDRESS -->
+
+            </div>
+
+            <!-- EDIT ADDRESS FORM -->
+            <script type="text/ng-template" id="edit-address-form-{{ address.id }}">
+                {%- include 'address-form' with 'edit' -%}
+            </script>
+            <!-- / EDIT ADDRESS FORM -->
+
+        {%- endfor -%}
+
+    </div>
+    <!-- /  CUSTOMER ADDRESSES -->
+
+    {%- if paginate.pages > 1 -%}
+
+        <!-- PAGINATION -->
+        <div class="text-center">
+            {%- include 'pagination' -%}
+        </div>
+        <!-- / PAGINATION -->
+
+    {%- endif -%}
+
+</div>
+
+{%- endpaginate -%}
+
+<!-- NEW ADDRESS FORM -->
+<script type="text/ng-template" id="new-Address-form">
+    {%- include 'address-form' with 'new' -%}
+</script>
+<!-- / NEW ADDRESS FORM -->

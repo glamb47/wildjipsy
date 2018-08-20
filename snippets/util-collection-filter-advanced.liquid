@@ -1,0 +1,133 @@
+{%- assign tagListArr = tags_string | downcase | split: ',' -%}
+
+{%- assign size = 0 -%}
+{%- assign tags = '' -%}
+{%- assign current_tags_size = current_tags | size -%}
+
+{%- comment -%}
+{#@ Loop in taglist array#}
+{%- endcomment -%}
+
+{%- for tag in tagListArr -%}
+
+    {%- assign tagToCheck = tag  | strip | downcase -%}
+    {%- assign checkList = '' -%}
+
+    {%- comment -%}
+    {#@ if any tag is selected#}
+    {%- endcomment -%}
+
+    {%- if  current_tags_size > 0 -%}
+
+        {%- for currentTagRaw in current_tags -%}
+
+            {%- assign currentTag = currentTagRaw | downcase -%}
+
+            {%- unless checkList == '' -%}
+            {%- assign checkList = checkList | append: ',' -%}
+            {%- endunless -%}
+
+            {%- comment -%}
+            {#@ if current tag in that taglist, use tagToCheck despite of currentTag#}
+            {%- endcomment -%}
+
+            {%- assign size = 0 -%}
+
+            {%- for tagListItemRaw in tagListArr -%}
+                {%- assign tagListItem = tagListItemRaw  | strip -%}
+                {%- if tagListItem == currentTag -%}
+                    {%- assign size = size | plus:1 -%}
+                    {%- break -%}
+                {%- endif -%}
+            {%- endfor -%}
+
+            {%- if size > 0 -%}
+                {%- assign checkList = checkList | append: tagToCheck -%}
+            {%- else -%}
+                {%- assign checkList =  checkList | append: currentTag -%}
+            {%- endif -%}
+
+        {%- endfor -%}
+
+    {%- else -%}
+
+        {%- comment -%}
+        {#@ No tag is selected#}
+        {%- endcomment -%}
+
+        {%- unless checkList == '' -%}
+        {%- assign checkList = checkList | append: ',' -%}
+        {%- endunless -%}
+        {%- assign checkList = checkList | append: tagToCheck -%}
+
+    {%- endif -%}
+
+    {%- assign checkArr = checkList | split: ',' -%}
+
+    {%- assign size = 0 -%}
+
+    {%- for check in checkArr -%}
+
+        {%- if check == tagToCheck -%}
+            {%- assign size = size | plus:1 -%}
+            {%- break -%}
+        {%- endif -%}
+
+    {%- endfor -%}
+
+    {%- unless size > 0 -%}
+
+    {%- unless checkList == '' -%}
+    {%- assign checkList = checkList | append: ',' -%}
+    {%- endunless -%}
+
+    {%- assign checkList = checkList | append: tagToCheck -%}
+
+    {%- endunless -%}
+
+    {%- assign checkArr = checkList | split: ',' -%}
+    {%- assign checkArrSize = checkArr | size -%}
+
+    {%- for product in collections[collection.handle].products -%}
+
+        {%- assign size = 0 -%}
+
+        {%- for check in checkArr -%}
+
+            {%- for productTagRaw in  product.tags -%}
+                {%- assign productTag = productTagRaw | downcase -%}
+
+                {%- if productTag == check -%}
+                    {%- assign size = size | plus: 1 -%}
+                {%- endif -%}
+
+            {%- endfor -%}
+
+        {%- endfor -%}
+
+        {%- if size == checkArrSize -%}
+
+            {%- assign size = 0 -%}
+
+            {%- for tag in tags -%}
+                {%- if tag == tagToCheck -%}
+                    {%- assign size = size | plus: 1 -%}
+                    {%- break -%}
+                {%- endif -%}
+            {%- endfor -%}
+
+            {%- unless size > 0 -%}
+            {%- unless tags == '' -%}
+            {%- assign tags = tags | append: ',' -%}
+            {%- endunless -%}
+            {%- assign tags = tags | append: tagToCheck -%}
+            {%- endunless -%}
+
+            {%- break -%}
+        {%- endif -%}
+
+    {%- endfor -%}
+
+{%- endfor -%}
+
+{%- assign tags = tags | split: ',' -%}

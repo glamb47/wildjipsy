@@ -1,0 +1,287 @@
+<div class="container">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header py-14 text-center text-md-left">
+        <a href="/account" class="return-link text-light">
+            <span class="glyph-icon">&larr;</span> {{ 'customer.account.return' | t }}
+        </a>
+        <h1 class="text-bold mt-14 mb-2">{{ 'customer.order.title' | t: name: order.name }}</h1>
+        <div class="text-light">
+            {{ 'customer.order.date' | t: date: order.created_at | date: "%B %d, %Y %I:%M%p" }}
+        </div>
+    </div>
+    <!-- / PAGE HEADER -->
+
+    {%- if order.cancelled -%}
+
+        <div class="alert alert-danger" role="alert">
+            {%- assign cancelled_at = order.cancelled_at | date: "%B %d, %Y %I:%M%p" -%}
+            <h5 class="h5">{{ 'customer.order.cancelled' | t: date: cancelled_at }}</h5>
+            <div>{{ 'customer.order.cancelled_reason' | t: reason: order.cancel_reason }}</div>
+        </div>
+
+    {%- endif -%}
+
+    <!-- ORDER DETAILS TABLE -->
+    <table class="table order-table">
+
+        <thead class="text-uppercase">
+            <tr>
+                <th>{{ 'customer.order.product' | t }}</th>
+                <th>
+                    <div>{{ 'customer.order.sku' | t }}</div>
+                </th>
+                <th>{{ 'customer.order.price' | t }}</th>
+                <th>{{ 'customer.order.quantity' | t }}</th>
+                <th class="text-right">{{ 'customer.order.total' | t }}</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {%- for line_item in order.line_items -%}
+
+                <!-- PRODUCT -->
+                <tr id="{{ line_item.id }}">
+
+                    <!-- PRODUCT NAME -->
+                    <td>
+
+                        <a class="text-primary" href="{{ line_item.product.url }}" title="{{ line_item.title }}">
+                            <b>{{ line_item.title }}</b>
+                        </a>
+
+                        {%- if line_item.fulfillment -%}
+
+                            <div class="note secondart-text">
+
+                                {%- assign created_at = line_item.fulfillment.created_at | date: "%b %d" -%}
+                                {{ 'customer.order.fulfilled_at' | t: date: created_at }}
+
+                                {%- if line_item.fulfillment.tracking_number -%}
+                                    <a href="{{ line_item.fulfillment.tracking_url }}">{{ line_item.fulfillment.tracking_company }}
+                                        #{{ line_item.fulfillment.tracking_number }}</a>
+                                {%- endif -%}
+
+                            </div>
+
+                        {%- endif -%}
+
+                    </td>
+                    <!-- / PRODUCT NAME -->
+
+                    <!-- PRODUCT SKU -->
+                    <td>
+                        <div>{{ line_item.sku }}</div>
+                    </td>
+                    <!-- / PRODUCT SKU -->
+
+                    <!-- PRODUCT PRICE -->
+                    <td>
+                        <span class="js-money" value="{{ line_item.price }}">{{ line_item.price | money }}</span>
+                    </td>
+                    <!-- / PRODUCT PRICE -->
+
+                    <!-- PRODUCT QUANTITY -->
+                    <td>{{ line_item.quantity }}</td>
+                    <!-- / PRODUCT QUANTITY -->
+
+                    <!-- PRODUCT TOTAL -->
+                    <td class="text-right"><span
+                            class="js-money"
+                            value="{{ line_item.quantity | times: line_item.price }}">{{ line_item.quantity | times: line_item.price | money }}</span>
+                    </td>
+                    <!-- / PRODUCT TOTAL -->
+
+                </tr>
+                <!-- PRODUCT -->
+            {%- endfor -%}
+        </tbody>
+
+        <tfoot>
+
+            <!-- SUBTOTAL -->
+            <tr>
+                <td colspan="4">{{ 'customer.order.subtotal' | t }}</td>
+                <td class="text-right js-money" value="{{ order.subtotal_price }}">{{ order.subtotal_price | money }}</td>
+            </tr>
+            <!-- / SUBTOTAL -->
+
+            {%- for discount in order.discounts -%}
+
+                <!-- DISCOUNT -->
+                <tr class="order_summary discount">
+                    <td colspan="4">{{ discount.code }} {{ 'customer.order.discount' | t }}</td>
+                    <td class="text-right js-money" value="{{ discount.savings }}">{{ discount.savings | money }}</td>
+                </tr>
+                <!-- / DISCOUNT -->
+
+            {%- endfor -%}
+
+            {%- for shipping_method in order.shipping_methods -%}
+
+                <!-- SHIPPING -->
+                <tr>
+                    <td colspan="4">{{ 'customer.order.shipping' | t }} ({{ shipping_method.title }})</td>
+                    <td class="text-right js-money"
+                        value="{{ shipping_method.price }}">{{ shipping_method.price | money }}</td>
+                </tr>
+                <!-- / SHIPPING -->
+
+            {%- endfor -%}
+
+            {%- for tax_line in order.tax_lines -%}
+
+                <!-- TAX -->
+                <tr>
+                    <td colspan="4">{{ 'customer.order.tax' | t }}
+                        ({{ tax_line.title }} {{ tax_line.rate | times: 100 }}%)
+                    </td>
+                    <td class="text-right js-money" value="{{ tax_line.price }}">{{ tax_line.price | money }}</td>
+                </tr>
+                <!-- / TAX -->
+
+            {%- endfor -%}
+
+            <!-- ORDER TOTAL -->
+            <tr>
+                <td colspan="4">
+                    <div class="h3 text-bold">{{ 'customer.order.total' | t }}</div>
+                </td>
+                <td class="text-right">
+                    <div class="js-money h3 text-bold"
+                         value="{{ order.total_price }}">{{ order.total_price | money }}</div>
+                </td>
+            </tr>
+            <!-- / ORDER TOTAL -->
+
+        </tfoot>
+
+    </table>
+    <!-- / ORDER DETAILS TABLE -->
+
+    <!-- ADDRESSES -->
+    <div class="row text-center addresses py-20">
+
+        <!-- BILLING ADDRESS -->
+        <div class="billing col-md-6 px-14 pb-20 pb-md-0">
+
+            <h2 class="text-bold">{{ 'customer.order.billing_address' | t }}</h2>
+
+            <div class="mb-8">
+                <span class="text-light">{{ 'customer.order.payment_status' | t }}:</span>
+                {{ order.financial_status_label }}
+            </div>
+
+            <hr>
+
+            <div class="h3 text-bold mt-8">
+                {{ order.billing_address.name }}
+            </div>
+
+            {%- if order.billing_address.company != blank -%}
+                <div class="mt-4">{{ order.billing_address.company }}</div>
+            {%- endif -%}
+
+            {%- if order.billing_address.street != blank -%}
+                <div class="mt-4">
+                    {{ order.billing_address.street }}
+                </div>
+            {%- endif -%}
+
+            {%- if order.billing_address.city != blank -%}
+                <div class="mt-4">
+                    {{ order.billing_address.city }}
+                </div>
+            {%- endif -%}
+
+            {%- if order.billing_address.province != blank -%}
+                <div class="mt-4">
+                    {{ order.billing_address.province }}
+                </div>
+            {%- endif -%}
+
+            {%- if order.billing_address.zip != blank -%}
+                <div class="mt-1">
+                    {{ order.billing_address.zip | upcase }}
+                </div>
+            {%- endif -%}
+
+            {%- if order.billing_address.country != blank -%}
+                <div class="mt-1">
+                    {{ order.billing_address.country }}
+                </div>
+            {%- endif -%}
+
+            {%- if order.billing_address.phone != blank -%}
+                <div class="mt-1">
+                    {{ order.billing_address.phone }}
+                </div>
+            {%- endif -%}
+
+        </div>
+        <!-- / BILLING ADDRESS -->
+
+        <!-- SHIPPING ADDRESS -->
+        <div class="shipping col-md-6 px-14">
+
+            <h2 class="text-bold">{{ 'customer.order.shipping_address' | t }}</h2>
+
+            <div class="mb-8">
+                <span class="text-light">{{ 'customer.order.fulfillment_status' | t }}:</span>
+                {{ order.fulfillment_status_label }}
+            </div>
+
+            <hr>
+
+            <div class="h3 text-bold mt-8">
+                {{ order.shipping_address.name }}
+            </div>
+
+            {%- if order.shipping_address.company != blank -%}
+                <div class="mt-4">{{ order.shipping_address.company }}</div>
+            {%- endif -%}
+
+            {%- if order.shipping_address.street != blank -%}
+                <div class="mt-4">
+                    {{ order.shipping_address.street }}
+                </div>
+            {%- endif -%}
+
+            {%- if order.shipping_address.city != blank -%}
+                <div class="mt-4">
+                    {{ order.shipping_address.city }}
+                </div>
+            {%- endif -%}
+
+            {%- if order.shipping_address.province != blank -%}
+                <div class="mt-4">
+                    {{ order.shipping_address.province }}
+                </div>
+            {%- endif -%}
+
+            {%- if order.shipping_address.zip != blank -%}
+                <div class="mt-1">
+                    {{ order.shipping_address.zip | upcase }}
+                </div>
+            {%- endif -%}
+
+            {%- if order.shipping_address.country != blank -%}
+                <div class="mt-1">
+                    {{ order.shipping_address.country }}
+                </div>
+            {%- endif -%}
+
+            {%- if order.shipping_address.phone != blank -%}
+                <div class="mt-1">
+                    {{ order.shipping_address.phone }}
+                </div>
+            {%- endif -%}
+
+        </div>
+        <!-- / SHIPPING ADDRESS -->
+
+    </div>
+    <!-- / ADDRESSES -->
+
+</div>

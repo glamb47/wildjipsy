@@ -1,0 +1,1302 @@
+{%- assign content_width = section.settings.content_width | default: settings.content_width -%}
+
+{%- include 'util-section-bg-color'
+auto_bg_color: section.settings.auto_bg_color,
+bg_color: section.settings.bg_color,
+bg_opacity: section.settings.bg_opacity -%}
+
+{%- capture section_style -%}
+background-size: {{ section.settings.bg_size }}; background-repeat: {{ section.settings.bg_repeat }}; background-position: {{ section.settings.bg_position }};
+{%- if section.settings.bg_image != blank -%}background-image: url({{ section.settings.bg_image | img_url: '1920x' }});{%- endif -%}
+background-color: {{ section_bg_color }};
+{%- endcapture -%}
+
+{%- if section.settings.bg_color_type == 'auto' -%}
+    {%- include 'util-color-brightness' color: section_bg_color, append: '-bg' -%}
+{%- else -%}
+    {%- assign color_brightness = section.settings.bg_color_type -%}
+{%- endif -%}
+
+
+  {%- assign product = false -%}
+
+        {%- if section.settings.product -%}
+
+            {%- assign product = all_products[section.settings.product] -%}
+
+            {%- assign current_variant = product.selected_or_first_available_variant -%}
+            {%- assign featured_image = current_variant.featured_image | default: product.featured_image -%}
+
+            {%- assign image_size = '1024x' -%}
+
+            {%- assign on_sale = false -%}
+            {%- if product.compare_at_price > product.price -%}
+                {%- assign on_sale = true -%}
+            {%- endif -%}
+
+            {%- assign sold_out = true -%}
+            {%- if product.available -%}
+                {%- assign sold_out = false -%}
+            {%- endif -%}
+
+            {%- comment -%}
+            // Parse [tabs,description] from product.description
+            {%- endcomment -%}
+            {%- include 'util-parse-product-tabs-description' -%}
+
+        {%- endif -%}
+
+<section id="{{ section.settings.custom_id }}"
+         class="section section-product section-h-{{ section.settings.section_height }} {{ color_brightness }} {{ section.settings.additional_classes }} {{ section.settings.show_only_desktop_or_mobile }} {% if section.settings.bg_parallax == 'enable' %}parallax-bg{% endif %}"
+         style="{{ section_style }}"
+         {% if section.settings.section_height == "window-height" %}js-fill-height{% endif %}>
+
+    <div class="section-content {{ content_width }}">
+
+        {%- if section.settings.show_title and section.settings.title != blank -%}
+            <h3 class="section-title text-uppercase py-12 m-0 {{ section.settings.title_alignment }} animate-on-scroll">
+                {{ section.settings.title }}
+            </h3>
+        {%- endif -%}
+
+        <div class="product-single row animate-on-scroll"
+            {%- if product -%}
+            js-product-single="{{ product | json | escape }}" current-variant-id="{{ current_variant.id }}"
+            {%- endif -%}>
+
+            {%- for block in section.blocks limit: section.blocks.size -%}
+
+                {%- assign column_width = block.settings.width -%}
+
+                {%- include 'util-column-class' -%}
+
+                <div
+                    class="{{ column_class }} {{ block.type }} {{ block.settings.alignment_v }} {{ block.settings.alignment_h }} {{ block.settings.text_alignment }} {{ block.settings.additional_classes }}">
+
+                    <div class="w-100" style="max-width:{{ block.settings.content_inner_max_width }}">
+
+                        {%- case block.type -%}
+
+                        {%- comment -%}
+                        {# @ Custom Image #}
+                        {%- endcomment -%}
+                        {%- when 'custom_image' -%}
+                        <div class="img-wrapper p-relative w-100">
+                            <!-- CUSTOM IMAGE -->
+                            <img class="custom-image img-fluid"
+                                 src="{{ block.settings.image | img_url: '1024x' }}"
+                                 alt="{{ block.settings.image.alt | escape }}">
+                            <!-- / CUSTOM IMAGE -->
+                            {% if block.settings.show_lightbox_button %}
+                                <div class="light-box-button p-2 align-bottom-right"
+                                     ng-click="ps.lightBox('{{ block.settings.image | img_url: '2048x' }}')">
+                                    <i class="icon link s-7 icon-fullscreen"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        {%- comment -%}
+                        {# @ Product Image #}
+                        {%- endcomment -%}
+                        {%- when 'product_image' -%}
+
+                        {%- if product -%}
+
+                            {%- if block.settings.image_slider -%}
+                                {%- if product.images.size > 1 -%}
+
+                                    <div class="js-images-loaded product-image-slider-wrapper">
+
+                                        {%- include 'spinner' -%}
+
+                                        <!-- PRODUCT IMAGE SLIDE -->
+                                        <div class="carousel product-image-slider flickity-overlap-arrows"
+                                             bc-flickity='{
+                          "draggable": true,
+                          "wrapAround": true,
+                          "prevNextButtons": true,
+                          "pageDots": true,
+                          "imagesLoaded": true
+                          }'
+                                             js-flickity-select="{[{ ps.productImageIndex }]}">
+                                            {%- for image in product.images -%}
+                                                <div class="img-wrapper w-100">
+                                                    <img class="img-fluid product-image"
+                                                         src="{{ image.src | img_url: '1024x' }}"
+                                                         alt="{{ image.alt | escape }}">
+                                                    {% if block.settings.show_lightbox_button %}
+                                                        <div class="light-box-button p-2 align-bottom-right"
+                                                             ng-click="ps.lightBox('{{ image.src | img_url: '2048x' }}')">
+                                                            <i class="icon link s-7 icon-fullscreen"></i>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            {%- endfor -%}
+                                        </div>
+                                        <!-- /  PRODUCT IMAGE SLIDE  -->
+                                    </div>
+                                {%- endif -%}
+
+                            {%- else -%}
+                                <!-- PRODUCT IMAGE -->
+                                <div class="img-wrapper p-relative w-100">
+                                    <img class="product-image {% if sold_out %}sold-out{% endif %}"
+                                         ng-src="{[{ ps.selectedVariantImage !== '' ? ps.resizeImage(ps.selectedVariantImage,'{{ image_size }}'): '{{ product.featured_image.src | img_url: image_size }}'}]}"
+                                         alt="{{ product.featured_image.alt | escape }}">
+                                    {% if block.settings.show_lightbox_button %}
+                                        <div class="light-box-button p-2 align-bottom-right"
+                                             ng-click="ps.lightBox(ps.selectedVariantImage !== '' ? ps.resizeImage(ps.selectedVariantImage,'2048x'): '{{ product.featured_image.src | img_url: image_size }}')">
+                                            <i class="icon link s-7 icon-fullscreen"></i>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <!-- / PRODUCT IMAGE -->
+                            {%- endif -%}
+
+                        {%- else -%}
+
+                            {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+                            {{ 'product-' | append: current | placeholder_svg_tag: 'product-image' }}
+
+                        {%- endif -%}
+
+                        {%- comment -%}
+                        {# @ Product Info #}
+                        {%- endcomment -%}
+                        {%- when 'product_info' -%}
+                        <form class="cart-form" action="/cart/add" method="post"
+                              enctype="multipart/form-data"
+                              id="AddToCartForm">
+
+                            {%- if block.settings.title_visible -%}
+
+                                <!-- PRODUCT TITLE -->
+                                <div class="h2 mb-4">
+                                    <a href="{{ product.url | within: collection }}" class="product-title">
+                                        {%- if product -%}
+                                            {{ product.title }}
+                                        {%- else -%}
+                                            {{ 'home_page.onboarding.product_title' | t }}
+                                        {%- endif -%}
+                                    </a>
+                                </div>
+                                <!-- / PRODUCT TITLE -->
+
+                            {%- endif -%}
+
+                            {%- if block.settings.price_visible -%}
+
+                                {% unless product.template_suffix == "no-offers" %}
+                                <!-- PRODUCT PRICE -->
+                                <div class="product-price flex-items-middle mb-4">
+
+                                    {%- if product -%}
+
+                                        {% capture price %}{{ product.price | money }}{% endcapture %}
+
+                                        <div class="h3 text-bold">
+
+                                            {%- if product.price_varies -%}
+                                                {{ 'products.general.from_html' | t: price: price, priceRaw: product.price }}
+                                            {%- else -%}
+                                                <span class="js-money" value="{{ product.price }}">{{ price }}</span>
+                                            {%- endif -%}
+
+                                        </div>
+
+                                        {%- if on_sale -%}
+                                            <div class="product-sale-price text-light text-linethrough h4 ml-2">
+                                                <span class="js-money" value="{{ product.compare_at_price }}">
+                                                    {{ product.compare_at_price  | money }}
+                                                </span>
+                                            </div>
+                                        {%- endif -%}
+
+                                    {%- else -%}
+
+                                        <div class="h3 text-bold">
+                                            <span class="js-money">
+                                                 {{ '4500' | money }}
+                                            </span>
+                                        </div>
+                                    {%- endif -%}
+
+                                </div>
+                                <!-- / PRODUCT PRICE -->
+                                {% endunless %}
+
+                            {%- endif -%}
+
+                            {%- if block.settings.stars_visible -%}
+                                <!-- PRODUCT STARS -->
+                                <div class="product-stars">
+                                    <span class="shopify-product-reviews-badge" data-id="{{ product.id }}"></span>
+                                </div>
+                                <!-- / PRODUCT STARS -->
+                            {%- endif -%}
+
+                            {%- if block.settings.description_visible -%}
+
+                                <!-- DESCRIPTION -->
+                                <div class="description mb-4" itemprop="description">
+                                    {%- if product -%}
+                                        {{ description | strip_html | truncate: 300 }}
+                                    {%- else -%}
+                                        {{ 'home_page.onboarding.lorem_short' | t }}
+                                    {%- endif -%}
+                                </div>
+                                <!-- / DESCRIPTION -->
+                            {%- endif -%}
+
+                            {%- if block.settings.variants_visible and product -%}
+
+                                <!-- VARIANTS SELECT -->
+                                <div
+                                    ng-if="ps.product.variants.length > 0 && ps.options[0].values[0] !== 'Default Title'"
+                                    class="variants py-4 {{ block.settings.product_option_select_style }}">
+
+                                    <div ng-repeat="option in ::ps.options"
+                                         class="option form-group mb-4 pb-0" ng-cloak>
+
+                                        <label class="text-uppercase">
+                                            {[{option.name}]}
+                                        </label>
+
+                                        <div>
+                                            {%- case block.settings.product_option_select_style -%}
+
+                                            {%- when 'swatch' -%}
+
+                                            <button type="button"
+                                                    class="btn{% if block.settings.alignment_h == 'text-left' %} mr-2{% elsif block.settings.alignment_h == 'text-center' %} mr-1 ml-1{% else %} ml-2 mr-0{% endif %} mb-2 swatch"
+                                                    ng-repeat="value in ::option.values"
+                                                {% unless block.settings.show_unavailable_variant_options %}
+                                                    ng-show="ps.checkExist(option.name, value)"
+                                                {% endunless %}
+                                                    ng-click="ps.selected.options[option.name] = value;ps.updateSelectedVariant()"
+                                                    ng-class="{'active':ps.selected.options[option.name] == value,'p-0 color':ps.isInSwatches(option.name) || ps.isInProductImageAsSwatches(option.name),'not-exist': !ps.checkExist(option.name, value)}">
+
+                                                  <span
+                                                      ng-if="!ps.isInSwatches(option.name) && !ps.isInProductImageAsSwatches(option.name)">
+                                                        {[{ value }]}
+                                                 </span>
+
+                                                <div class="color-image-preview"
+                                                     ng-if="ps.isInSwatches(option.name)"
+                                                     ng-style="{'background-color':ps.variantColor(value), 'background-image':ps.variantImage(value)}"
+                                                     tooltip-placement="top" tooltip-popup-delay="300"
+                                                     tooltip-append-to-body="true"
+                                                     uib-tooltip="{[{value}]}">
+                                                </div>
+
+                                                <div class="color-image-preview"
+                                                     ng-if="ps.isInProductImageAsSwatches(option.name)"
+                                                     ng-style="{'background-image':ps.variantProductImage(value)}"
+                                                     tooltip-placement="top" tooltip-popup-delay="300"
+                                                     tooltip-append-to-body="true"
+                                                     uib-tooltip="{[{value}]}">
+                                                </div>
+
+                                            </button>
+
+                                            {%- when 'select-box' -%}
+
+                                            <select name="" id="" class="form-control custom-select"
+                                                    ng-model="ps.selected.options[option.name]"
+                                                    ng-change="ps.updateSelectedVariant()">
+                                                <option
+                                                    {% unless block.settings.show_unavailable_variant_options %}
+                                                    ng-show="ps.checkExist(option.name, value)"
+                                                    {% endunless %}
+                                                    value="{[{ value }]}"
+                                                    ng-repeat="value in ::option.values">{[{ value }]}
+                                                </option>
+                                            </select>
+
+                                            {%- endcase -%}
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- / VARIANTS SELECT -->
+                            {%- endif -%}
+
+                            <select name="id" class="form-control hidden" ng-model="ps.selectedVariantId">
+                                {% for variant in product.variants %}
+                                    {% if variant.available %}
+                                        <option value="{{ variant.id }}">
+                                            {{ variant.title }}
+                                        </option>
+                                    {% else %}
+                                        <option disabled="disabled">{{ variant.title }}
+                                            - {{ 'products.product.sold_out' | t }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+
+                            {%- if block.settings.add_to_cart_button_visible -%}
+
+                                {% unless product.template_suffix == "no-offers" %}
+                                <!-- ADD TO CART BUTTON -->
+                                <button {% if product %}js-add-to-cart {% endif %}
+                                        class="btn btn-primary text-uppercase cart-button m-1{% if block.settings.alignment_h == 'text-right' %} mr-0{% else %} ml-0{% endif %}"{% if product %} type="submit" {% else %}type="button"{% endif %}
+                                        ng-disabled="!ps.selectedVariant.available">
+                                    <span
+                                        ng-show="ps.selectedVariant.available">
+                                        {% if product.template_suffix == "pre-order" %}
+                                            {{ 'products.product.pre_order' | t }}
+                                        {% else %}
+                                            {{ 'products.product.add_to_cart' | t }}
+                                        {% endif %}
+                                    </span>
+                                    <span
+                                        ng-show="!ps.selectedVariant.available">{{ 'products.product.sold_out' | t }}</span>
+                                </button>
+                                <!-- / ADD TO CART BUTTON -->
+                                {% endunless %}
+
+                            {%- endif -%}
+
+                            {%- if block.settings.details_button_visible -%}
+
+                                <!-- DETAILS BUTTON -->
+                                {%- if product -%}
+                                    <a href="{{ product.url | within: collection }}"
+                                       class="btn btn-bordered show-details m-1 {% if block.settings.alignment_h == 'text-left' %} ml-0{% else %} mr-0{% endif %}">
+                                        <span>{{ 'products.product.see_details' | t | upcase }}</span>
+                                    </a>
+                                {%- else -%}
+                                    <button type="button"
+                                            class="btn btn-bordered show-details m-1 {% if block.settings.alignment_h == 'text-left' %} ml-0{% else %} mr-0{% endif %}">
+                                        <span>{{ 'products.product.see_details' | t | upcase }}</span>
+                                    </button>
+                                {%- endif -%}
+                                <!-- / DETAILS BUTTON -->
+
+                            {%- endif -%}
+
+                        </form>
+
+                        {%- endcase -%}
+
+                    </div>
+
+                </div>
+
+            {%- endfor -%}
+
+        </div>
+
+    </div>
+
+</section>
+
+<script type="application/json">
+    /*"*/{% schema %}/*"*/
+    {
+        "name": "Product",
+        "class": "index-section",
+        "max_blocks": 2,
+        "settings": [
+            {
+                "type": "header",
+                "content": "General"
+            },
+            {
+                "type": "checkbox",
+                "id": "show_title",
+                "label": "Show title",
+                "default": true
+            },
+            {
+                "type": "text",
+                "id": "title",
+                "label": "Title"
+            },
+            {
+                "type": "select",
+                "id": "title_alignment",
+                "label": "Title alignment",
+                "default": "text-center",
+                "options": [
+                    {
+                        "value": "text-left",
+                        "label": "Left"
+                    },
+                    {
+                        "value": "text-center",
+                        "label": "Center"
+                    },
+                    {
+                        "value": "text-right",
+                        "label": "Right"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "section_height",
+                "label": "Section height",
+                "default": "auto",
+                "options": [
+                    {
+                        "label": "Auto",
+                        "value": "auto"
+                    },
+                    {
+                        "label": "Fill the window height",
+                        "value": "window-height"
+                    },
+                    {
+                        "label": "Extra Small",
+                        "value": "x-small"
+                    },
+                    {
+                        "label": "Small",
+                        "value": "small"
+                    },
+                    {
+                        "label": "Medium",
+                        "value": "medium"
+                    },
+                    {
+                        "label": "Large",
+                        "value": "large"
+                    },
+                    {
+                        "label": "Extra Large",
+                        "value": "x-large"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "content_width",
+                "label": "Content width",
+                "options": [
+                    {
+                        "value": "",
+                        "label": "Default"
+                    },
+                    {
+                        "value": "container",
+                        "label": "Container"
+                    },
+                    {
+                        "value": "container-fluid",
+                        "label": "Fluid container"
+                    },
+                    {
+                        "value": "container-fullwidth",
+                        "label": "Full width"
+                    }
+                ]
+            },
+            {
+                "type": "text",
+                "id": "custom_id",
+                "label": "Section ID",
+                "info": "Add an id to your section. It can be used in 'Scroll Navigation' and 'Custom CSS'"
+            },
+            {
+                "type": "header",
+                "content": "Product"
+            },
+            {
+                "label": "Product",
+                "id": "product",
+                "type": "product"
+            },
+            {
+                "type": "header",
+                "content": "Background"
+            },
+            {
+                "type": "select",
+                "id": "auto_bg_color",
+                "label": "Background color",
+                "default": "transparent",
+                "options": [
+                    {
+                        "value": "transparent",
+                        "label": "Transparent"
+                    },
+                    {
+                        "value": "custom",
+                        "label": "Custom"
+                    },
+                    {
+                        "value": "primary-color",
+                        "label": "Primary Color"
+                    },
+                    {
+                        "value": "primary-bg-color",
+                        "label": "Primary Background Color"
+                    },
+                    {
+                        "value": "secondary-color",
+                        "label": "Secondary Color"
+                    },
+                    {
+                        "value": "secondary-bg-color",
+                        "label": "Secondary Background Color"
+                    }
+                ]
+            },
+            {
+                "type": "color",
+                "id": "bg_color",
+                "label": "Background color",
+                "info": "Only applicable if 'Background Color' option is 'Custom'"
+            },
+            {
+                "type": "select",
+                "id": "bg_opacity",
+                "label": "Background opacity",
+                "default": "1",
+                "options": [
+                    {
+                        "value": "0",
+                        "label": "0"
+                    },
+                    {
+                        "value": "0.05",
+                        "label": "5"
+                    },
+                    {
+                        "value": "0.10",
+                        "label": "10"
+                    },
+                    {
+                        "value": "0.15",
+                        "label": "15"
+                    },
+                    {
+                        "value": "0.20",
+                        "label": "20"
+                    },
+                    {
+                        "value": "0.25",
+                        "label": "25"
+                    },
+                    {
+                        "value": "0.30",
+                        "label": "30"
+                    },
+                    {
+                        "value": "0.35",
+                        "label": "35"
+                    },
+                    {
+                        "value": "0.40",
+                        "label": "40"
+                    },
+                    {
+                        "value": "0.45",
+                        "label": "45"
+                    },
+                    {
+                        "value": "0.50",
+                        "label": "50"
+                    },
+                    {
+                        "value": "0.55",
+                        "label": "55"
+                    },
+                    {
+                        "value": "0.60",
+                        "label": "60"
+                    },
+                    {
+                        "value": "0.65",
+                        "label": "65"
+                    },
+                    {
+                        "value": "0.70",
+                        "label": "70"
+                    },
+                    {
+                        "value": "0.75",
+                        "label": "75"
+                    },
+                    {
+                        "value": "0.80",
+                        "label": "80"
+                    },
+                    {
+                        "value": "0.85",
+                        "label": "85"
+                    },
+                    {
+                        "value": "0.90",
+                        "label": "90"
+                    },
+                    {
+                        "value": "0.95",
+                        "label": "95"
+                    },
+                    {
+                        "value": "1",
+                        "label": "100"
+                    }
+                ]
+            },
+            {
+                "type": "image_picker",
+                "id": "bg_image",
+                "label": "Background image"
+            },
+            {
+                "type": "select",
+                "id": "bg_parallax",
+                "label": "Parallax effect",
+                "default": "disable",
+                "options": [
+                    {
+                        "value": "enable",
+                        "label": "Enable"
+                    },
+                    {
+                        "value": "disable",
+                        "label": "Disable"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "bg_size",
+                "label": "Background image size",
+                "default": "cover",
+                "options": [
+                    {
+                        "value": "auto",
+                        "label": "Auto"
+                    },
+                    {
+                        "value": "cover",
+                        "label": "Cover"
+                    },
+                    {
+                        "value": "contain",
+                        "label": "Contain"
+                    },
+                    {
+                        "value": "25%",
+                        "label": "25%"
+                    },
+                    {
+                        "value": "50%",
+                        "label": "50%"
+                    },
+                    {
+                        "value": "75%",
+                        "label": "75%"
+                    },
+                    {
+                        "value": "100%",
+                        "label": "100%"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "bg_repeat",
+                "label": "Background repeat",
+                "default": "no-repeat",
+                "options": [
+                    {
+                        "value": "no-repeat",
+                        "label": "No repeat"
+                    },
+                    {
+                        "value": "repeat",
+                        "label": "Repeat"
+                    },
+                    {
+                        "value": "repeat-x",
+                        "label": "Repeat x"
+                    },
+                    {
+                        "value": "repeat-y",
+                        "label": "Repeat y"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "bg_position",
+                "label": "Background position",
+                "default": "center center",
+                "options": [
+                    {
+                        "value": "left top",
+                        "label": "Left Top"
+                    },
+                    {
+                        "value": "left center",
+                        "label": "Left Center"
+                    },
+                    {
+                        "value": "left bottom",
+                        "label": "Left Bottom"
+                    },
+                    {
+                        "value": "right top",
+                        "label": "Right Top"
+                    },
+                    {
+                        "value": "right center",
+                        "label": "Right Center"
+                    },
+                    {
+                        "value": "right bottom",
+                        "label": "Right Bottom"
+                    },
+                    {
+                        "value": "center top",
+                        "label": "Center Top"
+                    },
+                    {
+                        "value": "center center",
+                        "label": "Center Center"
+                    },
+                    {
+                        "value": "center bottom",
+                        "label": "Center Bottom"
+                    }
+                ]
+            },
+            {
+                "type": "header",
+                "content": "Foreground"
+            },
+            {
+                "type": "select",
+                "id": "bg_color_type",
+                "label": "Text color",
+                "default": "auto",
+                "info": "'Auto' will decide text color depending on background color",
+                "options": [
+                    {
+                        "value": "auto",
+                        "label": "Auto"
+                    },
+                    {
+                        "value": "light-bg",
+                        "label": "Dark"
+                    },
+                    {
+                        "value": "dark-bg",
+                        "label": "Light"
+                    }
+                ]
+            },
+            {
+                "type": "header",
+                "content": "Extra"
+            },
+            {
+                "type": "select",
+                "id": "show_only_desktop_or_mobile",
+                "label": "Show only on desktop/mobile",
+                "default": "",
+                "options": [
+                    {
+                        "value": "",
+                        "label": "Show always"
+                    },
+                    {
+                        "value": "hidden-sm-up",
+                        "label": "Show only on mobile"
+                    },
+                    {
+                        "value": "hidden-xs-down",
+                        "label": "Show only on desktop"
+                    }
+                ]
+            },
+            {
+                "type": "text",
+                "id": "additional_classes",
+                "label": "Additional classes"
+            }
+        ],
+        "blocks": [
+            {
+                "type": "custom_image",
+                "name": "Image",
+                "settings": [
+                    {
+                        "type": "image_picker",
+                        "id": "image",
+                        "label": "Image"
+                    },
+                    {
+                        "type": "checkbox",
+                        "id": "show_lightbox_button",
+                        "label": "Show lightbox button for product images",
+                        "default": true
+                    },
+                    {
+                        "type": "select",
+                        "id": "width",
+                        "label": "Content width",
+                        "default": "4/12",
+                        "options": [
+                            {
+                                "value": "1/12",
+                                "label": "1/12"
+                            },
+                            {
+                                "value": "2/12",
+                                "label": "2/12"
+                            },
+                            {
+                                "value": "3/12",
+                                "label": "3/12"
+                            },
+                            {
+                                "value": "4/12",
+                                "label": "4/12"
+                            },
+                            {
+                                "value": "5/12",
+                                "label": "5/12"
+                            },
+                            {
+                                "value": "6/12",
+                                "label": "6/12"
+                            },
+                            {
+                                "value": "7/12",
+                                "label": "7/12"
+                            },
+                            {
+                                "value": "8/12",
+                                "label": "8/12"
+                            },
+                            {
+                                "value": "9/12",
+                                "label": "9/12"
+                            },
+                            {
+                                "value": "10/12",
+                                "label": "10/12"
+                            },
+                            {
+                                "value": "11/12",
+                                "label": "11/12"
+                            },
+                            {
+                                "value": "12/12",
+                                "label": "12/12"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "text",
+                        "id": "content_inner_max_width",
+                        "label": "Content inner max width (px,%)"
+                    },
+                    {
+                        "type": "select",
+                        "id": "alignment_v",
+                        "label": "Vertical alignment",
+                        "default": "flex-middle",
+                        "options": [
+                            {
+                                "value": "flex-top",
+                                "label": "Top"
+                            },
+                            {
+                                "value": "flex-middle",
+                                "label": "Middle"
+                            },
+                            {
+                                "value": "flex-bottom",
+                                "label": "Bottom"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "alignment_h",
+                        "label": "Horizontal alignment",
+                        "default": "flex-items-left",
+                        "options": [
+                            {
+                                "value": "flex-items-left",
+                                "label": "Left"
+                            },
+                            {
+                                "value": "flex-items-center",
+                                "label": "Center"
+                            },
+                            {
+                                "value": "flex-items-right",
+                                "label": "Right"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "text",
+                        "id": "additional_classes",
+                        "label": "Additional classes"
+                    }
+                ]
+            },
+            {
+                "type": "product_image",
+                "name": "Product Image",
+                "settings": [
+                    {
+                        "type": "checkbox",
+                        "id": "image_slider",
+                        "label": "Slide all product images",
+                        "default": true
+                    },
+                    {
+                        "type": "checkbox",
+                        "id": "show_lightbox_button",
+                        "label": "Show lightbox button for product images",
+                        "default": true
+                    },
+                    {
+                        "type": "select",
+                        "id": "width",
+                        "label": "Width",
+                        "default": "4/12",
+                        "options": [
+                            {
+                                "value": "1/12",
+                                "label": "1/12"
+                            },
+                            {
+                                "value": "2/12",
+                                "label": "2/12"
+                            },
+                            {
+                                "value": "3/12",
+                                "label": "3/12"
+                            },
+                            {
+                                "value": "4/12",
+                                "label": "4/12"
+                            },
+                            {
+                                "value": "5/12",
+                                "label": "5/12"
+                            },
+                            {
+                                "value": "6/12",
+                                "label": "6/12"
+                            },
+                            {
+                                "value": "7/12",
+                                "label": "7/12"
+                            },
+                            {
+                                "value": "8/12",
+                                "label": "8/12"
+                            },
+                            {
+                                "value": "9/12",
+                                "label": "9/12"
+                            },
+                            {
+                                "value": "10/12",
+                                "label": "10/12"
+                            },
+                            {
+                                "value": "11/12",
+                                "label": "11/12"
+                            },
+                            {
+                                "value": "12/12",
+                                "label": "12/12"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "text",
+                        "id": "content_inner_max_width",
+                        "label": "Content inner max width (px,%)"
+                    },
+                    {
+                        "type": "select",
+                        "id": "alignment_v",
+                        "label": "Vertical alignment",
+                        "default": "flex-middle",
+                        "options": [
+                            {
+                                "value": "flex-top",
+                                "label": "Top"
+                            },
+                            {
+                                "value": "flex-middle",
+                                "label": "Middle"
+                            },
+                            {
+                                "value": "flex-bottom",
+                                "label": "Bottom"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "alignment_h",
+                        "label": "Horizontal alignment",
+                        "default": "flex-items-left",
+                        "options": [
+                            {
+                                "value": "flex-items-left",
+                                "label": "Left"
+                            },
+                            {
+                                "value": "flex-items-center",
+                                "label": "Center"
+                            },
+                            {
+                                "value": "flex-items-right",
+                                "label": "Right"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "text",
+                        "id": "additional_classes",
+                        "label": "Additional classes"
+                    }
+                ]
+            },
+            {
+                "type": "product_info",
+                "name": "Product Info",
+                "settings": [
+                    {
+                        "type": "select",
+                        "id": "product_option_select_style",
+                        "label": "Options selection style",
+                        "default": "swatch",
+                        "options": [
+                            {
+                                "value": "swatch",
+                                "label": "Swatch"
+                            },
+                            {
+                                "value": "select-box",
+                                "label": "Select box"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "checkbox",
+                        "id": "title_visible",
+                        "label": "Product title",
+                        "default": true
+                    },
+                    {
+                        "type": "checkbox",
+                        "id": "price_visible",
+                        "label": "Product price",
+                        "default": true
+                    },
+                    {
+                        "type": "checkbox",
+                        "id": "stars_visible",
+                        "label": "Product star rating",
+                        "default": true
+                    },
+                    {
+                        "type": "checkbox",
+                        "id": "description_visible",
+                        "label": "Product description",
+                        "default": true
+                    },
+                    {
+                        "type": "checkbox",
+                        "id": "variants_visible",
+                        "label": "Product variants",
+                        "default": true
+                    },
+                    {
+                        "type": "checkbox",
+                        "id": "show_unavailable_variant_options",
+                        "label": "Show unavailable variant options",
+                        "default": false
+                    },
+                    {
+                        "type": "checkbox",
+                        "id": "add_to_cart_button_visible",
+                        "label": "Product add to cart button",
+                        "default": true
+                    },
+                    {
+                        "type": "checkbox",
+                        "id": "details_button_visible",
+                        "label": "Product details button",
+                        "default": true
+                    },
+                    {
+                        "type": "select",
+                        "id": "width",
+                        "label": "Width",
+                        "default": "8/12",
+                        "options": [
+                            {
+                                "value": "1/12",
+                                "label": "1/12"
+                            },
+                            {
+                                "value": "2/12",
+                                "label": "2/12"
+                            },
+                            {
+                                "value": "3/12",
+                                "label": "3/12"
+                            },
+                            {
+                                "value": "4/12",
+                                "label": "4/12"
+                            },
+                            {
+                                "value": "5/12",
+                                "label": "5/12"
+                            },
+                            {
+                                "value": "6/12",
+                                "label": "6/12"
+                            },
+                            {
+                                "value": "7/12",
+                                "label": "7/12"
+                            },
+                            {
+                                "value": "8/12",
+                                "label": "8/12"
+                            },
+                            {
+                                "value": "9/12",
+                                "label": "9/12"
+                            },
+                            {
+                                "value": "10/12",
+                                "label": "10/12"
+                            },
+                            {
+                                "value": "11/12",
+                                "label": "11/12"
+                            },
+                            {
+                                "value": "12/12",
+                                "label": "12/12"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "text",
+                        "id": "content_inner_max_width",
+                        "label": "Content inner max width (px,%)"
+                    },
+                    {
+                        "type": "select",
+                        "id": "alignment_v",
+                        "label": "Vertical alignment",
+                        "default": "flex-middle",
+                        "options": [
+                            {
+                                "value": "flex-top",
+                                "label": "Top"
+                            },
+                            {
+                                "value": "flex-middle",
+                                "label": "Middle"
+                            },
+                            {
+                                "value": "flex-bottom",
+                                "label": "Bottom"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "alignment_h",
+                        "label": "Horizontal alignment",
+                        "default": "flex-items-left",
+                        "options": [
+                            {
+                                "value": "flex-items-left",
+                                "label": "Left"
+                            },
+                            {
+                                "value": "flex-items-center",
+                                "label": "Center"
+                            },
+                            {
+                                "value": "flex-items-right",
+                                "label": "Right"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "text_alignment",
+                        "label": "Text alignment",
+                        "default": "text-left",
+                        "options": [
+                            {
+                                "value": "text-left",
+                                "label": "Left"
+                            },
+                            {
+                                "value": "text-center",
+                                "label": "Center"
+                            },
+                            {
+                                "value": "text-right",
+                                "label": "Right"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "text",
+                        "id": "additional_classes",
+                        "label": "Additional classes"
+                    }
+                ]
+            }
+        ],
+        "presets": [
+            {
+                "name": "Single Product",
+                "category": "04. Product",
+                "settings": {
+                    "content_width": "container"
+                },
+                "blocks": [
+                    {
+                        "type": "product_image",
+                        "settings": {
+                            "width": "4/12",
+                            "image_slider": true
+                        }
+                    },
+                    {
+                        "type": "product_info",
+                        "settings": {
+                            "width": "8/12",
+                            "title_visible": true,
+                            "alignment_h": "text-left",
+                            "product_option_select_style": "swatch",
+                            "description_visible": true,
+                            "variants_visible": true,
+                            "price_visible": true,
+                            "add_to_cart_button_visible": true,
+                            "details_button_visible": true
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+    /*"*/{% endschema %}/*"*/
+</script>

@@ -1,0 +1,43 @@
+<div class="container mb-12">
+    <div class="row flex-items-center">
+        <div class="col-12 form-content">
+
+            <!-- PAGE HEADER -->
+            <div class="page-header py-14">
+                <h1 class="text-bold text-center mb-4">{{ 'customer.activate_account.title' | t }}</h1>
+                <h4 class="text-light text-center">{{ 'customer.activate_account.subtext' | t }}</h4>
+            </div>
+            <!-- PAGE HEADER -->
+
+            <!-- ACTIVATE ACCOUNT FORM -->
+            {%- form 'activate_customer_password' -%}
+
+            {%- include 'form-errors' -%}
+
+            <div class="form-group">
+                <input type="password" value="" name="customer[password]" id="CustomerPassword"
+                       class="form-control" placeholder="{{ 'customer.activate_account.password' | t }}">
+            </div>
+
+            <div class="form-group">
+                <input type="password" value="" name="customer[password_confirmation]"
+                       class="form-control" id="CustomerPasswordConfirmation"
+                       placeholder="{{ 'customer.activate_account.password_confirm' | t }}">
+            </div>
+
+            <div class="flex-items-center">
+                <input type="submit" class="btn btn-primary center-block submit-button text-uppercase mt-8 mb-6"
+                       value="{{ 'customer.activate_account.submit' | t }}">
+            </div>
+
+            <div class="text-center">
+                <input type="submit" class="btn btn-link center-block submit-button p-0" name="decline"
+                       value="{{ 'customer.activate_account.cancel' | t }}">
+            </div>
+
+            {%- endform -%}
+            <!-- / ACTIVATE ACCOUNT FORM -->
+
+        </div>
+    </div>
+</div>

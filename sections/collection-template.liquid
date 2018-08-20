@@ -1,0 +1,381 @@
+{%- assign templateSuffixCheck = template.suffix | split: '-' | first -%}
+{%- assign product_rows = section.settings.rows -%}
+
+{%- comment -%}
+{# Figure out the collection page style based on the template suffix #}
+{%- endcomment -%}
+{%- if templateSuffixCheck == 'show' -%}
+    {%- assign collection_page_style = settings.collection_page_style -%}
+{%- else -%}
+    {%- assign collection_page_style = template.suffix | split: '_' | first | default: settings.collection_page_style -%}
+{%- endif -%}
+
+{%- comment -%}
+{# Figure out the product counts based on the template suffix #}
+{%- endcomment -%}
+
+{%- if templateSuffixCheck == 'show' -%}
+
+    {%- assign products_per_row = section.settings.products_per_row -%}
+
+    {%- if template.suffix contains 'x' -%}
+        {%- assign products_per_page_multiplier = template.suffix | split: '-' | last | replace: 'x', '' -%}
+        {%- assign products_per_page = products_per_row | times: product_rows | times: products_per_page_multiplier -%}
+    {%- else -%}
+        {%- assign products_per_page = 50 -%}
+    {%- endif -%}
+
+{%- else -%}
+
+    {%- assign products_per_row = template.suffix | split: '_' | last | split: '-' | first | default: section.settings.products_per_row -%}
+    {%- assign products_per_page = products_per_row | times: product_rows -%}
+
+{%- endif -%}
+
+{%- comment -%}
+{# Don't go over 50 #}
+{%- endcomment -%}
+{%- if products_per_page > 50 -%}
+    {%- assign products_per_page = 50 -%}
+{%- endif -%}
+
+{%- paginate collection.products by products_per_page -%}
+
+{%- include 'util-column-class' column_count: products_per_row, column_min: section.settings.products_per_row_mobile -%}
+
+{%- assign product_image_ratio = settings.product_image_aspect_ratio_w | plus: 0.0 | divided_by: settings.product_image_aspect_ratio_h -%}
+{%- include 'util-image-size' column_count: products_per_row, image_ratio: product_image_ratio, custom_ratio: settings.enable_product_custom_aspect_ratio -%}
+
+{% capture item_class %}{{ column_class }} animate-on-scroll{% endcapture %}
+
+<!-- COLLECTION TOP BAR -->
+<div
+    class="collection-top-bar mb-8 py-8 flex-items-center {% if collection_page_style == 'right-sidebar-with-filters' %}flex-items-md-left{% else %}flex-items-md-right{% endif %} flex-items-middle">
+
+    <!-- COLLECTION OPTIONS -->
+    <div class="collection-options flex-items-middle text-center text-md-right">
+
+        <!-- VIEW -->
+        <div class="collection-view flex-items-middle pb-4 pb-md-0 pr-md-6">
+
+            <div class="pr-2">
+                {{ 'collections.view.title' | t }}:
+            </div>
+
+            <div class="link text-light" ng-class="{'text-primary':cm.currentCollectionView === 'grid'}"
+                 ng-click="cm.toggleCollectionView('grid')">
+                <i class="icon-view-module"></i>
+            </div>
+
+            <div class="link text-light pl-1" ng-class="{'text-primary':cm.currentCollectionView === 'list'}"
+                 ng-click="cm.toggleCollectionView('list')">
+                <i class="icon-view-stream"></i>
+            </div>
+        </div>
+        <!-- / VIEW -->
+
+        <!-- SORT -->
+        <div class="collection-sort flex-items-middle pb-4 pb-md-0 pr-md-6">
+
+            <div class="form-inline select-sorting">
+
+                <div class="form-group m-0">
+
+                    <label class="font-weight-normal mb-0 pr-2" for="SortBy">
+                        {{ 'collections.sorting.title' | t }}:
+                    </label>
+
+                    <select class="form-control simple custom-select font-weight-bold" name="SortBy" id="SortBy"
+                            ng-model="cm.queryParams.sort_by">
+                        <option value="manual">{{ 'collections.sorting.featured' | t }}</option>
+                        <option value="best-selling">{{ 'collections.sorting.best_selling' | t }}</option>
+                        <option value="title-ascending">{{ 'collections.sorting.az' | t }}</option>
+                        <option value="title-descending">{{ 'collections.sorting.za' | t }}</option>
+                        <option value="price-ascending">{{ 'collections.sorting.price_ascending' | t }}</option>
+                        <option value="price-descending">{{ 'collections.sorting.price_descending' | t }}</option>
+                        <option value="created-descending">{{ 'collections.sorting.date_descending' | t }}</option>
+                        <option value="created-ascending">{{ 'collections.sorting.date_ascending' | t }}</option>
+                    </select>
+
+                </div>
+            </div>
+
+        </div>
+        <!-- / SORT -->
+
+        <!-- SHOW -->
+        <div class="collection-show flex-items-middle">
+
+            <div class="form-inline select-show">
+
+                <div class="form-group m-0">
+
+                    <label class="font-weight-normal mb-0 pr-2" for="Show">
+                        {{ 'collections.show.title' | t }}:
+                    </label>
+
+                    {%- assign show_products_per_row = section.settings.products_per_row -%}
+                    {%- assign show_products_per_page = show_products_per_row | times: product_rows -%}
+
+                    {%- if show_products_per_page > 50 -%}
+                        {%- assign show_products_per_page = 50 -%}
+                    {%- endif -%}
+
+                    {%- assign show_products_per_page_2x = show_products_per_page | times: 2 -%}
+                    {%- assign show_products_per_page_3x = show_products_per_page | times: 3 -%}
+
+                    <select class="form-control simple custom-select font-weight-bold" name="Show" id="Show"
+                            ng-model="cm.queryParams.view">
+
+                        <option value="">{{ show_products_per_page }}</option>
+
+                        {%- if show_products_per_page_2x < 50 -%}
+                            <option value="show-2x">{{ show_products_per_page_2x }}</option>
+                        {%- endif -%}
+
+                        {%- if show_products_per_page_3x < 50 -%}
+                            <option value="show-3x">{{ show_products_per_page_3x }}</option>
+                        {%- endif -%}
+
+                        {%- if show_products_per_page < 50 -%}
+                            <option value="show-50">50</option>
+                        {%- endif -%}
+
+                    </select>
+
+                </div>
+            </div>
+
+        </div>
+        <!-- / SHOW -->
+
+    </div>
+    <!-- / COLLECTION OPTIONS -->
+
+</div>
+<!-- / COLLECTION TOP BAR -->
+
+<!-- PRODUCTS -->
+<div id="collection-products" class="products {{ section.settings.default_view }}">
+
+    <div class="loader" ng-show="cm.loading">
+        {%- include 'spinner' -%}
+    </div>
+
+    <div class="row">
+
+        {%- for product in collection.products -%}
+
+            {%- include 'product-item'
+            embed_list_style: true,
+            item_class: item_class,
+            image_size: image_size -%}
+
+        {%- else -%}
+
+            {%- if shop.products_count == 0 -%}
+
+                {%- unless emptyState -%}
+                {{ 'theme-onboarding.css' | global_asset_url | stylesheet_tag }}
+                {%- assign emptyState = true -%}
+                {%- endunless -%}
+
+                <div class="helper-section">
+
+                    <div class="helper-note">
+
+                        <span class="helper-icon"></span>
+                        <h3>{{ 'home_page.onboarding.modal_title' | t }}</h3>
+                        <p>{{ 'home_page.onboarding.no_products_collection' | t }}</p>
+                        <p>
+                            <a class="admin-btn-primary" href="/admin/products/new">
+                                {{ 'home_page.onboarding.add_product' | t }}
+                            </a>
+                        </p>
+
+                    </div>
+
+                    <div class="grid-uniform helper-content row mx-0">
+
+                        {%- assign index = 1 -%}
+
+                        {%- assign product = all_products['###'] -%}
+
+                        {%- for i in (1..8) -%}
+
+                            {%- case i -%}
+                            {%- when 7 -%}
+                            {%- assign index = 1 -%}
+
+                            {%- when 8 -%}
+                            {%- assign index = 2 -%}
+                            {%- endcase -%}
+
+                            {%- include 'product-item'
+                            embed_list_style: true,
+                            item_class: item_class -%}
+
+                            {%- assign index = index | plus: 1 -%}
+
+                        {%- endfor -%}
+                    </div>
+                </div>
+
+            {%- else -%}
+
+                <div class="col text-center mt-12 mb-18">
+                    <em>{{ 'collections.general.no_matches' | t }}</em>
+                </div>
+
+            {%- endif -%}
+
+        {%- endfor -%}
+
+    </div>
+</div>
+<!-- / PRODUCTS -->
+
+<div id="collection-footer" class="collection-footer">
+
+    {%- if paginate.pages > 1 -%}
+        <!-- PAGINATION -->
+        {%- include 'pagination' ajax : true -%}
+        <!-- / PAGINATION -->
+    {%- endif -%}
+
+</div>
+
+{%- endpaginate -%}
+
+<script type="application/json">
+    /*"*/{% schema %}/*"*/
+    {
+        "name": "Collection",
+        "settings": [
+            {
+                "type": "header",
+                "content": "General"
+            },
+            {
+                "type": "select",
+                "id": "default_view",
+                "label": "Default view",
+                "default": "grid",
+                "options": [
+                    {
+                        "value": "grid",
+                        "label": "Grid"
+                    },
+                    {
+                        "value": "list",
+                        "label": "List"
+                    }
+                ]
+            },
+            {
+                "type": "header",
+                "content": "Grid View"
+            },
+            {
+                "type": "select",
+                "id": "products_per_row",
+                "label": "Number of products per row",
+                "default": "3",
+                "options": [
+                    {
+                        "value": "2",
+                        "label": "2"
+                    },
+                    {
+                        "value": "3",
+                        "label": "3"
+                    },
+                    {
+                        "value": "4",
+                        "label": "4"
+                    },
+                    {
+                        "value": "5",
+                        "label": "5"
+                    },
+                    {
+                        "value": "6",
+                        "label": "6"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "rows",
+                "label": "Number of rows",
+                "default": "3",
+                "options": [
+                    {
+                        "value": "1",
+                        "label": "1"
+                    },
+                    {
+                        "value": "2",
+                        "label": "2"
+                    },
+                    {
+                        "value": "3",
+                        "label": "3"
+                    },
+                    {
+                        "value": "4",
+                        "label": "4"
+                    },
+                    {
+                        "value": "5",
+                        "label": "5"
+                    },
+                    {
+                        "value": "6",
+                        "label": "6"
+                    },
+                    {
+                        "value": "7",
+                        "label": "7"
+                    },
+                    {
+                        "value": "8",
+                        "label": "8"
+                    },
+                    {
+                        "value": "9",
+                        "label": "9"
+                    },
+                    {
+                        "value": "10",
+                        "label": "10"
+                    }
+                ]
+            },
+            {
+                "type": "header",
+                "content": "Mobile Specific Options"
+            },
+            {
+                "type": "select",
+                "id": "products_per_row_mobile",
+                "label": "Number of products per row (Mobile)",
+                "default": "1",
+                "options": [
+                    {
+                        "value": "1",
+                        "label": "1"
+                    },
+                    {
+                        "value": "2",
+                        "label": "2"
+                    }
+                ]
+            }
+        ],
+        "blocks": [],
+        "default": {
+        }
+    }
+    /*"*/{% endschema %}/*"*/
+</script>

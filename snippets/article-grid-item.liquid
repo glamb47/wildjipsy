@@ -1,0 +1,199 @@
+{%- assign item_style = style | default: settings.article_style -%}
+{%- assign item_image_size = image_size | default: '1024x' -%}
+
+{%- comment -%}
+{#@ CPT: Article Image #}
+{%- endcomment -%}
+{%- capture article_image -%}
+
+{%- if article -%}
+
+    {%- if article.image -%}
+
+        <!-- ARTICLE IMAGE -->
+        <div class="article-image-wrapper">
+            <img class="article-image img-fluid"
+                 src="{{ article.image.src | img_url: item_image_size, crop: settings.article_image_crop }}"
+                 srcset="{{ article.image.src | img_url: item_image_size, crop: settings.article_image_crop }} 1x, {{ article.image.src | img_url: item_image_size, scale:2 , crop: settings.article_image_crop }} 2x"
+                 alt="{{ article.title.alt | escape }}">
+        </div>
+        <!-- / ARTICLE IMAGE -->
+
+    {%- endif -%}
+
+{%- else -%}
+
+    <!-- ARTICLE IMAGE -->
+    <div class="article-image-wrapper">
+        {{ 'image' | placeholder_svg_tag: 'article-image img-fluid' }}
+    </div>
+    <!-- / ARTICLE IMAGE -->
+
+{%- endif -%}
+
+{%- endcapture -%}
+
+
+{%- comment -%}
+{#@ CPT: Article Title #}
+{%- endcomment -%}
+{%- capture article_title -%}
+
+<!-- ARTICLE TITLE -->
+<div class="article-title h4">
+    {%- if article -%}
+        {{ article.title }}
+    {%- else -%}
+        {{ 'home_page.onboarding.article_title' | t }}
+    {%- endif -%}
+</div>
+<!-- / ARTICLE TITLE -->
+
+{%- endcapture -%}
+
+
+{%- comment -%}
+{#@ CPT: Article Time #}
+{%- endcomment -%}
+{%- capture article_time -%}
+
+<!-- ARTICLE TIME -->
+<time class="article-time text-light" datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+    {%- if article -%}
+        {{ article.published_at | date: format: 'month_day_year' }}
+    {%- else -%}
+        {{ 'now' | date: format: 'month_day_year' }}
+    {%- endif -%}
+</time>
+<!-- / ARTICLE TIME -->
+
+{%- endcapture -%}
+
+
+{%- comment -%}
+{#@ CPT: Article Excerpt #}
+{%- endcomment -%}
+{%- capture article_excerpt -%}
+
+<!-- ARTICLE EXCERPT -->
+<div class="article-excerpt h5">
+
+    {%- if article -%}
+        {{ article.excerpt_or_content | strip_html | truncate: 80 }}
+    {%- else -%}
+        <span>{{ 'home_page.onboarding.lorem_short' | t }}</span>
+    {%- endif -%}
+
+</div>
+<!-- / ARTICLE EXCERPT -->
+
+{%- endcapture -%}
+
+{%- comment -%}
+{#@ CPT: Article Read More Button #}
+{%- endcomment -%}
+{%- capture article_readmore_button -%}
+
+<!-- ARTICLE READ MORE BUTTON -->
+<div class="article-readmore-button">
+    <button class="btn btn-bordered">READ MORE</button>
+</div>
+<!-- / ARTICLE READ MORE BUTTON -->
+
+{%- endcapture -%}
+
+
+{%- comment -%}
+{#@ CPT: Article - Classic #}
+{%- endcomment -%}
+{%- capture article_classic -%}
+
+<div class="{% if article.image %}mb-4{% endif %}">
+    {{ article_image }}
+</div>
+
+<div class="mb-3">
+    {{ article_title }}
+    {{ article_time }}
+</div>
+
+{{ article_excerpt }}
+
+{%- endcapture -%}
+
+{%- comment -%}
+{#@ CPT: Article - Small Card #}
+{%- endcomment -%}
+{%- capture article_small_card -%}
+
+{{ article_image }}
+
+<div class="article-detail">
+
+    <div class="mb-3">
+        {{ article_time }}
+    </div>
+
+    <div class="mb-2">
+        {{ article_title }}
+    </div>
+
+    {{ article_excerpt }}
+
+</div>
+
+{%- endcapture -%}
+
+{%- comment -%}
+{#@ CPT: Article - Tall Card #}
+{%- endcomment -%}
+{%- capture article_tall_card -%}
+
+<div class="article-detail {% if article.image %}has-image{% endif %} p-4 p-md-8"
+     {% if article.image %}style="background-image:url('{{ article.image.src | img_url: '1024x' }}')"{% endif %}>
+
+    <div class="mb-3">
+        {{ article_time }}
+    </div>
+
+    <hr>
+
+    <div class="mb-4">
+        {{ article_title }}
+    </div>
+
+    <div class="mb-4">
+        {{ article_excerpt }}
+    </div>
+
+    {{ article_readmore_button }}
+
+</div>
+
+{%- endcapture -%}
+
+<!-- ARTICLE GRID ITEM -->
+<div class="grid-item article-grid-item {{ item_class | default:'' }} {{ item_style }} flex-item mb-8" {{ block.shopify_attributes }}>
+
+    <a class="grid-item-content" href="{% if article %}{{ article.url }}{% else %}#{% endif %}">
+
+        {%- case item_style -%}
+
+        {%- when 'classic' -%}
+        {{ article_classic }}
+
+        {%- when 'small-card' -%}
+        {{ article_small_card }}
+
+        {%- when 'tall-card' -%}
+        {{ article_tall_card }}
+
+        {%- else -%}
+        {{ article_classic }}
+
+        {%- endcase -%}
+
+    </a>
+
+</div>
+<!-- / ARTICLE GRID ITEM -->

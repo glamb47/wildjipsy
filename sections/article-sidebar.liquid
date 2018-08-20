@@ -1,0 +1,686 @@
+<!-- ASIDE -->
+<div id="article-sidebar"
+     class="sidebar visible-md-up"
+     js-bar
+     options='{"fixed":true, "position":"right", "mediaStep":"sm", "bodyAppend": true}'
+     ng-swipe-right="jb.closeBar()">
+    <div class="jasper-bar-content" js-scroll js-scroll-trigger="jb.isActive">
+        {%- include 'blog-article-sidebar' -%}
+    </div>
+</div>
+<!-- / ASIDE -->
+
+<button js-bar-toggle="article-sidebar"
+        class="hidden-md-up btn-fab btn-secondary m-4 align-bottom-right p-fixed z-index-99">
+    <i class="icon-view-headline"></i>
+</button>
+
+<script type="application/json">
+    /*"*/{% schema %}/*"*/
+    {
+        "name": "Article sidebar",
+        "settings": [],
+        "blocks": [
+            {
+                "type": "blog_tags",
+                "name": "Blog tags",
+                "settings": [
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title",
+                        "default": "Tags"
+                    }
+                ]
+            },
+            {
+                "type": "menu",
+                "name": "Menu",
+                "settings": [
+                    {
+                        "type": "header",
+                        "content": "Menu"
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title"
+                    },
+                    {
+                        "type": "link_list",
+                        "id": "menu",
+                        "label": "Menu"
+                    },
+                    {
+                        "type": "select",
+                        "id": "type",
+                        "label": "Type",
+                        "options": [
+                            {
+                                "value": "collapsible",
+                                "label": "Collapsible menu"
+                            },
+                            {
+                                "value": "popover",
+                                "label": "Popover menu"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "style",
+                        "label": "Style",
+                        "options": [
+                            {
+                                "value": "simple",
+                                "label": "Simple"
+                            },
+                            {
+                                "value": "classic",
+                                "label": "Classic"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "align",
+                        "label": "Align",
+                        "options": [
+                            {
+                                "value": "left",
+                                "label": "Left"
+                            },
+                            {
+                                "value": "center",
+                                "label": "Center"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "featured_product",
+                "name": "Product",
+                "settings": [
+                    {
+                        "type": "header",
+                        "content": "Product"
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title"
+                    },
+                    {
+                        "label": "Product",
+                        "id": "product",
+                        "type": "product"
+                    },
+                    {
+                        "type": "select",
+                        "id": "product_style",
+                        "label": "Product style",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "style1",
+                                "label": "Style 1"
+                            },
+                            {
+                                "value": "style2",
+                                "label": "Style 2"
+                            },
+                            {
+                                "value": "style3",
+                                "label": "Style 3"
+                            },
+                            {
+                                "value": "style4",
+                                "label": "Style 4"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "product_sale_badge_style",
+                        "label": "Sale badge style",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "text",
+                                "label": "\"Sale\" text"
+                            },
+                            {
+                                "value": "percentage",
+                                "label": "Percentage of discount"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "product_hover_buttons_style",
+                        "label": "Hover buttons style",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "text-buttons",
+                                "label": "Text buttons"
+                            },
+                            {
+                                "value": "icon-buttons",
+                                "label": "Icon buttons"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "product_show_star_rating",
+                        "label": "Star rating",
+                        "default": "",
+                        "info": "This option requires [Product Reviews App](https://apps.shopify.com/product-reviews)",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "show",
+                                "label": "Show"
+                            },
+                            {
+                                "value": "hide",
+                                "label": "Hide"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "product_list_carousel",
+                "name": "Product list carousel",
+                "settings": [
+                    {
+                        "type": "header",
+                        "content": "Product list carousel"
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title"
+                    },
+                    {
+                        "type": "collection",
+                        "id": "collection",
+                        "label": "Collection"
+                    },
+                    {
+                        "type": "select",
+                        "id": "row_count",
+                        "label": "Row count",
+                        "default": "3",
+                        "options": [
+                            {
+                                "value": "1",
+                                "label": "1"
+                            },
+                            {
+                                "value": "2",
+                                "label": "2"
+                            },
+                            {
+                                "value": "3",
+                                "label": "3"
+                            },
+                            {
+                                "value": "4",
+                                "label": "4"
+                            },
+                            {
+                                "value": "5",
+                                "label": "5"
+                            },
+                            {
+                                "value": "6",
+                                "label": "6"
+                            },
+                            {
+                                "value": "7",
+                                "label": "7"
+                            },
+                            {
+                                "value": "8",
+                                "label": "8"
+                            },
+                            {
+                                "value": "9",
+                                "label": "9"
+                            },
+                            {
+                                "value": "10",
+                                "label": "10"
+                            }
+                        ]
+                    },
+                    {
+                        "id": "product_limit",
+                        "type": "text",
+                        "label": "Product limit",
+                        "info": "Leave empty for not to limit",
+                        "default": "9"
+                    },
+                    {
+                        "type": "checkbox",
+                        "id": "show_separators",
+                        "label": "Show separators",
+                        "default": true
+                    },
+                    {
+                        "type": "checkbox",
+                        "id": "show_images",
+                        "label": "Show images",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "type": "product_single_carousel",
+                "name": "Product single carousel",
+                "settings": [
+                    {
+                        "type": "header",
+                        "content": "Product single carousel"
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title"
+                    },
+                    {
+                        "label": "Collection",
+                        "id": "collection",
+                        "type": "collection"
+                    },
+                    {
+                        "type": "select",
+                        "id": "product_style",
+                        "label": "Product style",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "style1",
+                                "label": "Style 1"
+                            },
+                            {
+                                "value": "style2",
+                                "label": "Style 2"
+                            },
+                            {
+                                "value": "style3",
+                                "label": "Style 3"
+                            },
+                            {
+                                "value": "style4",
+                                "label": "Style 4"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "product_sale_badge_style",
+                        "label": "Sale badge style",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "text",
+                                "label": "\"Sale\" text"
+                            },
+                            {
+                                "value": "percentage",
+                                "label": "Percentage of discount"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "product_hover_buttons_style",
+                        "label": "Hover buttons style",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "text-buttons",
+                                "label": "Text buttons"
+                            },
+                            {
+                                "value": "icon-buttons",
+                                "label": "Icon buttons"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "product_show_star_rating",
+                        "label": "Star rating",
+                        "default": "",
+                        "info": "This option requires [Product Reviews App](https://apps.shopify.com/product-reviews)",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "show",
+                                "label": "Show"
+                            },
+                            {
+                                "value": "hide",
+                                "label": "Hide"
+                            }
+                        ]
+                    },
+                    {
+                        "id": "product_limit",
+                        "type": "text",
+                        "label": "Product limit",
+                        "info": "Leave empty for not to limit",
+                        "default": "9"
+                    }
+                ]
+            },
+            {
+                "type": "featured_collection",
+                "name": "Collection",
+                "settings": [
+                    {
+                        "type": "header",
+                        "content": "Collection"
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title"
+                    },
+                    {
+                        "label": "Collection",
+                        "id": "collection",
+                        "type": "collection"
+                    },
+                    {
+                        "type": "select",
+                        "id": "hover_bg",
+                        "label": "Hover background color",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "hover-light",
+                                "label": "Light"
+                            },
+                            {
+                                "value": "hover-dark",
+                                "label": "Dark"
+                            },
+                            {
+                                "value": "hover-transparent",
+                                "label": "Transparent"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "checkbox",
+                        "id": "show_product_counts",
+                        "label": "Show Product Count"
+                    }
+                ]
+            },
+            {
+                "type": "featured_article",
+                "name": "Article",
+                "settings": [
+                    {
+                        "type": "header",
+                        "content": "Article"
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title"
+                    },
+                    {
+                        "label": "Article",
+                        "id": "article",
+                        "type": "article"
+                    },
+                    {
+                        "type": "select",
+                        "id": "article_style",
+                        "label": "Article style",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "classic",
+                                "label": "Classic"
+                            },
+                            {
+                                "value": "small-card",
+                                "label": "Small Card"
+                            },
+                            {
+                                "value": "tall-card",
+                                "label": "Tall Card"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "article_list_carousel",
+                "name": "Article list carousel",
+                "settings": [
+                    {
+                        "type": "header",
+                        "content": "Article list carousel"
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title"
+                    },
+                    {
+                        "type": "blog",
+                        "id": "blog",
+                        "label": "Blog"
+                    },
+                    {
+                        "type": "select",
+                        "id": "row_count",
+                        "label": "Row count",
+                        "default": "3",
+                        "options": [
+                            {
+                                "value": "1",
+                                "label": "1"
+                            },
+                            {
+                                "value": "2",
+                                "label": "2"
+                            },
+                            {
+                                "value": "3",
+                                "label": "3"
+                            },
+                            {
+                                "value": "4",
+                                "label": "4"
+                            },
+                            {
+                                "value": "5",
+                                "label": "5"
+                            },
+                            {
+                                "value": "6",
+                                "label": "6"
+                            },
+                            {
+                                "value": "7",
+                                "label": "7"
+                            },
+                            {
+                                "value": "8",
+                                "label": "8"
+                            },
+                            {
+                                "value": "9",
+                                "label": "9"
+                            },
+                            {
+                                "value": "10",
+                                "label": "10"
+                            }
+                        ]
+                    },
+                    {
+                        "id": "article_limit",
+                        "type": "text",
+                        "label": "Article limit",
+                        "info": "Leave empty for not to limit",
+                        "default": "9"
+                    },
+                    {
+                        "type": "checkbox",
+                        "id": "show_separators",
+                        "label": "Show separators",
+                        "default": true
+                    },
+                    {
+                        "type": "checkbox",
+                        "id": "show_images",
+                        "label": "Show images",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "type": "article_single_carousel",
+                "name": "Article single carousel",
+                "settings": [
+                    {
+                        "type": "header",
+                        "content": "Article single carousel"
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title"
+                    },
+                    {
+                        "type": "blog",
+                        "id": "blog",
+                        "label": "Blog"
+                    },
+                    {
+                        "type": "select",
+                        "id": "article_style",
+                        "label": "Article style",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "classic",
+                                "label": "Classic"
+                            },
+                            {
+                                "value": "small-card",
+                                "label": "Small Card"
+                            },
+                            {
+                                "value": "tall-card",
+                                "label": "Tall Card"
+                            }
+                        ]
+                    },
+                    {
+                        "id": "article_limit",
+                        "type": "text",
+                        "label": "Article limit",
+                        "info": "Leave empty for not to limit",
+                        "default": "9"
+                    }
+                ]
+            },
+            {
+                "type": "image",
+                "name": "Image",
+                "settings": [
+                    {
+                        "type": "header",
+                        "content": "Image"
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title"
+                    },
+                    {
+                        "type": "image_picker",
+                        "id": "image",
+                        "label": "Image"
+                    },
+                    {
+                        "type": "url",
+                        "id": "url",
+                        "label": "Link url"
+                    }
+                ]
+            },
+            {
+                "type": "html",
+                "name": "Html",
+                "settings": [
+                    {
+                        "type": "header",
+                        "content": "Custom html"
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title"
+                    },
+                    {
+                        "type": "textarea",
+                        "id": "html",
+                        "label": "Html",
+                        "placeholder": "Use basic HTML to format text",
+                        "default": "Custom Html"
+                    }
+                ]
+            }
+        ],
+        "default": {}
+    }
+    /*"*/{% endschema %}/*"*/
+</script>

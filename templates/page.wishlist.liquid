@@ -1,0 +1,134 @@
+<div class="container wishlist-page mb-12">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header pt-14 {% if page.content == blank %}pb-14{% endif %}">
+        <h1 class="text-bold text-center text-md-left">{{ 'wishlist.title' | t }}</h1>
+    </div>
+    <!-- / PAGE HEADER -->
+
+    <!-- PAGE CONTENT -->
+    {%- if page.content != blank -%}
+        <div class="h4 mt-2 mb-14 text-center text-md-left text-light">
+            {{ page.content }}
+        </div>
+    {%- endif -%}
+    <!-- / PAGE CONTENT -->
+
+    <js-wishlist ng-cloak>
+
+        <div ng-if="vm.loading">
+            {% include 'spinner' %}
+        </div>
+
+        <div ng-if="!vm.loading">
+
+            <div ng-if="vm.products.length > 0 && vm.productsLoaded">
+
+                <!-- WISHLIST TABLE -->
+                <div class="wishlist-table">
+
+                    <div class="table-header row hidden-xs-down">
+                        <div class="col-8">{{ 'wishlist.product_details' | t }}</div>
+                        <div class="col-4 text-center">{{ 'wishlist.price' | t }}</div>
+                    </div>
+
+                    <div class="table-separator"></div>
+
+                    <!-- PRODUCT -->
+                    <div class="table-row row" ng-repeat="product in ::vm.products" js-product-single="product">
+
+                        <div class="col-12 col-sm-8">
+
+                            <div class="row">
+
+                                <!-- PRODUCT IMAGE -->
+                                <div
+                                    class="product-image col-12 col-sm-6 flex-items-middle flex-items-center flex-items-sm-left pb-6 pb-sm-0">
+
+                                    <a class="wishlist-image"
+                                       href="{[{ product.url }]}?variant={[{ product.selectedVariant.id }]}">
+                                        <img class="img-fluid"
+                                             ng-src="{[{ product.selectedVariant.featured_image ? vm.resizeImage(product.selectedVariant.featured_image.src, '160x') : vm.resizeImage(product.featured_image, '160x') }]}"
+                                             alt="{[{ product.selectedVariant.name }]}"
+                                             ng-class="{'sold-out':!product.selectedVariant.available}">
+                                    </a>
+
+                                    <!-- PRODUCT REMOVE BUTTON -->
+                                    <div class="product-remove-button flex-items-middle flex-items-center"
+                                         ng-click="ps.toggleWishlist($event)">
+                                        <i class="icon-close s-4"
+                                           uib-tooltip="{{ 'wishlist.remove' | t }}"
+                                           tooltip-popup-delay="300" tooltip-append-to-body="true"></i>
+                                    </div>
+                                    <!-- / PRODUCT REMOVE BUTTON -->
+
+                                </div>
+                                <!-- / PRODUCT IMAGE -->
+
+                                <!-- PRODUCT TITLE -->
+                                <div
+                                    class="product-title col-12 col-sm-6 flex-items-middle flex-items-center flex-items-sm-left flex-order--1 flex-order-sm-0 text-center text-sm-left py-6 py-sm-0">
+
+                                    <div class="row">
+
+                                        <div class="col-12">
+                                            <a href="{[{ product.url }]}?variant={[{ product.selectedVariant.id }]}"
+                                               class="text-bold">
+                                                {[{ product.title }]}
+                                            </a>
+                                        </div>
+
+                                        <div class="col-12 pt-1 text-light"
+                                             ng-if="product.selectedVariant.title !== 'Default Title'">
+                                            {[{ product.selectedVariant.title }]}
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                                <!-- / PRODUCT TITLE -->
+
+                            </div>
+
+                        </div>
+
+                        <!-- PRODUCT PRICE -->
+                        <div
+                            class="product-price col-12 col-sm-4 flex-items-middle flex-items-center text-center pb-6 pb-sm-0">
+
+                            <div class="row">
+
+                                <div class="col-12 text-bold text-uppercase pb-2 hidden-sm-up">
+                                    {{ 'wishlist.price' | t }}
+                                </div>
+
+                                <div class="col-12 js-money text-bold h4" value="{[{ product.selectedVariant.price }]}">
+                                    {[{ product.selectedVariant.price }]}
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <!-- / PRODUCT PRICE -->
+
+                    </div>
+                    <!-- / PRODUCT -->
+
+                </div>
+                <!-- / WISHLIST TABLE -->
+
+            </div>
+
+            <div ng-if="vm.products.length === 0">
+
+                <div class="h4">
+                    {{ 'wishlist.empty' | t }}
+                </div>
+
+            </div>
+
+        </div>
+
+    </js-wishlist>
+
+</div>

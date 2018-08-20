@@ -1,0 +1,81 @@
+<ul>
+
+    {%- for link in linklists[menu_handle].links -%}
+
+        {%- assign menu_item_extras = false -%}
+        {%- for menu_extra in menu_extras -%}
+            {%- assign menu_extra_title = menu_extra.settings.title | downcase -%}
+            {%- assign link_title = link.title | downcase -%}
+            {%- if menu_extra_title == link_title -%}
+                {%- assign menu_item_extras = menu_extra.settings -%}
+                {%- break -%}
+            {%- endif -%}
+        {%- endfor -%}
+
+        {%- assign menu_item_title_color = '' -%}
+        {%- assign menu_item_icon_color = '' -%}
+
+        {%- if menu_item_extras -%}
+            {%- if menu_item_extras.title_color != blank and menu_item_extras.title_color != 'rgba(0,0,0,0)' -%}
+                {%- assign menu_item_title_color = menu_item_extras.title_color -%}
+            {%- endif -%}
+
+            {%- if menu_item_extras.icon_color != blank and menu_item_extras.icon_color != 'rgba(0,0,0,0)' -%}
+                {%- assign menu_item_icon_color = menu_item_extras.icon_color -%}
+            {%- endif -%}
+        {%- endif -%}
+
+        {%- assign child_menu_handle = link.title | handleize -%}
+
+        {%- assign has_children = false -%}
+        {%- if linklists[child_menu_handle].links != blank and menu_handle != child_menu_handle -%}
+            {%- assign has_children = true -%}
+        {%- endif -%}
+
+        <li class="nav-link-container {% if has_children %}popover-placement-{{ popover_placement }}{% endif %}"
+            {% if has_children %}js-popover
+            js-popover-options="{ placement: '{{ popover_placement }}', appendToBody: false }{% endif %}">
+
+            <a href="{% if link.url contains '#' %}{{ shop.url }}{% endif %}{{ link.url }}"
+               {% if template == "index" %}js-scroll-to-section{% endif %}
+                {% if has_children %}js-popover-trigger{% endif %}
+               class="nav-link dropdown-item link {{ nav_link_align_class }} {% if has_children == false and link.active %} active{% endif %} {% if has_children %} has-children{% endif %}">
+
+                <div class="nav-link-context" style="color: {{ menu_item_title_color }};">
+
+                    {%- if menu_item_extras and menu_item_extras.icon_class != '' -%}
+                        <i class="{{ menu_item_extras.icon_class }} s-4 mr-1"
+                           style="color: {{ menu_item_icon_color }}"></i>
+                    {%- endif -%}
+
+                    <span class="nav-link-title">
+                               {{ link.title }}
+                            </span>
+
+                    {%- if menu_item_extras and menu_item_extras.badge_text != '' -%}
+                        <div class="badge"
+                             style="background-color:{{ menu_item_extras.badge_bg_color | default: jasper_color_primary }};color:{{ menu_item_extras.badge_fg_color }}">
+                            <span>{{ menu_item_extras.badge_text }}</span>
+                            <span class="arrow"
+                                  style="border-color:{{ menu_item_extras.badge_bg_color | default: jasper_color_primary }}"></span>
+                        </div>
+                    {%- endif -%}
+
+                </div>
+
+            </a>
+
+            {%- if has_children -%}
+                {%- assign new_menu_depth = menu_depth | plus:1 -%}
+                <js-popover-content class="popover dropdown-style {{ popover_from }} {{ nav_origin }}">
+                    <div class="popover-content">
+                        {%- include 'nav-item-popover-subitems' menu_handle: child_menu_handle, menu_depth: new_menu_depth -%}
+                    </div>
+                </js-popover-content>
+            {%- endif -%}
+
+        </li>
+
+    {%- endfor -%}
+
+</ul>

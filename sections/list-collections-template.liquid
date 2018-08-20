@@ -1,0 +1,165 @@
+{%- assign content_width = section.settings.content_width | default: settings.content_width -%}
+
+<div class="{{ content_width }}">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header py-14">
+        <h3 class="text-uppercase text-center">{{ 'collections.general.title' | t }}</h3>
+    </div>
+    <!-- / PAGE HEADER -->
+
+    <!-- COLLECTIONS -->
+    <div class="row collections mb-14">
+
+        {%- include 'util-column-class' column_count: section.settings.column_count, column_min: section.settings.column_count_mobile -%}
+
+        {%- assign collection_image_ratio = settings.collection_image_aspect_ratio_w | plus :0.0 | divided_by: settings.collection_image_aspect_ratio_h -%}
+        {%- include 'util-image-size' column_count: section.settings.column_count, image_ratio: collection_image_ratio, custom_ratio: settings.enable_collection_custom_aspect_ratio -%}
+
+        {% capture item_class %}{{ column_class }} animate-on-scroll{% endcapture %}
+
+        {%- for collection in collections -%}
+
+            {%- unless collection.handle == 'frontpage' or collection.handle == 'home-page' -%}
+
+            <!-- COLLECTION -->
+            {%- include 'collection-item'
+            collection: collection,
+            style: section.settings.style,
+            item_class: item_class,
+            show_product_counts: section.settings.show_product_counts,
+            hover_bg: section.settings.hover_bg,
+            image_size: image_size -%}
+            <!-- / COLLECTION -->
+
+            {%- endunless -%}
+
+        {%- endfor -%}
+    </div>
+    <!-- / COLLECTIONS -->
+
+</div>
+
+<script type="application/json">
+    /*"*/{% schema %}/*"*/
+    {
+        "name": "Collections",
+        "settings": [
+            {
+                "type": "select",
+                "id": "content_width",
+                "label": "Content width",
+                "options": [
+                    {
+                        "value": "",
+                        "label": "Default"
+                    },
+                    {
+                        "value": "container",
+                        "label": "Container"
+                    },
+                    {
+                        "value": "container-fluid",
+                        "label": "Fluid container"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "column_count",
+                "label": "Number of collections per row",
+                "default": "4",
+                "options": [
+                    {
+                        "value": "2",
+                        "label": "2"
+                    },
+                    {
+                        "value": "3",
+                        "label": "3"
+                    },
+                    {
+                        "value": "4",
+                        "label": "4"
+                    },
+                    {
+                        "value": "5",
+                        "label": "5"
+                    },
+                    {
+                        "value": "6",
+                        "label": "6"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "style",
+                "label": "Style",
+                "options": [
+                    {
+                        "value": "classic",
+                        "label": "Classic"
+                    },
+                    {
+                        "value": "sym",
+                        "label": "Symmetric"
+                    },
+                    {
+                        "value": "asym",
+                        "label": "Asymmetric"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "hover_bg",
+                "label": "Hover background color",
+                "options": [
+                    {
+                        "value": "",
+                        "label": "Default"
+                    },
+                    {
+                        "value": "hover-light",
+                        "label": "Light"
+                    },
+                    {
+                        "value": "hover-dark",
+                        "label": "Dark"
+                    },
+                    {
+                        "value": "hover-transparent",
+                        "label": "Transparent"
+                    }
+                ]
+            },
+            {
+                "type": "checkbox",
+                "id": "show_product_counts",
+                "label": "Show product counts"
+            },
+            {
+                "type": "header",
+                "content": "Mobile Specific Options"
+            },
+            {
+                "type": "select",
+                "id": "column_count_mobile",
+                "label": "Column count (Mobile)",
+                "default": "1",
+                "options": [
+                    {
+                        "value": "1",
+                        "label": "1"
+                    },
+                    {
+                        "value": "2",
+                        "label": "2"
+                    }
+                ]
+            }
+        ]
+    }
+    /*"*/{% endschema %}/*"*/
+</script>

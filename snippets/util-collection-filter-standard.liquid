@@ -1,0 +1,34 @@
+{%- assign tags = '' -%}
+{%- assign _tags = tags_string | split:',' -%}
+
+{%- if _tags.size > 0 -%}
+
+    {%- for _tag_raw in _tags -%}
+
+        {%- assign _tag = _tag_raw | downcase | strip | replace: '&amp;', '&' -%}
+
+        {%- for _collection_tag in collection.tags -%}
+            {%- assign collection_tag = _collection_tag | downcase | strip | replace: '&amp;', '&' -%}
+            {%- assign tag_exists_in_collection_tags = false -%}
+
+            {%- if collection_tag == _tag -%}
+                {%- assign tag_exists_in_collection_tags = true -%}
+                {%- break -%}
+            {%- endif -%}
+        {%- endfor -%}
+
+        {%- if tag_exists_in_collection_tags -%}
+
+            {%- if tags == '' -%}
+                {%- assign tags = tags | append: _tag -%}
+            {%- else -%}
+                {%- assign tags = tags | append:',' | append: _tag -%}
+            {%- endif -%}
+
+        {%- endif -%}
+
+    {%- endfor -%}
+
+{%- endif -%}
+
+{%- assign tags = tags | split:',' -%}

@@ -1,0 +1,168 @@
+<div class="container mb-12">
+
+    <div class="row">
+
+        <div class="col-12">
+
+            <!-- PAGE HEADER -->
+            <div class="page-header py-14">
+                <h1 class="text-bold text-center text-md-left">{{ 'customer.account.title' | t }}</h1>
+            </div>
+            <!-- / PAGE HEADER -->
+
+        </div>
+
+        <div class="account-left col-12 col-md-9">
+
+            <div class="pr-0 pr-md-8">
+
+                {%- paginate customer.orders by 20 -%}
+
+                {%- if customer.orders.size != 0 -%}
+
+                    <!-- ORDERS TABLE -->
+                    <div class="orders-table row mb-4">
+
+                        <div class="orders-table-header col-12 text-uppercase text-bold hidden-xs-down">
+                            <div class="row flex-items-bottom">
+                                <div class="col-2-4">{{ 'customer.orders.order_number' | t }}</div>
+                                <div class="col-2-4">{{ 'customer.orders.date' | t }}</div>
+                                <div class="col-2-4">{{ 'customer.orders.payment_status' | t }}</div>
+                                <div class="col-2-4">{{ 'customer.orders.fulfillment_status' | t }}</div>
+                                <div class="col-2-4 text-sm-right">{{ 'customer.orders.total' | t }}</div>
+                            </div>
+                        </div>
+
+                        <div class="orders-table-body col-12">
+                            {%- for order in customer.orders -%}
+
+                                <div class="orders-table-separator row">
+                                    <div class="col-12 mx-auto mx-sm-0">
+                                        <hr class="my-8 my-sm-4 w-20 w-sm-auto">
+                                    </div>
+                                </div>
+
+                                <div class="orders-table-line row flex-items-middle">
+                                    <div class="col-12 col-sm-2-4">
+                                        <div class="pb-1 hidden-sm-up text-bold">
+                                            {{ 'customer.orders.order_number' | t }}:
+                                        </div>
+                                        <div>
+                                            <a class="text-primary text-bold" href="{{ order.customer_url }}"
+                                               title="{{ order.name }}">{{ order.name }}</a>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 col-sm-2-4">
+                                        <div class="pb-1 hidden-sm-up text-bold">
+                                            {{ 'customer.orders.date' | t }}:
+                                        </div>
+                                        <div>{{ order.created_at | date: "%b %d, %Y" }}</div>
+                                    </div>
+
+                                    <div class="col-12 col-sm-2-4">
+                                        <div class="pb-1 hidden-sm-up text-bold">
+                                            {{ 'customer.orders.payment_status' | t }}:
+                                        </div>
+                                        <div>{{ order.financial_status_label }}</div>
+                                    </div>
+
+                                    <div class="col-12 col-sm-2-4">
+                                        <div class="pb-1 hidden-sm-up text-bold">
+                                            {{ 'customer.orders.fulfillment_status' | t }}:
+                                        </div>
+                                        <div>{{ order.fulfillment_status_label }}</div>
+                                    </div>
+
+                                    <div class="col-12 col-sm-2-4 text-sm-right">
+                                        <div class="pb-1 hidden-sm-up text-bold">
+                                            {{ 'customer.orders.total' | t }}:
+                                        </div>
+                                        <div class="js-money" value="{{ order.total_price }}">
+                                            {{ order.total_price | money }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                            {%- endfor -%}
+                        </div>
+
+                    </div>
+                    <!-- / ORDERS TABLE -->
+
+                {%- else -%}
+
+                    <!-- NO ORDERS MESSAGE -->
+                    <p class="text-light">{{ 'customer.orders.none' | t }}</p>
+                    <!-- / NO ORDERS MESSAGE -->
+
+                {%- endif -%}
+
+                {%- if paginate.pages > 1 -%}
+
+                    <!-- PAGINATION -->
+                    <div class="text-center">
+                        {%- include 'pagination' -%}
+                    </div>
+                    <!-- / PAGINATION -->
+
+                {%- endif -%}
+
+                {%- endpaginate -%}
+
+            </div>
+        </div>
+
+        <div class="account-right secondary-bg col-12 col-md-3 p-8 mt-8 mt-md-0">
+
+            <!-- CUSTOMER NAME -->
+            <div
+                class="h3 customer-name text-capitalize text-bold mb-6 text-center text-md-left">{{ customer.name }}</div>
+            <!-- / CUSTOMER NAME -->
+
+            {%- if customer.default_address != nil -%}
+
+                <!-- CUSTOMER DEFAULT ADDRESS -->
+                <div class="customer-address text-light h4 mb-6 text-center text-md-left">
+
+                    {{ customer.default_address.address1 }}<br>
+
+                    {%- if customer.default_address.address2 != "" -%}
+                        {{ customer.default_address.address2 }}<br>
+                    {%- endif -%}
+
+                    {%- if customer.default_address.city != "" -%}
+                        {{ customer.default_address.city }}<br>
+                    {%- endif -%}
+
+                    {%- if customer.default_address.province_code != "" -%}
+                        {{ customer.default_address.province_code | upcase }}<br>
+                    {%- endif -%}
+
+                    {%- if customer.default_address.zip != "" -%}
+                        {{ customer.default_address.zip | upcase }}<br>
+                    {%- endif -%}
+
+                    {%- if customer.default_address.country != "" -%}
+                        {{ customer.default_address.country }}<br>
+                    {%- endif -%}
+
+                    {%- if customer.default_address.phone != "" -%}
+                        {{ customer.default_address.phone }}
+                    {%- endif -%}
+                </div>
+                <!-- / CUSTOMER DEFAULT ADDRESS -->
+
+            {%- endif -%}
+
+            <!-- SHOW ALL ADDRESSES -->
+            <div class="text-center text-md-left mb-8 mb-md-0">
+                <a class="customer-adresses-link btn btn-primary" href="/account/addresses">
+                    {{ 'customer.account.view_addresses' | t }} ({{ customer.addresses_count }})
+                </a>
+            </div>
+            <!-- / SHOW ALL ADDRESSES -->
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,202 @@
+<div class="section-content {{ content_width }}">
+
+    <div
+        class="home-page-slider {{ section.settings.arrows_style }}"
+        js-flickity-slider-helper
+        {% if section.settings.matchHeaderFg %}match-header-fg{% endif %}
+        bc-flickity='{
+                      "accessibility": true,
+                      "draggable": true,
+                      "dragThreshold": 15,
+                      "autoPlay": {% if section.settings.autoplay == true %} {{ section.settings.autoplaySpeed }}{% else %}false{% endif %},
+                      "pauseAutoPlayOnHover": true,
+                      "selectedAttraction":{{ section.settings.selectedAttraction }},
+                      "friction": {{ section.settings.friction }},
+                      "freeScroll": false,
+                      "contain": true,
+                      "wrapAround": {{ section.settings.infinite }},
+                      "prevNextButtons": {{ section.settings.arrows }},
+                      "pageDots": {{ section.settings.dots }},
+                      "groupCells": true,
+                      "imagesLoaded": {% if section.settings.section_height == 'auto' %} true{% else %}false{% endif %},
+                      "adaptiveHeight": {% if section.settings.section_height == 'auto' %} true{% else %}false{% endif %},
+                      "setGallerySize": {% if section.settings.section_height == 'auto' %} true{% else %}false{% endif %}
+                      }'>
+
+        {%- for block in section.blocks -%}
+
+            <div
+                class="slide col-12 p-0 {{ block.settings.filter }} {{ block.settings.fg_color }}"
+                fg-class="{{ block.settings.fg_color }}" {{ block.shopify_attributes }}>
+
+                {%- case block.type -%}
+
+                {%- comment -%}
+                {# @ Image #}
+                {%- endcomment -%}
+                {%- when 'image' -%}
+
+                {%- if block.settings.image != blank -%}
+
+                    <div
+                        class="slide-image {% if block.settings.pan_zoom_effect and section.settings.section_height != 'auto' %} pan-zoom-effect{% endif %}"
+                        {% unless section.settings.section_height == 'auto' %}
+                        style="background-size: {{ block.settings.bg_size }};
+                            background-repeat: {{ block.settings.bg_repeat }};
+                            background-position: {{ block.settings.bg_position }};
+                            background-image: url({{ block.settings.image | img_url: '1920x' }});
+                            {% if block.settings.bg_color != blank %}background-color: {{ block.settings.bg_color }};{% endif %}"
+                        {% endunless %}>
+
+                        {% if section.settings.section_height == 'auto' %}
+                            <img class="w-100" src="{{ block.settings.image | img_url: '1920x' }}">
+                        {% endif %}
+
+                    </div>
+
+                {%- else -%}
+
+                    {% capture demo_image %}demo-slide-{% cycle 1, 2, 3, 4 %}.jpg{% endcapture %}
+
+                    <div class="slide-image {% if block.settings.pan_zoom_effect %} pan-zoom-effect{% endif %}"
+                         style="background-size: {{ block.settings.bg_size }}; background-repeat: {{ block.settings.bg_repeat }};
+                             background-position: {{ block.settings.bg_position }};
+                             background-image: url({{ demo_image | asset_img_url: '1920x' }});
+                             {% if block.settings.bg_color != blank %}background-color: {{ block.settings.bg_color }};{% endif %}">
+                    </div>
+
+                {%- endif -%}
+
+                {%- if block.settings.caption -%}
+
+                    <div class="slide-visible-area {{ block.settings.alignment_h }}">
+
+                        <div
+                            class="slide-caption-wrapper {{ block.settings.align_text }} {{ block.settings.alignment_v }} ">
+
+                            {%- if block.settings.link != blank -%}
+                                <a href="{{ block.settings.link }}" class="slide-link"></a>
+                            {%- endif -%}
+
+                            {%- include 'util-color-transparentize' color: block.settings.caption_bg_color, opacity: block.settings.caption_bg_opacity -%}
+
+                            <div class="slide-caption {{ block.settings.additional_classes }}"
+                                 style="background-color: {{ color_transparentized }}"
+                                 data-caption-animation="{{ block.settings.caption_animation }}">
+                                {{ block.settings.caption }}
+                            </div>
+
+                        </div>
+                    </div>
+                {%- endif -%}
+
+                {%- comment -%}
+                {# @ Video #}
+                {%- endcomment -%}
+                {%- when 'video' -%}
+
+                <div wip-youtube
+                     video-url="'{{ block.settings.video_url }}'"
+                     options="{
+                                      type      : 'background',
+                                      fallbackImage : {% if block.settings.fallback_image != blank %}'{{ block.settings.fallback_image | img_url: '1920x' }}'{% else %}''{% endif %},
+                                      mobile        :  {% if block.settings.mobile %}true{% else %}false{% endif %},
+                                      playerVars: {
+                                          autoplay      :  {% if block.settings.autoplay %}1{% else %}0{% endif %},
+                                          controls      : 0,
+                                          iv_load_policy: 3,
+                                          cc_load_policy: 0,
+                                          fs            : 1,
+                                          modestbranding: 1,
+                                          playsinline   : 1,
+                                          disablekb     : 0,
+                                          rel           : 0,
+                                          showinfo      : 0,
+                                          wmode         : 'opaque',
+                                          branding      : 0,
+                                          {%- if  block.settings.start != blank and block.settings.start != 0 -%}
+                                          start      : {{ block.settings.start }},
+                                          {%- endif -%}
+                                          {%- if  block.settings.end != blank and block.settings.end != 0 -%}
+                                          end      : {{ block.settings.end }},
+                                          {%- endif -%}
+                                          autohide      : 0
+                                      }
+                                    }"
+                     style="width:100%;height: 100%">
+
+                    {%- if block.settings.caption -%}
+
+                        <div class="slide-visible-area {{ block.settings.alignment_h }}">
+
+                            <div
+                                class="slide-caption-wrapper {{ block.settings.align_text }} {{ block.settings.alignment_v }}">
+
+                                {%- if block.settings.link != blank -%}
+                                    <a href="{{ block.settings.link }}" class="slide-link"></a>
+                                {%- endif -%}
+
+                                {%- include 'util-color-transparentize' color: block.settings.caption_bg_color, opacity: block.settings.caption_bg_opacity -%}
+
+                                <div class="slide-caption {{ block.settings.additional_classes }}"
+                                     style="background-color: {{ color_transparentized }}"
+                                     data-caption-animation="{{ block.settings.caption_animation }}">
+                                    {{ block.settings.caption }}
+                                </div>
+                            </div>
+                        </div>
+                    {%- endif -%}
+                </div>
+
+                {%- when 'custom-url-video' -%}
+                <video-background source="{
+                  mp4: '{{ block.settings.video_url_mp4 }}',
+                  ogg: '{{ block.settings.video_url_ogg }}',
+                  webm: '{{ block.settings.video_url_webm }}'
+                }"
+                    {%- if block.settings.fallback_image != blank -%}
+                        poster="{{ block.settings.fallback_image | img_url: '1920x' }}"
+                    {%- endif -%}
+
+                    {%- if  block.settings.start != blank and block.settings.start != 0 -%}
+                        start-time=" {{ block.settings.start }}"
+                    {%- endif -%}
+
+                    {%- if  block.settings.end != blank and block.settings.end != 0 -%}
+                        end-time=" {{ block.settings.end }}",
+                    {%- endif -%}
+
+                                  autoplay
+                                  loop
+                                  muted
+                >
+                </video-background>
+
+                {%- if block.settings.caption -%}
+
+                    <div class="slide-visible-area {{ block.settings.alignment_h }}">
+
+                        <div
+                            class="slide-caption-wrapper {{ block.settings.align_text }} {{ block.settings.alignment_v }}">
+
+                            {%- if block.settings.link != blank -%}
+                                <a href="{{ block.settings.link }}" class="slide-link"></a>
+                            {%- endif -%}
+
+                            {%- include 'util-color-transparentize' color: block.settings.caption_bg_color, opacity: block.settings.caption_bg_opacity -%}
+
+                            <div class="slide-caption {{ block.settings.additional_classes }}"
+                                 style="background-color: {{ color_transparentized }}"
+                                 data-caption-animation="{{ block.settings.caption_animation }}">
+                                {{ block.settings.caption }}
+                            </div>
+                        </div>
+                    </div>
+                {%- endif -%}
+                {%- endcase -%}
+            </div>
+
+        {%- endfor -%}
+    </div>
+
+</div>

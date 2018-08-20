@@ -1,0 +1,195 @@
+// Sizes
+$gutter: 32px;
+
+/**
+Return color based on opacity
+If given color has an opacity value of 1, return the given default value.
+This is required for shopify's color selector. When you remove color from
+the selector, it returns rgba(0,0,0,0) rather than removing the color value.
+So we need this function to keep the variables filled, otherwise nothing
+will work correctly.
+ */
+@function assign-color($color, $default-color) {
+    @if (opacity($color) == 0) {
+        @return $default-color;
+    }
+
+    @return $color;
+}
+
+$primary-bg-color: assign-color({{ settings.color_primary_bg }}, #ffffff) !default;
+
+// Select given light or dark color based on primary bg color
+@function select-by-primary-bg($light-bg-color: rgba(0, 0, 0, 0.12), $dark-bg-color: rgba(255, 255, 255, 0.12) ) {
+
+    $bg-color: $primary-bg-color;
+
+    // If transparent background, return nothing
+    @if (opacity($bg-color) == 0) {
+        @return '';
+    }
+
+    // Darker background, return light color
+    @if (lightness($bg-color) < 50) {
+        @return $dark-bg-color;
+    }
+
+    // Lighter background, return dark color
+    @return $light-bg-color;
+}
+
+html,
+body,
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    flex: 100;
+}
+
+.wrapper {
+    background: select-by-primary-bg(#f3f4f5, none);
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        flex: 1 0 auto;
+        align-items: center;
+        align-content: center;
+        justify-content: center;
+        padding: 32px 32px 64px 32px;
+        max-width: 568px;
+
+        .giftcard {
+            background: select-by-primary-bg(#ffffff, rgba(0, 0, 0, 0.12));
+            border-color: select-by-primary-bg(rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.38));
+            margin-bottom: 0;
+
+            .card-img-top {
+                position: relative;
+            }
+
+            .card-block {
+                position: relative;
+            }
+
+            #qr-code {
+
+                img {
+                    padding: $gutter;
+                    border: 1px solid select-by-primary-bg(rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.87));;
+                    border-radius: 4px;
+                    margin: 0 auto $gutter;
+                    background-color: #ffffff;
+                }
+            }
+
+            .action-link {
+                left: $gutter / 2;
+                font-size: 0.875em;
+                font-weight: bold;
+                display: block;
+                text-transform: uppercase;
+                letter-spacing: .2em;
+            }
+        }
+
+        .giftcard-code {
+            position: absolute;
+            bottom: $gutter;
+            text-align: center;
+            width: 100%;
+            z-index: 50;
+        }
+
+        .giftcard-code-medium {
+            font-size: .875em;
+        }
+
+        .giftcard-code-small {
+            font-size: .75em;
+        }
+
+        .giftcard-code-inner {
+            display: inline-block;
+            vertical-align: baseline;
+            background-color: #fff;
+            padding: .5em;
+            border-radius: 4px;
+            max-width: 450px;
+            -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12);
+
+            .giftcard__code--small & {
+                overflow: auto;
+            }
+        }
+
+        .giftcard-code-text {
+            font-weight: 400;
+            font-size: 1.875em;
+            text-transform: uppercase;
+            border-radius: 2px;
+            border: 1px dashed rgba(0, 0, 0, 0.38);
+            padding: .4em .5em;
+            display: inline-block;
+            vertical-align: baseline;
+            color: #777;
+            line-height: 1;
+
+            .disabled & {
+                color: #999;
+                text-decoration: line-through;
+            }
+        }
+
+        .giftcard-amount {
+            position: absolute;
+            top: 0;
+            right: 0;
+            color: #fff;
+            font-size: 2.75em;
+            line-height: 1.2;
+            padding: $gutter / 2;
+            z-index: 50;
+
+            strong {
+                display: block;
+                text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.12);
+            }
+        }
+
+        .giftcard-amount-medium {
+            font-size: 2em;
+        }
+
+        .tooltip {
+            opacity: 1;
+            bottom: 100%;
+            right: 0;
+        }
+
+        .action-link-print {
+            display: inline-block;
+            vertical-align: baseline;
+            width: 17px;
+            height: 17px;
+            vertical-align: middle;
+            margin-right: 5px;
+            opacity: select-by-primary-bg(0.25, 1);
+            background: {
+                image: url('//cdn.shopify.com/s/assets/gift-card/icon-print-164daa1ae32d10d1f9b83ac21b6f2c70.png');
+                repeat: no-repeat;
+                position: 0 0;
+            }
+
+            .svg & {
+                background-image: url('//cdn.shopify.com/s/assets/gift-card/icon-print-6a10b2fb86d223b8c783c9696eaf4c31.svg');
+            }
+
+            .action-link:hover & {
+                opacity: 0.4;
+            }
+        }
+    }
+}

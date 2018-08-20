@@ -1,0 +1,321 @@
+{%- comment -%}
+    You can modify the 'env' variable to change the environment.
+
+    Available values:
+    -----------------
+    'dev' : Development environment.
+    Unbundled and unminified javascript and css/scss files will be loaded. This will speed up the development but
+    it will slow down your shop. You must minify and bundle all javascript and css/scss files after modifying them
+    in order to keep your shop's performance on the highest level possible.
+
+    'prod': Production environment.
+    Minified and bundled javascript and css/scss files will loaded. This will greatly increase your shop's
+    performance but it will make the development impossible.
+{%- endcomment -%}
+
+{%- assign env = 'prod' -%}
+
+<!doctype html>
+<html>
+    <head>
+        <!-- Basic page needs ================================================== -->
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="mobile-web-app-capable" content="yes">
+
+        {%- if settings.favicon != blank -%}
+            <link rel="shortcut icon" href="{{ settings.favicon | img_url: '32x' }}" type="image/png">
+        {%- endif -%}
+
+        {%- if settings.add_to_home_screen_logo != blank -%}
+            <link rel="apple-touch-icon" href="{{ settings.add_to_home_screen_logo | img_url:'128x128' }}"/>
+            <link rel="apple-touch-icon" sizes="72x72"
+                  href="{{ settings.add_to_home_screen_logo | img_url: '72x72' }}"/>
+            <link rel="apple-touch-icon" sizes="128x128"
+                  href="{{ settings.add_to_home_screen_logo | img_url: '128x128' }}"/>
+            <link rel="icon" sizes="192x192" href="{{ settings.add_to_home_screen_logo | img_url: '192x192' }}">
+        {%- endif -%}
+
+        <!-- Title and description ================================================== -->
+        <title>
+            {{ page_title }}{% if current_tags %}{% assign meta_tags = current_tags | join: ', ' %} &ndash; {{ 'general.meta.tags' | t: tags: meta_tags }}{% endif %}{% if current_page != 1 %} &ndash; {{ 'general.meta.page' | t: page: current_page }}{% endif %}{% unless page_title contains shop.name %}
+                &ndash; {{ shop.name }}{% endunless %}
+        </title>
+
+        {%- if page_description and template contains 'product' -%}
+            {%- include 'util-filter-product-tabs-description' descriptionRaw: page_description | escape -%}
+            <meta name="description" content="{{ description_filtered }}">
+        {%- else -%}
+            <meta name="description" content="{{ page_description | escape }}">
+        {%- endif -%}
+
+        <!-- Social meta ================================================== -->
+        {%- include 'social-meta-tags' -%}
+
+        <!-- Helpers ================================================== -->
+        <link rel="canonical" href="{{ canonical_url }}">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+        {%- include 'util-default-colors' -%}
+        <meta name="theme-color" content="{{ jasper_color_primary }}">
+
+        <!-- CSS ================================================== -->
+        {%- if settings.scroll_reveal_enable -%}
+            <style>
+                /* Ensure elements load hidden before ScrollReveal runs */
+                .sr .fooReveal {
+                    visibility: hidden;
+                }
+
+                .animate-on-scroll {
+                    visibility: hidden;
+                }
+            </style>
+        {%- endif -%}
+
+        {%- if env == 'dev' -%}
+            <link href="{{ 'jasper-iconfont.css' | asset_url }}" rel="stylesheet" media="all">
+            <link href="{{ 'animate.min.css' | asset_url }}" rel="stylesheet" media="all">
+            <link href="{{ 'ngDialog.min.css' | asset_url }}" rel="stylesheet" media="all">
+            <link href="{{ 'angular-notify.min.css' | asset_url }}" rel="stylesheet" media="all">
+            <link href="{{ 'perfect-scrollbar.min.css' | asset_url }}" rel="stylesheet" media="all">
+            <link href="{{ 'ui-bootstrap-custom-2.5.0-csp.css' | asset_url }}" rel="stylesheet" media="all">
+            <link href="{{ 'wip-image-zoom.min.css' | asset_url }}" rel="stylesheet" media="all">
+            <link href="{{ 'wip-youtube.min.css' | asset_url }}" rel="stylesheet" media="all">
+            <link href="{{ 'flags.css' | asset_url }}" rel="stylesheet" media="all">
+            {%- elsif env == 'prod' -%}
+            <link href="{{ 'vendor.min.css' | asset_url }}" rel="stylesheet" media="all">
+        {%- endif -%}
+
+        <link href="{{ 'base-styles.scss.css' | asset_url }}" rel="stylesheet" media="all">
+        <link href="{{ 'styles.scss.css' | asset_url }}" rel="stylesheet" media="all">
+
+        {%- include 'util-google-fonts' -%}
+
+        <!-- Header hook for plugins ================================================== -->
+        {{ content_for_header }}
+
+        <!-- Header JS ================================================== -->
+        {%- comment -%}
+            If you store has customer accounts disabled, you can remove the following JS file
+        {%- endcomment -%}
+
+        {%- if template contains 'customers' -%}
+            {{ 'shopify_common.js' | shopify_asset_url | script_tag }}
+        {%- endif -%}
+
+        <style type="text/css">
+            [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak, .hidden {
+                display: none !important;
+            }
+
+            {%- if settings.page_loading_effect_enable -%}
+            #splash-screen {
+                display: block;
+                position: fixed;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: {{ settings.color_primary_bg | default:"#ffffff" }};
+                z-index: 99999;
+            }
+
+            #splash-screen .center {
+                display: block;
+                width: 100%;
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+
+            {%- endif -%}
+        </style>
+
+        <style type="text/css">
+            {{ settings.custom_css | replace:'&gt;', '>'}}
+        </style>
+
+        <script>
+            window.jasper = {};
+            window.jasper.megamenus = {};
+            window.jasper.money_format = '{{ shop.money_format }}';
+            window.jasper.shop_secure_url = '{{ shop.secure_url }}';
+            window.jasper.shop_url = '{{ shop.url }}';
+            window.jasper.money_with_currency_format = '{{ shop.money_with_currency_format }}';
+            window.jasper.shop_currency = '{{ shop.currency }}';
+            window.jasper.shop_currencies = '{{ settings.shop_currencies }}';
+            window.jasper.enable_multiple_shop_currencies = {{ settings.enable_multiple_shop_currencies }};
+            window.jasper.enable_auto_currency_changer = {{ settings.enable_auto_currency_changer }};
+            window.jasper.auto_currency_behaviour = '{{ settings.auto_currency_behaviour }}';
+            window.jasper.current_template = '{{ template.name }}';
+            window.jasper.customer = {% if customer %}true{% else %}false{% endif %};
+            window.jasper.customer_email = '{{ customer.email }}';
+            window.jasper.customer_tags = '{{ customer.tags | json }}';
+            window.jasper.custom_scrollbars_enable = {{ settings.custom_scrollbars_enable }};
+            window.jasper.scroll_reveal_enable = {{ settings.scroll_reveal_enable }};
+            window.jasper.scroll_reveal_duration = {{ settings.scroll_reveal_duration }};
+            window.jasper.scroll_reveal_mobile_enable = {{ settings.scroll_reveal_mobile_enable }};
+            window.jasper.scroll_reveal_starting_scale = {{ settings.scroll_reveal_starting_scale }};
+            window.jasper.scroll_reveal_starting_opacity = {{ settings.scroll_reveal_starting_opacity }};
+            window.jasper.cart_add_to_cart_behavior = '{{ settings.cart_add_to_cart_behavior }}';
+            window.jasper.admin_scss_css_url = '{{ 'admin.scss.css' | asset_url }}';
+            window.jasper.settings_data_json_url = '{{ 'settings_data.json' | asset_url }}';
+            window.jasper.settings_color_data_json_url = '{{ 'settings_color_data.json' | asset_url }}';
+            window.jasper.customer_addresses_delete_confirm = '{{ 'customer.addresses.delete_confirm' | t | json }}';
+            window.jasper.version = parseInt({{ settings.jasper_version }});
+            window.jasper.enable_product_custom_aspect_ratio = {{ settings.enable_product_custom_aspect_ratio }};
+            window.jasper.disable_ajax_cart = {{ settings.disable_ajax_cart }};
+        </script>
+    </head>
+
+    {%- capture body_bg_style -%}
+        background-size: {{ settings.body_bg_size }};
+        background-repeat: {{ settings.body_bg_repeat }};
+        background-position: {{ settings.body_bg_position }};
+        {% if settings.body_bg_fixed == "enable" %}background-attachment: fixed;{% endif %}
+        {% if settings.body_bg_image != blank %}background-image: url({{ settings.body_bg_image | img_url: '2048x' }});{% endif %}
+    {%- endcapture -%}
+
+    {%- if settings.grid_item_disable_overlay_on_mobile -%}
+        {%- assign grid_item_mobile_hover_status = 'disable-grid-item-hover-on-mobile' -%}
+    {%- endif -%}
+
+    <body id="{{ page_title | handle }}"
+          ng-controller="MainController as vm"
+          style="{{ body_bg_style }}"
+          class="flex-items-stretch {{ settings.body_width }} {{ settings.aside }} {% if settings.aside_open %}aside-show{% endif %} {% if customer %}customer-logged-in{% endif %} template-{{ template.name }} {% if template.suffix %}template-{{ template.name }}-{{ template.suffix }}{% endif %} {{ grid_item_mobile_hover_status }}">
+        {%- if settings.page_loading_effect_enable -%}
+            <js-splash-screen id="splash-screen">
+                <div class="center">
+                    {% include 'spinkit' %}
+                </div>
+            </js-splash-screen>
+        {%- endif -%}
+
+        {%- if settings.aside == 'left-aside' -%}
+            {%- section 'aside' -%}
+        {%- endif -%}
+
+        <div id="wrapper" class="col p-0">
+
+            {%- if template == 'index' -%}
+                {%- section 'full-screen-banner' -%}
+            {%- endif -%}
+
+            <div id="content-wrapper" class="content-wrapper p-relative">
+
+                {%- section 'header' -%}
+
+                <main class="main-content" role="main">
+                    {{ content_for_layout }}
+                </main>
+
+                {%- section 'footer' -%}
+
+            </div>
+
+        </div>
+
+        {%- if settings.aside == 'right-aside' -%}
+            {%- section 'aside' -%}
+        {%- endif -%}
+
+        {%- section 'popup' -%}
+
+        {%- section 'product-variant-swatches' -%}
+
+        {%- section 'mega-menu-1' -%}
+        {%- section 'mega-menu-2' -%}
+        {%- section 'mega-menu-3' -%}
+        {%- section 'mega-menu-4' -%}
+        {%- section 'mega-menu-5' -%}
+        {%- section 'mega-menu-6' -%}
+        {%- section 'mega-menu-7' -%}
+        {%- section 'mega-menu-8' -%}
+        {%- section 'mega-menu-9' -%}
+        {%- section 'mega-menu-10' -%}
+
+        {%- include 'js-theme-options' -%}
+
+        <!-- For Verification if adblock is enabled -->
+        <div id="adBanner"></div>
+
+        <!-- JS ================================================== -->
+
+        <!-- v3.2.1 -->
+        <script src="{{ 'jquery.min.js' | asset_url }}"></script>
+        <script src="{{ 'api.jquery.js' | shopify_asset_url }}"></script>
+        <script src="//cdn.shopify.com/s/javascripts/currencies.js"></script>
+
+        {%- if env == 'dev' -%}
+            <script src="{{ 'modernizr.min.js' | asset_url }}"></script>
+            <!-- v1.6.9 -->
+            <script src="{{ 'angular.min.js' | asset_url }}"></script>
+            <script src="{{ 'angular-animate.min.js' | asset_url }}"></script>
+            <script src="{{ 'angular-cookies.min.js' | asset_url }}"></script>
+            <script src="{{ 'angular-sanitize.min.js' | asset_url }}"></script>
+            <script src="{{ 'angular-touch.min.js' | asset_url }}"></script>
+            <!-- v4.2.4 -->
+            <script src="{{ 'es6-promise.auto.min.js' | asset_url }}"></script>
+            <!-- v4.1.4 -->
+            <script src="{{ 'imagesLoaded.min.js' | asset_url }}"></script>
+            <!-- v0.8.0 -->
+            <script src="{{ 'perfect-scrollbar.min.js' | asset_url }}"></script>
+            <!-- v1.14.3 -->
+            <script src="{{ 'popper.min.js' | asset_url }}"></script>
+            <!-- v1.1.3 -->
+            <script src="{{ 'sticky-kit.min.js' | asset_url }}"></script>
+            <!-- v1.0.6 -->
+            <script src="{{ 'fastclick.min.js' | asset_url }}"></script>
+            <!-- v3.4.0 -->
+            <script src="{{ 'scrollreveal.min.js' | asset_url }}"></script>
+            <!-- v1.4.4 -->
+            <script src="{{ 'tether.min.js' | asset_url }}"></script>
+            <!-- v4.0.0-alpha.5 -->
+            <script src="{{ 'bootstrap.min.js' | asset_url }}"></script>
+            <!-- v2.5.1 -->
+            <script src="{{ 'angular-notify.min.js' | asset_url }}"></script>
+            <!-- v4.2.1 -->
+            <script src="{{ 'masonry.pkgd.min.js' | asset_url }}"></script>
+            <script src="{{ 'ui-bootstrap-custom-tpls-2.5.0.min.js' | asset_url }}"></script>
+            <!-- v2.1.1 -->
+            <script src="{{ 'flickity.pkgd.min.js' | asset_url }}"></script>
+            <!-- v2.0.0 -->
+            <script src="{{ 'flickity-imagesloaded.js' | asset_url }}"></script>
+
+            <script src="{{ 'slick.min.js' | asset_url }}"></script>
+            <script src="{{ 'angular-slick.min.js' | asset_url }}"></script>
+            <!-- v3.1.4 -->
+            <script src="{{ 'angular-flickity.min.js' | asset_url }}"></script>
+            <!-- v1.18.4 -->
+            <script src="{{ 'ng-map.min.js' | asset_url }}"></script>
+            <!-- v1.4.1 -->
+            <script src="{{ 'instafeed.min.js' | asset_url }}"></script>
+            <!-- v1.4.0 -->
+            <script src="{{ 'ngDialog.min.js' | asset_url }}"></script>
+            <script src="{{ 'wip-image-zoom.min.js' | asset_url }}"></script>
+            <script src="{{ 'wip-youtube.min.js' | asset_url }}"></script>
+            <!-- v1.0.2 -->
+            <script src="{{ 'angular-video-background.min.js' | asset_url }}"></script>
+            <script src="{{ 'jquery.currencies.min.js' | asset_url }}"></script>
+            <script src="{{ 'scripts.js' | asset_url }}"></script>
+            {%- elsif env == 'prod' -%}
+            <script src="{{ 'vendor.min.js' | asset_url }}"></script>
+            <script src="{{ 'scripts.min.js' | asset_url }}"></script>
+        {%- endif -%}
+
+        <script type="text/ng-template" id="product-quick-view-dialog-template.html">
+            {%- include 'product-quickview-js-template' -%}
+        </script>
+
+        {%- if settings.custom_js != blank -%}
+            <script>
+                {{ settings.custom_js }}
+            </script>
+        {%- endif -%}
+
+    </body>
+</html>

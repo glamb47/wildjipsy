@@ -1,0 +1,80 @@
+{%- unless template == 'index' or template == 'cart' -%}
+
+<nav class="breadcrumb" role="navigation" aria-label="breadcrumbs">
+
+    <li class="breadcrumb-item">
+        <a href="/" title="{{ 'general.breadcrumbs.home_link_title' | t }}">{{ 'general.breadcrumbs.home' | t }}</a>
+    </li>
+
+    {%- if template contains 'product' -%}
+
+        {%- if collection -%}
+
+            {%- if collection.handle -%}
+
+                {% capture url %}/collections/{{ collection.handle }}{% endcapture %}
+
+                <li class="breadcrumb-item">
+                    <a href="{{ url }}">{{ collection.title }}</a>
+                </li>
+
+            {%- endif -%}
+
+        {%- endif -%}
+
+        <li class="breadcrumb-item text-light">{{ product.title }}</li>
+
+        {%- elsif template contains 'collection' and collection.handle -%}
+
+        {%- if current_tags -%}
+
+            {% capture url %}/collections/{{ collection.handle }}{% endcapture %}
+
+            <li class="breadcrumb-item">
+                <a href="{{ url }}">{{ collection.title }}</a>
+            </li>
+
+            <li class="breadcrumb-item text-light">{{ current_tags | join: " + " }}</li>
+
+        {%- else -%}
+
+            <li class="breadcrumb-item text-light">{{ collection.title }}</li>
+
+        {%- endif -%}
+
+        {%- elsif template == 'blog' -%}
+
+        {%- if current_tags -%}
+
+            <li class="breadcrumb-item">
+                <a href="{{ blog.url }}">{{ blog.title }}</a>
+            </li>
+
+            <li class="breadcrumb-item text-light">{{ current_tags | join: " + " }}</li>
+
+        {%- else -%}
+
+            <li class="breadcrumb-item text-light">{{ blog.title }}</li>
+
+        {%- endif -%}
+
+        {%- elsif template == 'article' -%}
+
+        <li class="breadcrumb-item">
+            <a href="{{ blog.url }}">{{ blog.title }}</a>
+        </li>
+
+        <li class="breadcrumb-item text-light">{{ article.title }}</li>
+
+        {%- elsif template contains 'page' -%}
+
+        <li class="breadcrumb-item text-light">{{ page.title }}</li>
+
+    {%- else -%}
+
+        <li class="breadcrumb-item text-light">{{ page_title }}</li>
+
+    {%- endif -%}
+
+</nav>
+{%- endunless -%}

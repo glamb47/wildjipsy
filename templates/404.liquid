@@ -1,0 +1,51 @@
+<div class="container text-center pt-20">
+
+    <div class="page-content">
+
+        <!-- PAGE TITLE -->
+        <div class="display-4">{{ 'general.404.title' | t }}</div>
+        <!-- / PAGE TITLE -->
+
+        <!-- 404 MESSAGE -->
+        <p class="h4 mt-5 mb-15">{{ 'general.404.subtext_html' | t }}</p>
+        <!-- / 404 MESSAGE -->
+
+        <form action="/search" method="get" class="search-form" role="search">
+
+            <div class="row pb-8 flex-items-middle">
+
+                <div class="col-12 col-sm">
+                    <input class="form-control" type="search" name="q" value="{{ search.terms | escape }}"
+                           placeholder="{{ 'general.search.placeholder' | t }}" class="input-group-field"
+                           aria-label="{{ 'general.search.placeholder' | t }}"
+                           placeholder="{{ 'general.search.placeholder' | t }}">
+                </div>
+
+                <div class="col-12 col-sm pl-sm-0 mt-4 mt-sm-0 flex-nogrow flex-items-center">
+                    <select class="form-control custom-select search-type-select appearance-safe" name="type">
+                        <option value="">Everywhere</option>
+                        <option value="product">Product</option>
+                        <option value="page">Page</option>
+                        <option value="article">Post</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="row flex-items-center">
+                <button type="submit" class="btn btn-primary center-block px-17">
+                    {{ 'general.search.submit' | t }}
+                </button>
+            </div>
+
+        </form>
+
+        <!-- CONTINUE SHOPPING LINK -->
+        <a class="text-primary btn btn-link mt-8" href="/collections/all">
+            <i class="icon-arrow-left s-3"></i>
+            <span>{{ 'general.404.continue_shopping' | t }}</span>
+        </a>
+        <!-- / CONTINUE SHOPPING LINK -->
+
+    </div>
+</div>

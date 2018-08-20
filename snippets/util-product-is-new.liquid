@@ -1,0 +1,10 @@
+{%- assign date_published = product.published_at | date:'%s' -%}
+{%- assign date_now = 'now' | date:'%s' -%}
+{%- assign date_difference = date_now | minus: date_published -%}
+{%- assign period = settings.product_new_badge_period | plus:0 -%}
+
+{%- if date_difference < period -%}
+    {% assign is_new = true %}
+{%- else -%}
+    {% assign is_new = false %}
+{%- endif -%}

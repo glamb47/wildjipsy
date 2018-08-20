@@ -1,0 +1,44 @@
+{%- if shop.customer_accounts_enabled -%}
+
+    <ul class="nav nav-horizontal">
+
+        {%- if customer -%}
+
+            <li class="nav-item">
+                <a class="nav-link" href="/account">{{ 'layout.customer.orders' | t }}</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="/account/addresses">{{ 'layout.customer.addresses' | t }}</a>
+            </li>
+
+            {%- if pages.wishlist != empty and settings.product_wishlist_disabled != true -%}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ pages.wishlist.url }}">{{ 'layout.customer.wishlist' | t }}</a>
+            </li>
+            {%- endif -%}
+
+            <li class="nav-item">
+                <a class="nav-link" href="/account/logout">{{ 'layout.customer.log_out' | t }}</a>
+            </li>
+
+        {%- else -%}
+
+            <li class="nav-item">
+                <a class="nav-link" href="/account/login">{{ 'layout.customer.log_in' | t }}</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="/account/register">{{ 'layout.customer.create_account' | t }}</a>
+            </li>
+
+            {%- if pages.wishlist != empty and settings.product_wishlist_disabled != true -%}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ pages.wishlist.url }}">{{ 'layout.customer.wishlist' | t }}</a>
+            </li>
+            {%- endif -%}
+
+        {%- endif -%}
+
+    </ul>
+{%- endif -%}

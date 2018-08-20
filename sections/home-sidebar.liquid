@@ -1,0 +1,965 @@
+{%- capture sidebar_content -%}
+
+    {%- for block in section.blocks -%}
+
+        <section class="sidebar-block animate-on-scroll">
+
+            {%- case block.type -%}
+
+            {%- comment -%}
+            {# @ Menu #}
+            {%- endcomment -%}
+            {%- when 'menu' -%}
+
+            {%- if block.settings.title != blank -%}
+                <div class="sidebar-block-header h4">
+                    {{ block.settings.title }}
+                </div>
+            {%- endif -%}
+
+            <div class="sidebar-block-content">
+
+                {%- if block.settings.type == 'popover' -%}
+
+                    {%- if settings.home_sidebar == 'left-sidebar' -%}
+                        {%- assign popover_direction = 'right-start' -%}
+                    {%- endif -%}
+
+                    {%- if settings.home_sidebar == 'right-sidebar' -%}
+                        {%- assign popover_direction = 'left-start' -%}
+                    {%- endif -%}
+
+                    <div class="hidden-sm-down">
+                        {%- include 'nav' with 'vertical'
+                        nav_item:'nav-item-popover',
+                        menu: block.settings.menu,
+                        style: block.settings.style,
+                        align: block.settings.align,
+                        popover_direction: popover_direction,
+                        popover_classes: 'from-sidebar' -%}
+                    </div>
+
+                    <div class="hidden-md-up">
+                        {%- include 'nav' with 'vertical',
+                        nav_item:'nav-item-collapse',
+                        menu: block.settings.menu,
+                        style: block.settings.style,
+                        align: block.settings.align -%}
+                    </div>
+
+                {%- else -%}
+                    {%- include 'nav' with 'vertical',
+                    nav_item:'nav-item-collapse',
+                    menu: block.settings.menu,
+                    style: block.settings.style,
+                    align: block.settings.align -%}
+                {%- endif -%}
+            </div>
+
+            {%- comment -%}
+            {# @ Featured product #}
+            {%- endcomment -%}
+            {%- when 'featured_product' -%}
+
+            {%- if block.settings.title != blank -%}
+                <div class="sidebar-block-header h4">
+                    {{ block.settings.title }}
+                </div>
+            {%- endif -%}
+
+            <div class="sidebar-block-content">
+                {%- include 'product-item'
+                product: all_products[block.settings.product],
+                hover_bg: block.settings.hover_bg,
+                style: block.settings.product_style,
+                sale_badge_style : block.settings.product_sale_badge_style,
+                hover_buttons_style : block.settings.product_hover_buttons_style,
+                show_star_rating: block.settings.product_show_star_rating,
+                image_size: '300x' -%}
+            </div>
+
+            {%- comment -%}
+            {# @ Product list carousel #}
+            {%- endcomment -%}
+            {%- when 'product_list_carousel' -%}
+
+            {%- assign product_limit = false -%}
+            {%- if block.settings.product_limit != blank -%}
+                {%- assign product_limit = block.settings.product_limit -%}
+            {%- endif -%}
+
+            {%- assign image_size = '120x' -%}
+            {%- if settings.enable_product_custom_aspect_ratio -%}
+                {%- assign product_image_ratio = settings.product_image_aspect_ratio_w | plus :0.0 | divided_by: settings.product_image_aspect_ratio_h -%}
+                {%- assign image_height = 120 | divided_by: product_image_ratio | round -%}
+                {%- assign image_size = 120 | append:'x' | append: image_height -%}
+            {%- endif -%}
+
+            {%- include 'product-list-carousel'
+            title: block.settings.title,
+            collection: collections[block.settings.collection],
+            row_count: block.settings.row_count,
+            show_separators: block.settings.show_separators,
+            show_images: block.settings.show_images,
+            image_size: image_size,
+            product_limit: product_limit -%}
+
+            {%- comment -%}
+            {# @ Product single carousel #}
+            {%- endcomment -%}
+            {%- when 'product_single_carousel' -%}
+
+            {%- assign product_limit = false -%}
+            {%- if block.settings.product_limit != blank -%}
+                {%- assign product_limit = block.settings.product_limit -%}
+            {%- endif -%}
+
+            {%- assign image_size = '300x' -%}
+            {%- if settings.enable_product_custom_aspect_ratio -%}
+                {%- assign product_image_ratio = settings.product_image_aspect_ratio_w | plus :0.0 | divided_by: settings.product_image_aspect_ratio_h -%}
+                {%- assign image_height = 300 | divided_by: product_image_ratio | round -%}
+                {%- assign image_size = 300 | append:'x' | append: image_height -%}
+            {%- endif -%}
+
+            {%- include 'product-single-carousel'
+            title: block.settings.title,
+            collection: collections[block.settings.collection],
+            product_hover_bg: block.settings.hover_bg,
+            product_style: block.settings.product_style,
+            product_sale_badge_style : block.settings.product_sale_badge_style,
+            product_hover_buttons_style : block.settings.product_hover_buttons_style,
+            product_show_star_rating: block.settings.product_show_star_rating,
+            product_image_size: image_size,
+            product_limit: product_limit -%}
+
+            {%- comment -%}
+            {# @ Featured collection #}
+            {%- endcomment -%}
+            {%- when 'featured_collection' -%}
+
+            {%- if block.settings.title != blank -%}
+                <div class="sidebar-block-header h4">
+                    {{ block.settings.title }}
+                </div>
+            {%- endif -%}
+
+            <div class="sidebar-block-content">
+                {%- include 'collection-item'
+                collection: collections[block.settings.collection],
+                show_product_counts: block.settings.show_product_counts,
+                hover_bg: block.settings.hover_bg,
+                image_size: '300x' -%}
+            </div>
+
+            {%- comment -%}
+            {# @ Featured article #}
+            {%- endcomment -%}
+            {%- when 'featured_article' -%}
+
+            {%- assign articleArr = block.settings.article | split: '/' -%}
+
+            {%- assign article = false -%}
+
+            {%- for article_item in blogs[articleArr[0]].articles -%}
+                {%- if  article_item.handle == block.settings.article -%}
+                    {%- assign article = article_item -%}
+                {%- endif -%}
+            {%- endfor -%}
+
+            {%- if block.settings.title != blank -%}
+                <div class="sidebar-block-header h4">
+                    {{ block.settings.title }}
+                </div>
+            {%- endif -%}
+
+            <div class="sidebar-block-content">
+                {%- include 'article-grid-item'
+                style: block.settings.article_style,
+                image_size: '300x' -%}
+            </div>
+
+            {%- comment -%}
+            {# @ Article list carousel #}
+            {%- endcomment -%}
+            {%- when 'article_list_carousel' -%}
+
+            {%- assign image_size = '120x' -%}
+            {%- if settings.enable_article_custom_aspect_ratio -%}
+                {%- assign article_image_ratio = settings.article_image_aspect_ratio_w | plus :0.0 | divided_by: settings.article_image_aspect_ratio_h -%}
+                {%- assign image_height = 120 | divided_by: article_image_ratio | round -%}
+                {%- assign image_size = 120 | append:'x' | append: image_height -%}
+            {%- endif -%}
+
+            {%- assign article_limit = false -%}
+            {%- if block.settings.article_limit != blank -%}
+                {%- assign article_limit = block.settings.article_limit -%}
+            {%- endif -%}
+
+            {%- include 'article-list-carousel'
+            title: block.settings.title,
+            blog: blogs[block.settings.blog],
+            row_count: block.settings.row_count,
+            show_separators: block.settings.show_separators,
+            show_images: block.settings.show_images,
+            image_size: image_size,
+            article_limit: article_limit -%}
+
+            {%- comment -%}
+            {# @ Article single carousel #}
+            {%- endcomment -%}
+            {%- when 'article_single_carousel' -%}
+            {%- assign image_size = '300x' -%}
+
+            {%- if settings.enable_article_custom_aspect_ratio -%}
+                {%- assign article_image_ratio = settings.article_image_aspect_ratio_w | plus :0.0 | divided_by: settings.article_image_aspect_ratio_h -%}
+                {%- assign image_height = 300 | divided_by: article_image_ratio | round -%}
+                {%- assign image_size = 300 | append:'x' | append: image_height -%}
+            {%- endif -%}
+
+            {%- assign article_limit = false -%}
+            {%- if block.settings.article_limit != blank -%}
+                {%- assign article_limit = block.settings.article_limit -%}
+            {%- endif -%}
+
+            {%- include 'article-single-carousel'
+            title: block.settings.title,
+            blog: blogs[block.settings.blog],
+            row_count: block.settings.row_count,
+            image_size: image_size,
+            article_limit: article_limit -%}
+
+            {%- comment -%}
+            {# @ Image #}
+            {%- endcomment -%}
+            {%- when 'image' -%}
+
+            {%- if block.settings.title != blank -%}
+                <div class="sidebar-block-header h4">
+                    {{ block.settings.title }}
+                </div>
+            {%- endif -%}
+
+            <div class="sidebar-block-content">
+
+                <div class="image-wrapper w-100">
+
+                    {% if block.settings.url != blank %}<a href="{{ block.settings.url }}">{% endif %}
+
+                        {%- if block.settings.image != blank -%}
+                            <img class="img-fluid w-100"
+                                 src="{{ block.settings.image | img_url: '300x' }}"
+                                 srcset="{{ block.settings.image | img_url: '300x' }} 1x, {{ block.settings.image | img_url: '300x', scale:2 }} 2x"
+                                 alt="{{ block.settings.image.alt | escape }}">
+                        {%- else -%}
+                            {{ 'image' | placeholder_svg_tag: 'placeholder-svg img-fluid w-100' }}
+                        {%- endif -%}
+
+                        {% if block.settings.url != blank %}</a>{% endif %}
+                </div>
+
+            </div>
+
+            {%- comment -%}
+            {# @ Html #}
+            {%- endcomment -%}
+            {%- when 'html' -%}
+
+            {%- if block.settings.title != blank -%}
+                <div class="sidebar-block-header h4">
+                    {{ block.settings.title }}
+                </div>
+            {%- endif -%}
+
+            <div class="sidebar-block-content">
+
+                <div class="grid-item html-grid-item {{ column_class }} {{ item_class }} flex-item mb-4">
+                    {%- if block.settings.html != blank -%}
+                        {{ block.settings.html }}
+                    {%- else -%}
+                        <span>Insert HTML code..</span>
+                    {%- endif -%}
+                </div>
+
+            </div>
+
+            {%- endcase -%}
+
+        </section>
+
+    {%- endfor -%}
+
+    {%- endcapture -%}
+
+<!-- ASIDE -->
+<div class="sidebar visible-md-up"
+     js-bar id="home-sidebar"
+     options='{"fixed":true, "position":"right", "mediaStep":"sm", "bodyAppend": true}'
+     ng-swipe-right="jb.closeBar()">
+    <div class="jasper-bar-content" js-scroll js-scroll-trigger="jb.isActive">
+        {{ sidebar_content }}
+    </div>
+</div>
+<!-- / ASIDE -->
+
+<button js-bar-toggle="home-sidebar"
+        class="hidden-md-up btn-fab btn-secondary m-4 align-bottom-right p-fixed z-index-99">
+    <i class="icon-view-headline"></i>
+</button>
+
+<script type="application/json">
+    /*"*/{% schema %}/*"*/
+    {
+        "name": "Home page sidebar",
+        "settings": [],
+        "blocks": [
+            {
+                "type": "menu",
+                "name": "Menu",
+                "settings": [
+                    {
+                        "type": "header",
+                        "content": "Menu"
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title"
+                    },
+                    {
+                        "type": "link_list",
+                        "id": "menu",
+                        "label": "Menu"
+                    },
+                    {
+                        "type": "select",
+                        "id": "type",
+                        "label": "Type",
+                        "options": [
+                            {
+                                "value": "collapsible",
+                                "label": "Collapsible menu"
+                            },
+                            {
+                                "value": "popover",
+                                "label": "Popover menu"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "style",
+                        "label": "Style",
+                        "options": [
+                            {
+                                "value": "simple",
+                                "label": "Simple"
+                            },
+                            {
+                                "value": "classic",
+                                "label": "Classic"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "align",
+                        "label": "Align",
+                        "options": [
+                            {
+                                "value": "left",
+                                "label": "Left"
+                            },
+                            {
+                                "value": "center",
+                                "label": "Center"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "featured_product",
+                "name": "Product",
+                "settings": [
+                    {
+                        "type": "header",
+                        "content": "Product"
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title"
+                    },
+                    {
+                        "label": "Product",
+                        "id": "product",
+                        "type": "product"
+                    },
+                    {
+                        "type": "select",
+                        "id": "product_style",
+                        "label": "Product style",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "style1",
+                                "label": "Style 1"
+                            },
+                            {
+                                "value": "style2",
+                                "label": "Style 2"
+                            },
+                            {
+                                "value": "style3",
+                                "label": "Style 3"
+                            },
+                            {
+                                "value": "style4",
+                                "label": "Style 4"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "product_sale_badge_style",
+                        "label": "Sale badge style",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "text",
+                                "label": "\"Sale\" text"
+                            },
+                            {
+                                "value": "percentage",
+                                "label": "Percentage of discount"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "product_hover_buttons_style",
+                        "label": "Hover buttons style",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "text-buttons",
+                                "label": "Text buttons"
+                            },
+                            {
+                                "value": "icon-buttons",
+                                "label": "Icon buttons"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "product_show_star_rating",
+                        "label": "Star rating",
+                        "default": "",
+                        "info": "This option requires [Product Reviews App](https://apps.shopify.com/product-reviews)",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "show",
+                                "label": "Show"
+                            },
+                            {
+                                "value": "hide",
+                                "label": "Hide"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "product_list_carousel",
+                "name": "Product list carousel",
+                "settings": [
+                    {
+                        "type": "header",
+                        "content": "Product list carousel"
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title"
+                    },
+                    {
+                        "type": "collection",
+                        "id": "collection",
+                        "label": "Collection"
+                    },
+                    {
+                        "type": "select",
+                        "id": "row_count",
+                        "label": "Row count",
+                        "default": "3",
+                        "options": [
+                            {
+                                "value": "1",
+                                "label": "1"
+                            },
+                            {
+                                "value": "2",
+                                "label": "2"
+                            },
+                            {
+                                "value": "3",
+                                "label": "3"
+                            },
+                            {
+                                "value": "4",
+                                "label": "4"
+                            },
+                            {
+                                "value": "5",
+                                "label": "5"
+                            },
+                            {
+                                "value": "6",
+                                "label": "6"
+                            },
+                            {
+                                "value": "7",
+                                "label": "7"
+                            },
+                            {
+                                "value": "8",
+                                "label": "8"
+                            },
+                            {
+                                "value": "9",
+                                "label": "9"
+                            },
+                            {
+                                "value": "10",
+                                "label": "10"
+                            }
+                        ]
+                    },
+                    {
+                        "id": "product_limit",
+                        "type": "text",
+                        "label": "Product limit",
+                        "info": "Leave empty for not to limit",
+                        "default": "9"
+                    },
+                    {
+                        "type": "checkbox",
+                        "id": "show_separators",
+                        "label": "Show separators",
+                        "default": true
+                    },
+                    {
+                        "type": "checkbox",
+                        "id": "show_images",
+                        "label": "Show images",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "type": "product_single_carousel",
+                "name": "Product single carousel",
+                "settings": [
+                    {
+                        "type": "header",
+                        "content": "Product single carousel"
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title"
+                    },
+                    {
+                        "label": "Collection",
+                        "id": "collection",
+                        "type": "collection"
+                    },
+                    {
+                        "type": "select",
+                        "id": "product_style",
+                        "label": "Product style",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "style1",
+                                "label": "Style 1"
+                            },
+                            {
+                                "value": "style2",
+                                "label": "Style 2"
+                            },
+                            {
+                                "value": "style3",
+                                "label": "Style 3"
+                            },
+                            {
+                                "value": "style4",
+                                "label": "Style 4"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "product_sale_badge_style",
+                        "label": "Sale badge style",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "text",
+                                "label": "\"Sale\" text"
+                            },
+                            {
+                                "value": "percentage",
+                                "label": "Percentage of discount"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "product_hover_buttons_style",
+                        "label": "Hover buttons style",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "text-buttons",
+                                "label": "Text buttons"
+                            },
+                            {
+                                "value": "icon-buttons",
+                                "label": "Icon buttons"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "product_show_star_rating",
+                        "label": "Star rating",
+                        "default": "",
+                        "info": "This option requires [Product Reviews App](https://apps.shopify.com/product-reviews)",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "show",
+                                "label": "Show"
+                            },
+                            {
+                                "value": "hide",
+                                "label": "Hide"
+                            }
+                        ]
+                    },
+                    {
+                        "id": "product_limit",
+                        "type": "text",
+                        "label": "Product limit",
+                        "info": "Leave empty for not to limit",
+                        "default": "9"
+                    }
+                ]
+            },
+            {
+                "type": "featured_collection",
+                "name": "Collection",
+                "settings": [
+                    {
+                        "type": "header",
+                        "content": "Collection"
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title"
+                    },
+                    {
+                        "label": "Collection",
+                        "id": "collection",
+                        "type": "collection"
+                    },
+                    {
+                        "type": "select",
+                        "id": "hover_bg",
+                        "label": "Hover background color",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "hover-light",
+                                "label": "Light"
+                            },
+                            {
+                                "value": "hover-dark",
+                                "label": "Dark"
+                            },
+                            {
+                                "value": "hover-transparent",
+                                "label": "Transparent"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "checkbox",
+                        "id": "show_product_counts",
+                        "label": "Show Product Count"
+                    }
+                ]
+            },
+            {
+                "type": "featured_article",
+                "name": "Article",
+                "settings": [
+                    {
+                        "type": "header",
+                        "content": "Article"
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title"
+                    },
+                    {
+                        "label": "Article",
+                        "id": "article",
+                        "type": "article"
+                    },
+                    {
+                        "type": "select",
+                        "id": "article_style",
+                        "label": "Article style",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "classic",
+                                "label": "Classic"
+                            },
+                            {
+                                "value": "small-card",
+                                "label": "Small Card"
+                            },
+                            {
+                                "value": "tall-card",
+                                "label": "Tall Card"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "article_list_carousel",
+                "name": "Article list carousel",
+                "settings": [
+                    {
+                        "type": "header",
+                        "content": "Article list carousel"
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title"
+                    },
+                    {
+                        "type": "blog",
+                        "id": "blog",
+                        "label": "Blog"
+                    },
+                    {
+                        "type": "select",
+                        "id": "row_count",
+                        "label": "Row count",
+                        "default": "3",
+                        "options": [
+                            {
+                                "value": "1",
+                                "label": "1"
+                            },
+                            {
+                                "value": "2",
+                                "label": "2"
+                            },
+                            {
+                                "value": "3",
+                                "label": "3"
+                            },
+                            {
+                                "value": "4",
+                                "label": "4"
+                            },
+                            {
+                                "value": "5",
+                                "label": "5"
+                            },
+                            {
+                                "value": "6",
+                                "label": "6"
+                            },
+                            {
+                                "value": "7",
+                                "label": "7"
+                            },
+                            {
+                                "value": "8",
+                                "label": "8"
+                            },
+                            {
+                                "value": "9",
+                                "label": "9"
+                            },
+                            {
+                                "value": "10",
+                                "label": "10"
+                            }
+                        ]
+                    },
+                    {
+                        "id": "article_limit",
+                        "type": "text",
+                        "label": "Article limit",
+                        "info": "Leave empty for not to limit",
+                        "default": "9"
+                    },
+                    {
+                        "type": "checkbox",
+                        "id": "show_separators",
+                        "label": "Show separators",
+                        "default": true
+                    },
+                    {
+                        "type": "checkbox",
+                        "id": "show_images",
+                        "label": "Show images",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "type": "article_single_carousel",
+                "name": "Article single carousel",
+                "settings": [
+                    {
+                        "type": "header",
+                        "content": "Article single carousel"
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title"
+                    },
+                    {
+                        "type": "blog",
+                        "id": "blog",
+                        "label": "Blog"
+                    },
+                    {
+                        "type": "select",
+                        "id": "article_style",
+                        "label": "Article style",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "classic",
+                                "label": "Classic"
+                            },
+                            {
+                                "value": "small-card",
+                                "label": "Small Card"
+                            },
+                            {
+                                "value": "tall-card",
+                                "label": "Tall Card"
+                            }
+                        ]
+                    },
+                    {
+                        "id": "article_limit",
+                        "type": "text",
+                        "label": "Article limit",
+                        "info": "Leave empty for not to limit",
+                        "default": "9"
+                    }
+                ]
+            },
+            {
+                "type": "image",
+                "name": "Image",
+                "settings": [
+                    {
+                        "type": "header",
+                        "content": "Image"
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title"
+                    },
+                    {
+                        "type": "image_picker",
+                        "id": "image",
+                        "label": "Image"
+                    },
+                    {
+                        "type": "url",
+                        "id": "url",
+                        "label": "Link url"
+                    }
+                ]
+            },
+            {
+                "type": "html",
+                "name": "Html",
+                "settings": [
+                    {
+                        "type": "header",
+                        "content": "Custom html"
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title"
+                    },
+                    {
+                        "type": "textarea",
+                        "id": "html",
+                        "label": "Html",
+                        "placeholder": "Use basic HTML to format text",
+                        "default": "Custom Html"
+                    }
+                ]
+            }
+        ],
+        "default": {}
+    }
+    /*"*/{% endschema %}/*"*/
+</script>

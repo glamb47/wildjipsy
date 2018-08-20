@@ -1,0 +1,10 @@
+{%- comment -%}
+{# @ Color Transparentize #}
+{%- endcomment -%}
+
+{%- if color == blank or color == 'rgba(0,0,0,0)' -%}
+    {%- assign color_transparentized = 'rgba(0,0,0,0)' -%}
+{%- else -%}
+    {%- assign _alpha = opacity | plus:0 -%}
+    {%- assign color_transparentized = color | color_modify: 'alpha', _alpha -%}
+{%- endif -%}

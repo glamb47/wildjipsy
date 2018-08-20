@@ -1,0 +1,498 @@
+{%- capture section_style -%}
+background-size: {{ section.settings.bg_size }}; background-repeat: {{ section.settings.bg_repeat }}; background-position: {{ section.settings.bg_position }};
+{% if section.settings.bg_image != blank %}background-image: url({{ section.settings.bg_image | img_url: '2048x' }});{% endif %}
+{% if section.settings.bg_color != blank %}background-color: {{ section.settings.bg_color }};{% endif %}
+{%- endcapture -%}
+
+{%- include 'util-color-brightness' color: section.settings.bg_color, append: '-bg' -%}
+
+<div id="shopify-section-aside-content">
+
+    <div js-aside="{{ settings.aside }}" js-aside-open="{{ settings.aside_open }}"
+         class="js-aside"
+         {% if settings.aside == 'left-aside' %}ng-swipe-left="ja.hide()"{% endif %} {% if settings.aside == 'right-aside' %}ng-swipe-right="ja.hide()"{% endif %}>
+
+        <div class="js-aside-content overflow-y {{ section.settings.additional_classes }} {{ color_brightness }}"
+             style="{{ section_style }}" js-scroll>
+            {%- for block in section.blocks -%}
+
+                <div class="{{ block.settings.additional_classes }}">
+
+                    {%- case block.type -%}
+
+                    {%- comment -%}
+                    {# @ Site logo block #}
+                    {%- endcomment -%}
+
+                    {%- when 'site_logo' -%}
+
+                    <div class="flex-items-center">
+                        <!-- LOGO -->
+                        {%- include 'logo' custom_logo: block.settings.aside_logo, image_size: block.settings.logo_max_width -%}
+                        <!-- / LOGO -->
+                    </div>
+
+                    {%- comment -%}
+                    {# @ Social icons block #}
+                    {%- endcomment -%}
+
+                    {%- when 'social_icons' -%}
+                    <div class="flex-items-center">
+                        <!-- SOCIAL LINKS -->
+                        {%- include 'social-links' -%}
+                        <!-- / SOCIAL LINKS -->
+                    </div>
+
+                    {%- comment -%}
+                    {# @ Copyright text block#}
+                    {%- endcomment -%}
+
+                    {%- when 'copyright_text' -%}
+
+                    <div class="text-center">
+                        <!-- COPYRIGHT TEXT -->
+                        {%- include 'copyright-text' -%}
+                        <!-- / COPYRIGHT TEXT -->
+                    </div>
+
+                    {%- comment -%}
+                    {# @ Menu block#}
+                    {%- endcomment -%}
+
+                    {%- when 'menu' -%}
+
+                    {%- if block.settings.type == 'popover' -%}
+
+                        {%- if settings.aside == 'left-aside' -%}
+                            {%- assign popover_direction = 'right-start' -%}
+                        {%- endif -%}
+
+                        {%- if settings.aside == 'right-aside' -%}
+                            {%- assign popover_direction = 'left-start' -%}
+                        {%- endif -%}
+
+                        {%- assign nav_origin = 'from-aside' -%}
+
+                        <div class="hidden-sm-down">
+                            {%- include 'nav' with 'vertical'
+                            nav_item:'nav-item-popover',
+                            menu: block.settings.menu,
+                            align: block.settings.align,
+                            popover_direction: popover_direction,
+                            popover_classes: 'from-aside' -%}
+                        </div>
+
+                        <div class="hidden-md-up">
+                            {%- include 'nav' with 'vertical',
+                            nav_item:'nav-item-collapse',
+                            menu: block.settings.menu,
+                            align: block.settings.align -%}
+                        </div>
+
+                    {%- else -%}
+
+                        {%- include 'nav' with 'vertical',
+                        nav_item:'nav-item-collapse',
+                        menu: block.settings.menu,
+                        align: block.settings.align -%}
+
+                    {%- endif -%}
+
+                    {%- comment -%}
+                    {# @ Search bar block #}
+                    {%- endcomment -%}
+
+                    {%- when 'search_bar' -%}
+
+                    {%- include 'search' search_style: 'input-group', icon_mode: false -%}
+
+                    {%- comment -%}
+                    {# @ Action buttons block#}
+                    {%- endcomment -%}
+
+                    {%- when 'action_buttons' -%}
+
+                    <div class="flex-items-middle flex-items-center">
+                        {%- if block.settings.show_currency_selector -%}
+                            <!-- CURRENCY SELECTOR -->
+                            {%- include 'currency-selector', icon_mode: true -%}
+                            <!-- / CURRENCY SELECTOR -->
+                        {%- endif -%}
+
+                        <!-- SEARCH -->
+                        {%- if block.settings.show_search -%}
+                            {%- include 'search' search_style: 'mobile-search', icon_mode: true -%}
+                        {%- endif -%}
+                        <!-- / SEARCH -->
+
+                        {%- if block.settings.show_my_account -%}
+                            <!-- MY ACCOUNT -->
+                            {%- include 'my-account-dropdown' icon_mode: true -%}
+                            <!-- / MY ACCOUNT -->
+                        {%- endif -%}
+
+                        {%- if block.settings.show_cart -%}
+                            <!-- CART -->
+                            {%- include 'cart' cart_style: block.settings.cart_style, icon_mode: true, from_aside: true, tag_border_color: section.settings.bg_color -%}
+                            <!-- / CART -->
+                        {%- endif -%}
+                    </div>
+
+                    {%- comment -%}
+                    {# @ Html block #}
+                    {%- endcomment -%}
+
+                    {%- when 'html' -%}
+                    <!-- HTML -->
+                    {{ block.settings.html }}
+                    <!-- / HTML -->
+
+                    {%- endcase -%}
+                </div>
+
+            {%- endfor -%}
+
+        </div>
+    </div>
+
+</div>
+
+
+<script type="application/json">
+    /*"*/{% schema %}/*"*/
+    {
+        "name": "Aside",
+        "settings": [
+            {
+                "type": "header",
+                "content": "Background"
+            },
+            {
+                "type": "color",
+                "id": "bg_color",
+                "label": "Background color",
+                "default": "#f7f7f7"
+            },
+            {
+                "type": "image_picker",
+                "id": "bg_image",
+                "label": "Background image"
+            },
+            {
+                "type": "select",
+                "id": "bg_size",
+                "label": "Background image size",
+                "default": "cover",
+                "options": [
+                    {
+                        "value": "auto",
+                        "label": "Auto"
+                    },
+                    {
+                        "value": "cover",
+                        "label": "Cover"
+                    },
+                    {
+                        "value": "contain",
+                        "label": "Contain"
+                    },
+                    {
+                        "value": "25%",
+                        "label": "25%"
+                    },
+                    {
+                        "value": "50%",
+                        "label": "50%"
+                    },
+                    {
+                        "value": "75%",
+                        "label": "75%"
+                    },
+                    {
+                        "value": "100%",
+                        "label": "100%"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "bg_repeat",
+                "label": "Background repeat",
+                "default": "no-repeat",
+                "options": [
+                    {
+                        "value": "no-repeat",
+                        "label": "No repeat"
+                    },
+                    {
+                        "value": "repeat",
+                        "label": "Repeat"
+                    },
+                    {
+                        "value": "repeat-x",
+                        "label": "Repeat x"
+                    },
+                    {
+                        "value": "repeat-y",
+                        "label": "Repeat y"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "bg_position",
+                "label": "Background position",
+                "default": "center center",
+                "options": [
+                    {
+                        "value": "left top",
+                        "label": "Left Top"
+                    },
+                    {
+                        "value": "left center",
+                        "label": "Left Center"
+                    },
+                    {
+                        "value": "left bottom",
+                        "label": "Left Bottom"
+                    },
+                    {
+                        "value": "right top",
+                        "label": "Right Top"
+                    },
+                    {
+                        "value": "right center",
+                        "label": "Right Center"
+                    },
+                    {
+                        "value": "right bottom",
+                        "label": "Right Bottom"
+                    },
+                    {
+                        "value": "center top",
+                        "label": "Center Top"
+                    },
+                    {
+                        "value": "center center",
+                        "label": "Center Center"
+                    },
+                    {
+                        "value": "center bottom",
+                        "label": "Center Bottom"
+                    }
+                ]
+            },
+            {
+                "type": "header",
+                "content": "Extra"
+            },
+            {
+                "type": "text",
+                "id": "additional_classes",
+                "label": "Additional classes",
+                "default": "px-8 py-8"
+            }
+        ],
+        "blocks": [
+            {
+                "type": "site_logo",
+                "name": "Logo",
+                "settings": [
+                    {
+                        "type": "text",
+                        "id": "logo_max_width",
+                        "label": "Logo width (px)",
+                        "default": "100",
+                        "info": "Images won't be upscaled, so make sure you upload a logo larger than the 'logo width' option. For retina screens, your logo must be at least double the 'logo width' option. For example, if you set the above option to '128', your logo must be at least 256px wide."
+                    },
+                    {
+                        "type": "image_picker",
+                        "id": "aside_logo",
+                        "label": "Aside logo image",
+                        "info": "If empty, logo from general settings will be used"
+                    },
+                    {
+                        "type": "text",
+                        "id": "additional_classes",
+                        "label": "Additional classes"
+                    }
+                ]
+            },
+            {
+                "type": "menu",
+                "name": "Menu",
+                "settings": [
+                    {
+                        "type": "link_list",
+                        "id": "menu",
+                        "label": "Menu",
+                        "default": "main-menu"
+                    },
+                    {
+                        "type": "select",
+                        "id": "type",
+                        "label": "Type",
+                        "options": [
+                            {
+                                "value": "collapsible",
+                                "label": "Collapsible menu"
+                            },
+                            {
+                                "value": "popover",
+                                "label": "Popover menu"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "align",
+                        "label": "Align",
+                        "options": [
+                            {
+                                "value": "left",
+                                "label": "Left"
+                            },
+                            {
+                                "value": "center",
+                                "label": "Center"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "text",
+                        "id": "additional_classes",
+                        "label": "Additional classes"
+                    }
+                ]
+            },
+            {
+                "type": "action_buttons",
+                "name": "Action buttons",
+                "settings": [
+                    {
+                        "type": "checkbox",
+                        "id": "show_currency_selector",
+                        "label": "Show currency selector",
+                        "default": true
+                    },
+                    {
+                        "type": "checkbox",
+                        "id": "show_search",
+                        "label": "Show search",
+                        "default": true
+                    },
+                    {
+                        "type": "checkbox",
+                        "id": "show_my_account",
+                        "label": "Show my account",
+                        "default": true
+                    },
+                    {
+                        "type": "checkbox",
+                        "id": "show_cart",
+                        "label": "Show cart",
+                        "default": true
+                    },
+                    {
+                        "type": "select",
+                        "id": "cart_style",
+                        "label": "Cart style",
+                        "default": "right-bar",
+                        "options": [
+                            {
+                                "value": "link",
+                                "label": "Link to the Cart page"
+                            },
+                            {
+                                "group": "Ajax Quick Cart",
+                                "value": "top-bar",
+                                "label": "Top bar"
+                            },
+                            {
+                                "group": "Ajax Quick Cart",
+                                "value": "bottom-bar",
+                                "label": "Bottom bar"
+                            },
+                            {
+                                "group": "Ajax Quick Cart",
+                                "value": "right-bar",
+                                "label": "Right bar"
+                            },
+                            {
+                                "group": "Ajax Quick Cart",
+                                "value": "left-bar",
+                                "label": "Left bar"
+                            },
+                            {
+                                "group": "Ajax Quick Cart",
+                                "value": "popover-small",
+                                "label": "Popover small"
+                            },
+                            {
+                                "group": "Ajax Quick Cart",
+                                "value": "popover-big",
+                                "label": "Popover big"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "text",
+                        "id": "additional_classes",
+                        "label": "Additional classes"
+                    }
+                ]
+            },
+            {
+                "type": "search_bar",
+                "name": "Search bar",
+                "settings": [
+                    {
+                        "type": "text",
+                        "id": "additional_classes",
+                        "label": "Additional classes"
+                    }
+                ]
+            },
+            {
+                "type": "social_icons",
+                "name": "Social icons",
+                "settings": [
+                    {
+                        "type": "text",
+                        "id": "additional_classes",
+                        "label": "Additional classes"
+                    }
+                ]
+            },
+            {
+                "type": "copyright_text",
+                "name": "Copyright text",
+                "settings": [
+                    {
+                        "type": "text",
+                        "id": "additional_classes",
+                        "label": "Additional classes"
+                    }
+                ]
+            },
+            {
+                "type": "html",
+                "name": "Html",
+                "settings": [
+                    {
+                        "type": "textarea",
+                        "id": "html",
+                        "label": "Html",
+                        "placeholder": "Use basic HTML to format text"
+                    },
+                    {
+                        "type": "text",
+                        "id": "additional_classes",
+                        "label": "Additional classes"
+                    }
+                ]
+            }
+        ]
+    }
+    /*"*/{% endschema %}/*"*/
+</script>

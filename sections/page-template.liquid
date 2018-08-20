@@ -1,0 +1,259 @@
+{%- assign content_width = settings.page_content_width | default: settings.content_width -%}
+
+{%- capture section_style -%}
+background-size: {{ section.settings.bg_size }}; background-repeat: {{ section.settings.bg_repeat }}; background-position: {{ section.settings.bg_position }};
+{%- if section.settings.bg_image != blank -%}background-image: url({{ section.settings.bg_image | img_url: '1920x' }});{%- endif -%}
+{%- if section.settings.bg_color != blank -%}background-color: {{ section.settings.bg_color }};{%- endif -%}
+{%- endcapture -%}
+
+{%- if section.settings.bg_color_type == 'auto' -%}
+    {%- include 'util-color-brightness' color: section.settings.bg_color, append: '-bg' -%}
+{%- else -%}
+    {%- assign color_brightness = section.settings.bg_color_type -%}
+{%- endif -%}
+
+<!-- PAGE HEADER -->
+<div
+    class="page-header py-4 {{ color_brightness }} {% if section.settings.bg_parallax == 'enable' %} parallax-bg{% endif %}"
+    style="{{ section_style }}">
+
+    <div class="{{ content_width }}">
+
+        {%- if section.settings.show_breadcrumb -%}
+            <!-- BREADCRUMB -->
+            <div class="flex-items-center flex-items-md-{{ section.settings.breadcrumb_title_alignment }} py-3 py-md-4">
+                {%- include 'breadcrumb' -%}
+            </div>
+            <!-- / BREADCRUMB -->
+        {%- endif -%}
+
+        <!-- PAGE TITLE -->
+        <div
+            class="page-title flex-items-center flex-items-md-{{ section.settings.breadcrumb_title_alignment }} py-3 py-md-4">
+                <span class="h2">
+                 {{ page.title }}
+                </span>
+        </div>
+        <!-- / PAGE TITLE -->
+
+    </div>
+
+</div>
+<!-- / PAGE HEADER -->
+
+<div class="{{ content_width }} pt-8">
+
+    <div class="row">
+
+        <div class="col-12">
+
+            <!-- PAGE CONTENT -->
+            <div class="page-content">
+                {{ page.content }}
+            </div>
+            <!-- / PAGE CONTENT -->
+
+        </div>
+
+    </div>
+
+</div>
+
+<script type="application/json">
+    /*"*/{% schema %}/*"*/
+    {
+        "name": "Page header",
+        "settings": [
+            {
+                "type": "header",
+                "content": "General"
+            },
+            {
+                "type": "checkbox",
+                "id": "show_breadcrumb",
+                "label": "Show breadcrumb",
+                "default": true
+            },
+            {
+                "type": "select",
+                "id": "breadcrumb_title_alignment",
+                "label": "Breadcrumb & Title Alignment",
+                "default": "left",
+                "options": [
+                    {
+                        "value": "left",
+                        "label": "Left"
+                    },
+                    {
+                        "value": "center",
+                        "label": "Center"
+                    },
+                    {
+                        "value": "right",
+                        "label": "Right"
+                    }
+                ]
+            },
+            {
+                "type": "header",
+                "content": "Background"
+            },
+            {
+                "type": "color",
+                "id": "bg_color",
+                "label": "Background color"
+            },
+            {
+                "type": "image_picker",
+                "id": "bg_image",
+                "label": "Background image"
+            },
+            {
+                "type": "select",
+                "id": "bg_parallax",
+                "label": "Parallax effect",
+                "default": "disable",
+                "options": [
+                    {
+                        "value": "enable",
+                        "label": "Enable"
+                    },
+                    {
+                        "value": "disable",
+                        "label": "Disable"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "bg_size",
+                "label": "Background image size",
+                "default": "cover",
+                "options": [
+                    {
+                        "value": "auto",
+                        "label": "Auto"
+                    },
+                    {
+                        "value": "cover",
+                        "label": "Cover"
+                    },
+                    {
+                        "value": "contain",
+                        "label": "Contain"
+                    },
+                    {
+                        "value": "25%",
+                        "label": "25%"
+                    },
+                    {
+                        "value": "50%",
+                        "label": "50%"
+                    },
+                    {
+                        "value": "75%",
+                        "label": "75%"
+                    },
+                    {
+                        "value": "100%",
+                        "label": "100%"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "bg_repeat",
+                "label": "Background repeat",
+                "default": "no-repeat",
+                "options": [
+                    {
+                        "value": "no-repeat",
+                        "label": "No repeat"
+                    },
+                    {
+                        "value": "repeat",
+                        "label": "Repeat"
+                    },
+                    {
+                        "value": "repeat-x",
+                        "label": "Repeat x"
+                    },
+                    {
+                        "value": "repeat-y",
+                        "label": "Repeat y"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "bg_position",
+                "label": "Background position",
+                "default": "center center",
+                "options": [
+                    {
+                        "value": "left top",
+                        "label": "Left Top"
+                    },
+                    {
+                        "value": "left center",
+                        "label": "Left Center"
+                    },
+                    {
+                        "value": "left bottom",
+                        "label": "Left Bottom"
+                    },
+                    {
+                        "value": "right top",
+                        "label": "Right Top"
+                    },
+                    {
+                        "value": "right center",
+                        "label": "Right Center"
+                    },
+                    {
+                        "value": "right bottom",
+                        "label": "Right Bottom"
+                    },
+                    {
+                        "value": "center top",
+                        "label": "Center Top"
+                    },
+                    {
+                        "value": "center center",
+                        "label": "Center Center"
+                    },
+                    {
+                        "value": "center bottom",
+                        "label": "Center Bottom"
+                    }
+                ]
+            },
+            {
+                "type": "header",
+                "content": "Foreground"
+            },
+            {
+                "type": "select",
+                "id": "bg_color_type",
+                "label": "Text color",
+                "default": "auto",
+                "info": "'Auto' will decide text color depending on background color",
+                "options": [
+                    {
+                        "value": "auto",
+                        "label": "Auto"
+                    },
+                    {
+                        "value": "light-bg",
+                        "label": "Dark"
+                    },
+                    {
+                        "value": "dark-bg",
+                        "label": "Light"
+                    }
+                ]
+            }
+        ]
+    }
+    /*"*/{% endschema %}/*"*/
+</script>

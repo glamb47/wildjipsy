@@ -1,0 +1,53 @@
+{%- comment -%}
+{# @ Image Size Calculator #}
+{%- endcomment -%}
+
+{%- assign _column_count = column_count | default: 4 -%}
+{%- assign image_width = 1920 | divided_by: _column_count | round -%}
+
+{%- case column_width -%}
+
+    {%- when '1/12' -%}
+        {%- assign image_width = 160 -%}
+
+    {%- when '2/12' -%}
+        {%- assign image_width = 320 -%}
+
+    {%- when '3/12' -%}
+        {%- assign image_width = 480 -%}
+
+    {%- when '4/12' -%}
+        {%- assign image_width = 640 -%}
+
+    {%- when '5/12' -%}
+        {%- assign image_width = 800 -%}
+
+    {%- when '6/12' -%}
+        {%- assign image_width = 960 -%}
+
+    {%- when '7/12' -%}
+        {%- assign image_width = 1120 -%}
+
+    {%- when '8/12' -%}
+        {%- assign image_width = 1280 -%}
+
+    {%- when '9/12' -%}
+        {%- assign image_width = 1440 -%}
+
+    {%- when '10/12' -%}
+        {%- assign image_width = 1600 -%}
+
+    {%- when '11/12' -%}
+        {%- assign image_width = 1760 -%}
+
+    {%- when '12/12' -%}
+        {%- assign image_width = 1920 -%}
+
+{%- endcase -%}
+
+{%- if custom_ratio and image_ratio -%}
+    {%- assign image_height = image_width | divided_by: image_ratio | round -%}
+    {%- assign image_size = image_width | append:'x' | append: image_height -%}
+{%- else -%}
+    {%- assign image_size = image_width | append:'x' -%}
+{%- endif -%}

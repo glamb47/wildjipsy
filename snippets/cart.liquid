@@ -1,0 +1,519 @@
+{%- comment -%}
+{# @ CPT: Bar id #}
+{%- endcomment -%}
+{% capture bar_id %}{% if id %}ajax-cart-bar-{{ id }}{% else %}ajax-cart-bar-{{ section.id }}{% endif %}{% endcapture %}
+
+{%- assign image_size = '320x' -%}
+{%- if settings.enable_product_custom_aspect_ratio -%}
+    {%- assign product_image_ratio = settings.product_image_aspect_ratio_w | plus :0.0 | divided_by: settings.product_image_aspect_ratio_h -%}
+    {%- assign image_height = 320 | divided_by: product_image_ratio | round -%}
+    {%- assign image_size = 320 | append:'x' | append: image_height -%}
+{%- endif -%}
+
+{%- assign popover_custom_classes = popover_classes | append:' from-' | append: section.id -%}
+
+{%- comment -%}
+{# @ CPT: Horizontal Cart #}
+{%- endcomment -%}
+{%- capture horizontal_cart -%}
+
+<js-ajax-cart class="horizontal style-{{ cart_style }} p-16 pb-9">
+
+    <!-- CART HEADER -->
+    <div class="cart-header row flex-items-middle">
+
+        <div class="col cart-title">
+
+            <a href="/cart" class="cart-link">{{ 'cart.ajax.title' | t }}</a>
+
+            <div class="cart-count flex-items-middle text-light ml-1" ng-if="jc.cart.data.items.length > 0">
+                <span class="cart-count-separator mr-2">{{ 'cart.ajax.count_separator' | t }}</span>
+                <span class="cart-count-number mr-1">{[{jc.cart.data.item_count}]}</span>
+                <span class="cart-count-text"
+                      ng-if="jc.cart.data.item_count === 1">{{ 'cart.ajax.product' | t }}</span>
+                <span class="cart-count-text"
+                      ng-if="jc.cart.data.item_count > 1">{{ 'cart.ajax.products' | t }}</span>
+            </div>
+
+        </div>
+
+        <div class="col flex-nogrow">
+            <i class="cart-close-button link icon icon-close s-6" js-bar-toggle="{{ bar_id }}" just-close></i>
+        </div>
+
+    </div>
+    <!-- / CART HEADER -->
+
+    <!-- CART EMPTY -->
+    <div class="cart-empty" ng-if="jc.cart.data.items.length == 0">
+        {{ 'cart.ajax.empty' | t }}
+    </div>
+    <!-- / CART EMPTY -->
+
+    <!-- CART -->
+    <form class="cart ajaxcart row" ng-if="jc.cart.data.items.length > 0" action="/cart" method="post" novalidate>
+
+        <!-- CART ITEMS -->
+        <div class="cart-items col-12" ng-if="jc.cart.data.items.length > 0">
+
+            <div class="row scrollable only-x py-8 flex-nowrap" js-scroll>
+
+                <!-- CART ITEM -->
+                <div class="cart-item col-6 col-sm-3 col-md-2 flex-column" ng-repeat="item in jc.cart.data.items"
+                     item-id="{[{ item.id }]}">
+
+                    <!-- PRODUCT IMAGE -->
+                    <div class="product-image" data-label="{{ 'customer.order.product' | t }}">
+
+                        <a href="{[{ item.url }]}" class="cart-image">
+                            <img class="img-fluid" ng-src="{[{jc.resizeImage(item.image,'{{ image_size }}')}]}"
+                                 alt="{[{ item.title }]}">
+                        </a>
+
+                        <!-- PRODUCT REMOVE BUTTON -->
+                        <div class="product-remove flex-items-middle flex-items-center">
+                            <i ng-click="jc.removeProduct(item)" class="link text-light icon-close s-4"></i>
+                        </div>
+                        <!-- / PRODUCT REMOVE BUTTON -->
+
+                    </div>
+                    <!-- / PRODUCT IMAGE -->
+
+                    <!-- PRODUCT INFO -->
+                    <div class="product-info my-4 text-center">
+
+                        <a href="{[{ item.url }]}" class="product-title text-bold">
+                            {[{ item.product_title }]}
+                        </a>
+
+                        <div class="product-variants text-light" ng-if="item.variant_title">
+                            {[{ item.variant_title }]}
+                        </div>
+
+                    </div>
+                    <!-- / PRODUCT INFO -->
+
+                    <!-- PRODUCT BOTTOM -->
+                    <div class="product-bottom flex-items-center flex-items-middle">
+
+                        <!-- PRODUCT QUANTITY -->
+                        <div class="product-qty">
+
+                            <div js-number-input value="item.quantity"
+                                 step="1"
+                                 min="0"
+                                 input-id="updates_{[{ item.id }]}"
+                                 input-name="updates[]"
+                                 change="jc.changeQuantity(event, item)">
+                            </div>
+
+                        </div>
+                        <!-- / PRODUCT QUANTITY -->
+
+                        <i class="icon icon-close s-4 text-light mx-2"></i>
+
+                        <!-- PRODUCT PRICE -->
+                        <div class="product-price flex-items-middle">
+
+                            <div class="cart-item-price js-money" value="{[{ item.price }]}">
+                                {[{ item.price }]}
+                            </div>
+
+                            <div ng-if="item.original_price != item.price" class="cart-item-original-price ml-2">
+                        <span class="js-money text-linethrough" value="{[{ item.original_price }]}">
+                            {[{ item.original_price }]}
+                        </span>
+                            </div>
+
+                        </div>
+                        <!-- / PRODUCT PRICE -->
+
+                        <!-- PRODUCT DISCOUNTS -->
+                        <div class="product-discounts">
+
+                            <div ng-repeat="discount in item.discounts" class="cart-item-discount flex-items-middle">
+                                <span class="tag tag-primary">{{ discount.title }}</span>
+                            </div>
+
+                        </div>
+                        <!-- / PRODUCT DISCOUNTS -->
+
+                    </div>
+                    <!-- / PRODUCT BOTTOM -->
+
+                </div>
+                <!-- CART ITEM -->
+
+            </div>
+
+        </div>
+        <!-- CART ITEMS -->
+
+        <!-- CART TOTAL & FORM BUTTONS -->
+        <div class="cart-footer col-12 flex-items-middle flex-wrap">
+
+            <!-- CART TOTAL -->
+            <div class="cart-total flex-items-middle flex-grow">
+
+                <div class="h3 cart-subtotal-title mr-4">{{ 'cart.general.subtotal' | t }}</div>
+
+                <div class="flex-items-middle">
+
+                    <div class="h2 cart-subtotal">
+                        <span class="js-money text-bold" value="{[{ jc.cart.data.total_price }]}">
+                            {[{ jc.cart.data.total_price }]}
+                        </span>
+                    </div>
+
+                    <div ng-if="jc.cart.data.total_discount > 0" class="pb-2">
+                        <span class="cart-subtotal-savings js-money text-italic"
+                              value="{[{ jc.cart.data.total_discount }]}">
+                            {[{jc.cart.data.total_discount}]}
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+            <!-- / CART TOTAL -->
+
+            <!-- CART FORM BUTTONS -->
+            <div class="flex-items-middle flex-nogrow">
+
+                <a href="/cart" class="view-cart-button btn btn-secondary text-uppercase mr-3">
+                    {{ 'cart.general.view_cart' | t }}
+                </a>
+
+                <input type="submit" name="checkout"
+                       class="checkout-button btn btn-primary text-uppercase"
+                       value="{{ 'cart.general.checkout' | t }}">
+
+            </div>
+            <!-- / CART FORM BUTTONS -->
+
+        </div>
+
+    </form>
+    <!-- / CART -->
+
+    <div ng-show="jc.loading">
+        <div class="loading-overlay flex-items-center">
+            {%- include 'spinner' -%}
+        </div>
+    </div>
+
+</js-ajax-cart>
+{%- endcapture -%}
+
+{%- comment -%}
+{# @ CPT: Vertical Cart #}
+{%- endcomment -%}
+{%- capture vertical_cart -%}
+
+<js-ajax-cart class="vertical style-{{ cart_style }} p-10 p-sm-16">
+
+    <!-- CART HEADER -->
+    <div class="cart-header row flex-items-top flex-items-space-between">
+
+        <div class="col cart-title flex-column flex-nogrow">
+
+            <a href="/cart" class="cart-link">{{ 'cart.ajax.title' | t }}</a>
+
+            <div class="cart-count flex-items-middle text-light" ng-if="jc.cart.data.items.length > 0">
+                <span class="cart-count-number mr-1">{[{jc.cart.data.item_count}]}</span>
+                <span class="cart-count-text"
+                      ng-if="jc.cart.data.item_count === 1">{{ 'cart.ajax.product' | t }}</span>
+                <span class="cart-count-text"
+                      ng-if="jc.cart.data.item_count > 1">{{ 'cart.ajax.products' | t }}</span>
+            </div>
+
+        </div>
+
+        {%- if cart_style != 'popover-small' and cart_style != 'popover-big' -%}
+            <div class="col flex-nogrow">
+                <i class="cart-close-button link icon icon-close s-6" js-bar-toggle="{{ bar_id }}" just-close></i>
+            </div>
+        {%- endif -%}
+
+    </div>
+    <!-- / CART HEADER -->
+
+    <!-- CART EMPTY -->
+    <div class="cart-empty" ng-if="jc.cart.data.items.length == 0">
+        <div class="mb-8">
+            <i class="icon icon-shopping s-30"></i>
+        </div>
+        <div>
+            {{ 'cart.ajax.empty' | t }}
+        </div>
+    </div>
+    <!-- / CART EMPTY -->
+
+    <!-- CART -->
+    <form ng-if="jc.cart.data.items.length > 0" action="/cart" method="post" novalidate class="cart ajaxcart row">
+
+        <!-- CART ITEMS -->
+        <div
+            class="cart-items col-12 {% if cart_style == 'popover-small' or cart_style == 'popover-big' %} scrollable only-y{% endif %}"
+            {% if cart_style == 'popover-small' or cart_style == 'popover-big' %}js-scroll{% endif %}>
+
+            <!-- CART ITEM -->
+            <div class="cart-item row flex-items-center" ng-repeat="item in jc.cart.data.items"
+                 item-id="{[{ item.id }]}">
+
+                <!-- PRODUCT IMAGE -->
+                <div class="product-image col pb-4 pb-sm-0 flex-nogrow"
+                     data-label="{{ 'customer.order.product' | t }}">
+
+                    <a href="{[{ item.url }]}">
+                        <img class="img-fluid" ng-src="{[{jc.resizeImage(item.image,'{{ image_size }}')}]}"
+                             alt="{[{ item.title }]}">
+                    </a>
+
+                    <!-- PRODUCT REMOVE BUTTON -->
+                    <div class="product-remove flex-items-middle flex-items-center">
+                        <i ng-click="jc.removeProduct(item)" class="link text-light icon-close s-4"></i>
+                    </div>
+                    <!-- / PRODUCT REMOVE BUTTON -->
+
+                </div>
+                <!-- / PRODUCT IMAGE -->
+
+                <div
+                    class="col-12 col-sm pl-sm-0 flex-column flex-sm-row flex-items-center flex-items-sm-left flex-items-middle flex-items-sm-top text-center text-sm-left">
+
+                    <!-- PRODUCT INFO -->
+                    <div class="product-info">
+
+                        <a href="{[{ item.url }]}" class="product-title text-bold">
+                            {[{ item.product_title }]}
+                        </a>
+
+                        <div class="product-variants text-light" ng-if="item.variant_title">
+                            {[{ item.variant_title }]}
+                        </div>
+
+                    </div>
+                    <!-- / PRODUCT INFO -->
+
+                    <!-- PRODUCT QUANTITY & PRICE -->
+                    <div class="my-4 flex-items-middle">
+
+                        <!-- PRODUCT QUANTITY -->
+                        <div class="product-qty">
+
+                            <div js-number-input value="item.quantity"
+                                 step="1"
+                                 min="0"
+                                 input-id="updates_{[{ item.id }]}"
+                                 input-name="updates[]"
+                                 change="jc.changeQuantity(event, item)">
+                            </div>
+
+                        </div>
+                        <!-- / PRODUCT QUANTITY -->
+
+                        <i class="icon icon-close s-4 text-light mx-2"></i>
+
+                        <!-- PRODUCT PRICE -->
+                        <div class="product-price flex-items-middle">
+
+                            <div class="cart-item-price js-money" value="{[{ item.price }]}">
+                                {[{ item.price }]}
+                            </div>
+
+                            <div ng-if="item.original_price != item.price" class="cart-item-original-price ml-2">
+                                <span class="js-money text-linethrough" value="{[{ item.original_price }]}">
+                                    {[{ item.original_price }]}
+                                </span>
+                            </div>
+
+                        </div>
+                        <!-- / PRODUCT PRICE -->
+
+                    </div>
+                    <!-- / PRODUCT QUANTITY & PRICE -->
+
+                    <!-- PRODUCT DISCOUNTS -->
+                    <div class="product-discounts">
+
+                        <div ng-repeat="discount in item.discounts" class="cart-item-discount flex-items-middle">
+                            <span class="tag tag-primary">{{ discount.title }}</span>
+                        </div>
+
+                    </div>
+                    <!-- / PRODUCT DISCOUNTS -->
+
+                </div>
+
+            </div>
+            <!-- / CART ITEM -->
+
+        </div>
+        <!-- / CART ITEMS -->
+
+        <!-- CART TOTAL -->
+        <div class="cart-total col-12">
+
+            <div class="row flex-items-middle">
+
+                <div class="col-12 col-sm flex-items-center flex-items-sm-left">
+                    <span class="h3 cart-subtotal-title">{{ 'cart.general.subtotal' | t }}</span>
+                </div>
+
+                <div class="col-12 col-sm flex-items-center flex-items-sm-right">
+                    <div class="h2 cart-subtotal">
+                        <span class="js-money text-bold" value="{[{ jc.cart.data.total_price }]}">
+                            {[{ jc.cart.data.total_price }]}
+                        </span>
+                    </div>
+
+                    <div ng-if="jc.cart.data.total_discount > 0" class="pb-2">
+                        <span class="cart-subtotal-savings js-money text-italic"
+                              value="{[{ jc.cart.data.total_discount }]}">
+                            {[{jc.cart.data.total_discount}]}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- / CART TOTAL -->
+
+        <!-- CART FORM BUTTONS -->
+        <div class="col-12 mt-8 cart-form-buttons">
+
+            <div class="row">
+
+                <div class="col-12 mb-3">
+                    <a href="/cart" class="view-cart-button btn btn-block btn-secondary text-uppercase">
+                        {{ 'cart.general.view_cart' | t }}
+                    </a>
+                </div>
+
+                <div class="col-12">
+                    <input type="submit" name="checkout"
+                           class="checkout-button btn btn-block btn-primary text-uppercase"
+                           value="{{ 'cart.general.checkout' | t }}">
+                </div>
+
+            </div>
+
+        </div>
+        <!-- / CART FORM BUTTONS -->
+
+    </form>
+    <!-- / CART -->
+
+    <div ng-show="jc.loading">
+        <div class="loading-overlay flex-items-center">
+            {%- include 'spinner' -%}
+        </div>
+    </div>
+
+</js-ajax-cart>
+{%- endcapture -%}
+
+{%- comment -%}
+{# @ CPT: Cart Button #}
+{%- endcomment -%}
+{%- capture cart_button -%}
+
+<div class="p-2 flex-items-middle">
+
+    {%- if icon_mode -%}
+
+        <i class="icon icon-shopping s-6 text-light link"></i>
+        <div ng-cloak class="tag tag-primary" style="border-color: {{ tag_border_color }}">
+            <span ng-bind="$root.cartItemCount"></span>
+        </div>
+
+    {%- else -%}
+
+        <span>{{ 'layout.cart.title' | t }}</span>
+        <div ng-cloak class="ml-2 px-2 py-1 tag tag-primary">
+            <span ng-bind="$root.cartItemCount"></span>
+        </div>
+
+    {%- endif -%}
+
+</div>
+{%- endcapture -%}
+
+{%- comment -%}
+{# @ Cart #}
+{%- endcomment -%}
+
+<div class="cart-button link {% if icon_mode %} with-icon{% endif %}"
+     ng-init="$root.cartItemCount = {{ cart.item_count }}"
+     {% if cart_style == 'popover-small' or cart_style == 'popover-big' %}js-popover
+     js-popover-options="{ disableAutoPositioning: true, placement: 'bottom-end', trigger: '{{ settings.menu_trigger }}', popoverClasses: '{{ popover_custom_classes }}' }" {% endif %}>
+
+    {%- if cart_style == 'link' -%}
+
+        <a href="/cart">
+            {{ cart_button }}
+        </a>
+
+    {%- endif -%}
+
+    {%- if cart_style == 'popover-small' or cart_style == 'popover-big' -%}
+
+        <div class="dropdown-toggle" js-popover-trigger>
+            {{ cart_button }}
+        </div>
+
+    {%- endif -%}
+
+    {%- if cart_style == 'left-bar' or cart_style == 'right-bar' or cart_style == 'top-bar' or cart_style == 'bottom-bar' -%}
+
+        <div js-bar-toggle="{{ bar_id }}">
+            {{ cart_button }}
+        </div>
+
+    {%- endif -%}
+
+    {%- comment -%}
+    {# @ Cart - Popover #}
+    {%- endcomment -%}
+
+    {%- if cart_style == 'popover-small' or cart_style == 'popover-big' -%}
+
+        <div class="dropdown-menu {{ cart_style }} secondary-bg" js-popover-content>
+            {{ vertical_cart }}
+        </div>
+
+    {%- endif -%}
+
+</div>
+
+{%- comment -%}
+{# @ Cart - Sidebar #}
+{%- endcomment -%}
+
+{%- if cart_style == 'left-bar' or cart_style == 'right-bar' -%}
+
+    <js-bar id="{{ bar_id }}"
+            options='{"fixed":true, "position":"{{ cart_style | replace: '-bar','' }}"}' ng-cloak
+            {% if cart_style == 'right-bar' %}ng-swipe-right="jb.closeBar()"{% endif %}
+        {% if cart_style == 'left-bar' %}ng-swipe-left="jb.closeBar()"{% endif %}>
+
+        <div class="jasper-bar-content" js-scroll>
+            {{ vertical_cart }}
+        </div>
+
+    </js-bar>
+
+{%- endif -%}
+
+{%- comment -%}
+{# @ Cart - Top Bottom Bar #}
+{%- endcomment -%}
+
+{%- if cart_style == 'top-bar' or cart_style == 'bottom-bar' -%}
+
+    <js-bar id="{{ bar_id }}"
+            options='{"fixed":true, "position":"{{ cart_style | replace: '-bar','' }}"}' ng-cloak>
+        {{ horizontal_cart }}
+    </js-bar>
+
+{%- endif -%}

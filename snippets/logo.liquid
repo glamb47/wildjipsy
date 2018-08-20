@@ -1,0 +1,28 @@
+{%- comment -%}
+{# @ CPT: Image Size #}
+{%- endcomment -%}
+{% capture image_size_1x %}{% if image_size == blank %}original{% else %}{{ image_size }}x{% endif %}{% endcapture %}
+
+{%- if custom_logo -%}
+
+    <a href="/" class="logo" itemprop="url">
+        <img src="{{ custom_logo | img_url: image_size_1x }}"
+             srcset="{{ custom_logo | img_url: image_size_1x }} 1x, {{ custom_logo | img_url: image_size_1x, scale: 2 }} 2x"
+             alt="{{ shop.name }}" itemprop="logo">
+    </a>
+
+    {%- elsif settings.logo -%}
+
+    <a href="/" class="logo" itemprop="url">
+        <img src="{{ settings.logo | img_url: image_size_1x }}"
+             srcset="{{ settings.logo | img_url: image_size_1x }} 1x, {{ settings.logo | img_url: image_size_1x, scale: 2 }} 2x"
+             alt="{{ shop.name }}" itemprop="logo">
+    </a>
+
+{%- else -%}
+
+    <a href="/" class="site-title text-uppercase text-nowrap h2" itemprop="url">
+        {{ shop.name }}
+    </a>
+
+{%- endif -%}

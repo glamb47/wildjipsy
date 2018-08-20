@@ -1,0 +1,138 @@
+{%- assign item_image_size = image_size | default: '300x' -%}
+
+{%- if collection.products.size > 0 -%}
+
+    <div class="list-carousel">
+
+        <div class="carousel-header sidebar-block-header flex-items-middle">
+
+            <div class="flex-grow h4">
+                {%- if title != blank -%}
+                    {{ title }}
+                {%- else -%}
+                    {{ collection.title | upcase }}
+                {%- endif -%}
+            </div>
+
+            <div class="flex-nogrow flex-items-middle arrows-adaptive">
+                <button class="flickity-prev-next-button previous small" type="button" aria-label="previous"
+                        bc-flickity-previous
+                        bc-flickity-id="list-carousel-{{ block.id }}">
+                    <svg viewBox="0 0 100 100">
+                        <path d="M 10,50 L 60,100 L 70,90 L 30,50 L 70,10 L 60,0 Z" class="arrow"></path>
+                    </svg>
+                </button>
+
+                <button class="flickity-prev-next-button next small" type="button" aria-label="next"
+                        bc-flickity-next
+                        bc-flickity-id="list-carousel-{{ block.id }}">
+                    <svg viewBox="0 0 100 100">
+                        <path d="M 10,50 L 60,100 L 70,90 L 30,50 L 70,10 L 60,0 Z" class="arrow"
+                              transform="translate(100, 100) rotate(180)"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="carousel sidebar-block-content"
+             bc-flickity-id="list-carousel-{{ block.id }}"
+             bc-flickity='{
+                        "prevNextButtons": false,
+                        "draggable": true,
+                        "dragThreshold": 15,
+                        "pageDots": false,
+                        "imagesLoaded": true,
+                        "adaptiveHeight": true
+                          }'>
+
+            {%- for product in collection.products limit: product_limit -%}
+
+                {%- capture row -%}
+
+                {%- assign sold_out = true -%}
+
+                {%- if product.available -%}
+                    {%- assign sold_out = false -%}
+                {%- endif -%}
+
+                {%- assign on_sale = false -%}
+
+                {%- if product.compare_at_price > product.price -%}
+                    {%- assign on_sale = true -%}
+                {%- endif -%}
+
+                {%- assign price = product.price | money -%}
+
+                <a class="row" href="{{ product.url | within: collection }}">
+
+                    {%- if show_images -%}
+                        <div class="col-3">
+                            {%- if product.featured_image -%}
+                                <img class="product-image img-fluid {% if sold_out %}sold-out{% endif %}"
+                                     src="{{ product.featured_image.src | img_url: item_image_size, crop: settings.product_image_crop }}"
+                                     srcset="{{ product.featured_image.src | img_url: item_image_size, crop: settings.product_image_crop }} 1x, {{ product.featured_image.src | img_url: item_image_size, scale:2, crop: settings.product_image_crop }} 2x"
+                                     alt="{{ product.featured_image.alt | escape }}">
+                            {%- else -%}
+                                {{ 'product-1' | placeholder_svg_tag: 'article-image img-fluid scale-2' }}
+                            {%- endif -%}
+                        </div>
+                    {%- endif -%}
+
+                    <div class="{% if show_images %}col-9{% else %}col-12{% endif %}">
+
+                        <div class="product-title text-truncate">
+                            {{ product.title }}
+                        </div>
+
+                        <!-- PRODUCT PRICE -->
+                        <div class="product-price text-light text-bold">
+
+                            {%- if product.price_varies -%}
+                                <span class="price-varies {% if on_sale %} text-danger{% endif %}">
+                                    {{ 'products.general.from_html' | t: price: price, priceRaw: product.price }}
+                                </span>
+                            {%- else -%}
+                                <span class="price js-money {% if on_sale %} text-danger{% endif %}" value="{{ product.price }}">{{ price }}</span>
+                            {%- endif -%}
+
+                            {%- if on_sale -%}
+                                <span class="js-money sale-price text-linethrough ml-1"
+                                     value="{{ product.compare_at_price }}">
+                                    {{ product.compare_at_price | money }}
+                                </span>
+                            {%- endif -%}
+
+                        </div>
+                        <!-- / PRODUCT PRICE -->
+                    </div>
+                </a>
+
+                {%- endcapture -%}
+
+                {%- assign modulo = forloop.index | modulo: row_count -%}
+
+                {%- if forloop.first -%}
+                    <div class="product-item w-100">
+                {%- endif -%}
+
+                {{ row }}
+
+                {%- if modulo == 0 -%}
+                    </div>
+                    {%- unless forloop.last -%}
+                    <div class="product-item w-100">
+                    {%- endunless -%}
+                {%- else -%}
+                    {%- if forloop.last -%}
+                        </div>
+                    {%- else -%}
+                        {%- if show_separators -%}
+                            <hr>
+                        {%- endif -%}
+                    {%- endif -%}
+                {%- endif -%}
+
+            {%- endfor -%}
+        </div>
+    </div>
+{%- endif -%}

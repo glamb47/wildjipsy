@@ -1,0 +1,62 @@
+{%- assign item_image_size = product_image_size | default: '1024x' -%}
+
+{%- if collection.products.size > 0 -%}
+    <div class="single-carousel">
+
+        <div class="carousel-header sidebar-block-header flex-items-middle">
+
+            <div class="flex-grow h4">
+                {%- if title != blank -%}
+                    {{ title }}
+                {%- else -%}
+                    {{ collection.title | upcase }}
+                {%- endif -%}
+            </div>
+
+            <div class="flex-nogrow flex-items-middle">
+                <button class="flickity-prev-next-button previous small" type="button" aria-label="previous"
+                        bc-flickity-previous
+                        bc-flickity-id="single-carousel-{{ block.id }}">
+                    <svg viewBox="0 0 100 100">
+                        <path d="M 10,50 L 60,100 L 70,90 L 30,50  L 70,10 L 60,0 Z" class="arrow"></path>
+                    </svg>
+                </button>
+
+                <button class="flickity-prev-next-button next small" type="button" aria-label="next"
+                        bc-flickity-next
+                        bc-flickity-id="single-carousel-{{ block.id }}">
+                    <svg viewBox="0 0 100 100">
+                        <path d="M 10,50 L 60,100 L 70,90 L 30,50  L 70,10 L 60,0 Z" class="arrow"
+                              transform="translate(100, 100) rotate(180) "></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="carousel sidebar-block-content"
+             bc-flickity-id="single-carousel-{{ block.id }}"
+             bc-flickity='{
+                        "prevNextButtons": false,
+                        "draggable": true,
+                        "dragThreshold": 15,
+                        "pageDots": false,
+                        "imagesLoaded": true,
+                        "adaptiveHeight": true
+                          }'>
+
+            {%- for product in collection.products limit: product_limit -%}
+
+                {%- include 'product-item'
+                product: product,
+                hover_bg: product_hover_bg,
+                style: product_style,
+                sale_badge_style: product_sale_badge_style,
+                item_class: 'w-100',
+                hover_buttons_style: product_hover_buttons_style,
+                show_star_rating: product_show_star_rating,
+                image_size: item_image_size -%}
+
+            {%- endfor -%}
+        </div>
+    </div>
+{%- endif -%}

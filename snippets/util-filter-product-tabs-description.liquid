@@ -1,0 +1,9 @@
+{%- capture descriptionRaw -%}{{- descriptionRaw | replace: '<!--[', '[' -}}{%- endcapture -%}
+{%- capture descriptionRaw -%}{{- descriptionRaw | replace: ']-->', ']' -}}{%- endcapture -%}
+{%- capture descriptionRaw -%}{{- descriptionRaw | replace: ']</p>', ']' -}}{%- endcapture -%}
+{%- capture descriptionRaw -%}{{- descriptionRaw | replace: '<p>[', '[' -}}{%- endcapture -%}
+
+{%- assign descriptionArr = descriptionRaw | split: '[js-tabs]' -%}
+{%- capture productTabsRaw -%}{{- descriptionArr[1] | replace: '[/js-tabs]', '' -}}{%- endcapture -%}
+
+{%- assign description_filtered = descriptionArr[0] -%}

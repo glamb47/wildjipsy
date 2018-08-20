@@ -1,0 +1,511 @@
+{%- assign content_width = section.settings.content_width | default: settings.content_width -%}
+
+{%- include 'util-section-bg-color'
+auto_bg_color: section.settings.auto_bg_color,
+bg_color: section.settings.bg_color,
+bg_opacity: section.settings.bg_opacity -%}
+
+{%- capture section_style -%}
+background-size: {{ section.settings.bg_size }}; background-repeat: {{ section.settings.bg_repeat }}; background-position: {{ section.settings.bg_position }};
+{%- if section.settings.bg_image != blank -%}background-image: url({{ section.settings.bg_image | img_url: '1920x' }});{%- endif -%}
+background-color: {{ section_bg_color }};
+{%- endcapture -%}
+
+{%- if section.settings.bg_color_type == 'auto' -%}
+    {%- include 'util-color-brightness' color: section_bg_color, append: '-bg' -%}
+{%- else -%}
+    {%- assign color_brightness = section.settings.bg_color_type -%}
+{%- endif -%}
+
+<section id="{{ section.settings.custom_id }}"
+         class="section section-h-{{ section.settings.section_height }} {{ section.settings.additional_classes }} {{ section.settings.show_only_desktop_or_mobile }} {{ color_brightness }} {% if section.settings.bg_parallax == 'enable' %}parallax-bg{% endif %}"
+         style="{{ section_style }}"
+         {% if section.settings.section_height == "window-height" %}js-fill-height{% endif %}>
+
+    <div class="section-content {{ content_width }}">
+
+        <div class="row">
+
+            <div class="col-12 flex-items-center {{ section.settings.horizontal_alignment }}">
+
+                <div class="newsletter-container text-center my-6">
+
+                    {%- if section.settings.show_title and section.settings.title != blank -%}
+                        <div class="animate-on-scroll">
+                            <h3 class="text-uppercase mb-2">
+                                {{ section.settings.title }}
+                            </h3>
+                        </div>
+                    {%- endif -%}
+
+                    <div class="animate-on-scroll">
+                        {%- include 'newsletter-form' -%}
+                    </div>
+
+                    {%- if section.settings.show_caption -%}
+                        <div class="animate-on-scroll">
+                            <h4 class="text-light">
+                                {%- if section.settings.caption != blank -%}
+                                    {{ section.settings.caption }}
+                                {%- else -%}
+                                    {{ 'newsletter.caption' | t }}
+                                {%- endif -%}
+                            </h4>
+                        </div>
+                    {%- endif -%}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<script type="application/json">
+    /*"*/{% schema %}/*"*/
+    {
+        "name": "Newsletter",
+        "class": "index-section",
+        "settings": [
+            {
+                "type": "header",
+                "content": "General"
+            },
+            {
+                "type": "checkbox",
+                "id": "show_title",
+                "label": "Show title",
+                "default": true
+            },
+            {
+                "type": "text",
+                "id": "title",
+                "label": "Title"
+            },
+            {
+                "type": "checkbox",
+                "id": "show_caption",
+                "label": "Show caption",
+                "default": true
+            },
+            {
+                "type": "textarea",
+                "id": "caption",
+                "label": "Caption",
+                "info": "Leave blank to use original caption"
+            },
+            {
+                "type": "select",
+                "id": "section_height",
+                "label": "Section height",
+                "default": "auto",
+                "options": [
+                    {
+                        "label": "Auto",
+                        "value": "auto"
+                    },
+                    {
+                        "label": "Fill the window height",
+                        "value": "window-height"
+                    },
+                    {
+                        "label": "Extra Small",
+                        "value": "x-small"
+                    },
+                    {
+                        "label": "Small",
+                        "value": "small"
+                    },
+                    {
+                        "label": "Medium",
+                        "value": "medium"
+                    },
+                    {
+                        "label": "Large",
+                        "value": "large"
+                    },
+                    {
+                        "label": "Extra Large",
+                        "value": "x-large"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "content_width",
+                "label": "Content width",
+                "options": [
+                    {
+                        "value": "",
+                        "label": "Default"
+                    },
+                    {
+                        "value": "container",
+                        "label": "Container"
+                    },
+                    {
+                        "value": "container-fluid",
+                        "label": "Fluid container"
+                    },
+                    {
+                        "value": "container-fullwidth",
+                        "label": "Full width"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "horizontal_alignment",
+                "label": "Horizontal Alignment",
+                "default": "flex-items-sm-center",
+                "options": [
+                    {
+                        "value": "flex-items-sm-left",
+                        "label": "Left"
+                    },
+                    {
+                        "value": "flex-items-sm-center",
+                        "label": "Center"
+                    },
+                    {
+                        "value": "flex-items-sm-right",
+                        "label": "Right"
+                    }
+                ]
+            },
+            {
+                "type": "text",
+                "id": "custom_id",
+                "label": "Section ID",
+                "info": "Add an id to your section. It can be used in 'Scroll Navigation' and 'Custom CSS'"
+            },
+            {
+                "type": "header",
+                "content": "Background"
+            },
+            {
+                "type": "select",
+                "id": "auto_bg_color",
+                "label": "Background color",
+                "default": "transparent",
+                "options": [
+                    {
+                        "value": "transparent",
+                        "label": "Transparent"
+                    },
+                    {
+                        "value": "custom",
+                        "label": "Custom"
+                    },
+                    {
+                        "value": "primary-color",
+                        "label": "Primary Color"
+                    },
+                    {
+                        "value": "primary-bg-color",
+                        "label": "Primary Background Color"
+                    },
+                    {
+                        "value": "secondary-color",
+                        "label": "Secondary Color"
+                    },
+                    {
+                        "value": "secondary-bg-color",
+                        "label": "Secondary Background Color"
+                    }
+                ]
+            },
+            {
+                "type": "color",
+                "id": "bg_color",
+                "label": "Background color",
+                "info": "Only applicable if 'Background Color' option is 'Custom'"
+            },
+            {
+                "type": "select",
+                "id": "bg_opacity",
+                "label": "Background opacity",
+                "default": "1",
+                "options": [
+                    {
+                        "value": "0",
+                        "label": "0"
+                    },
+                    {
+                        "value": "0.05",
+                        "label": "5"
+                    },
+                    {
+                        "value": "0.10",
+                        "label": "10"
+                    },
+                    {
+                        "value": "0.15",
+                        "label": "15"
+                    },
+                    {
+                        "value": "0.20",
+                        "label": "20"
+                    },
+                    {
+                        "value": "0.25",
+                        "label": "25"
+                    },
+                    {
+                        "value": "0.30",
+                        "label": "30"
+                    },
+                    {
+                        "value": "0.35",
+                        "label": "35"
+                    },
+                    {
+                        "value": "0.40",
+                        "label": "40"
+                    },
+                    {
+                        "value": "0.45",
+                        "label": "45"
+                    },
+                    {
+                        "value": "0.50",
+                        "label": "50"
+                    },
+                    {
+                        "value": "0.55",
+                        "label": "55"
+                    },
+                    {
+                        "value": "0.60",
+                        "label": "60"
+                    },
+                    {
+                        "value": "0.65",
+                        "label": "65"
+                    },
+                    {
+                        "value": "0.70",
+                        "label": "70"
+                    },
+                    {
+                        "value": "0.75",
+                        "label": "75"
+                    },
+                    {
+                        "value": "0.80",
+                        "label": "80"
+                    },
+                    {
+                        "value": "0.85",
+                        "label": "85"
+                    },
+                    {
+                        "value": "0.90",
+                        "label": "90"
+                    },
+                    {
+                        "value": "0.95",
+                        "label": "95"
+                    },
+                    {
+                        "value": "1",
+                        "label": "100"
+                    }
+                ]
+            },
+            {
+                "type": "image_picker",
+                "id": "bg_image",
+                "label": "Background image"
+            },
+            {
+                "type": "select",
+                "id": "bg_parallax",
+                "label": "Parallax effect",
+                "default": "disable",
+                "options": [
+                    {
+                        "value": "enable",
+                        "label": "Enable"
+                    },
+                    {
+                        "value": "disable",
+                        "label": "Disable"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "bg_size",
+                "label": "Background image size",
+                "default": "cover",
+                "options": [
+                    {
+                        "value": "auto",
+                        "label": "Auto"
+                    },
+                    {
+                        "value": "cover",
+                        "label": "Cover"
+                    },
+                    {
+                        "value": "contain",
+                        "label": "Contain"
+                    },
+                    {
+                        "value": "25%",
+                        "label": "25%"
+                    },
+                    {
+                        "value": "50%",
+                        "label": "50%"
+                    },
+                    {
+                        "value": "75%",
+                        "label": "75%"
+                    },
+                    {
+                        "value": "100%",
+                        "label": "100%"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "bg_repeat",
+                "label": "Background repeat",
+                "default": "no-repeat",
+                "options": [
+                    {
+                        "value": "no-repeat",
+                        "label": "No repeat"
+                    },
+                    {
+                        "value": "repeat",
+                        "label": "Repeat"
+                    },
+                    {
+                        "value": "repeat-x",
+                        "label": "Repeat x"
+                    },
+                    {
+                        "value": "repeat-y",
+                        "label": "Repeat y"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "bg_position",
+                "label": "Background position",
+                "default": "center center",
+                "options": [
+                    {
+                        "value": "left top",
+                        "label": "Left Top"
+                    },
+                    {
+                        "value": "left center",
+                        "label": "Left Center"
+                    },
+                    {
+                        "value": "left bottom",
+                        "label": "Left Bottom"
+                    },
+                    {
+                        "value": "right top",
+                        "label": "Right Top"
+                    },
+                    {
+                        "value": "right center",
+                        "label": "Right Center"
+                    },
+                    {
+                        "value": "right bottom",
+                        "label": "Right Bottom"
+                    },
+                    {
+                        "value": "center top",
+                        "label": "Center Top"
+                    },
+                    {
+                        "value": "center center",
+                        "label": "Center Center"
+                    },
+                    {
+                        "value": "center bottom",
+                        "label": "Center Bottom"
+                    }
+                ]
+            },
+            {
+                "type": "header",
+                "content": "Foreground"
+            },
+            {
+                "type": "select",
+                "id": "bg_color_type",
+                "label": "Text color",
+                "default": "auto",
+                "info": "'Auto' will decide text color depending on background color",
+                "options": [
+                    {
+                        "value": "auto",
+                        "label": "Auto"
+                    },
+                    {
+                        "value": "light-bg",
+                        "label": "Dark"
+                    },
+                    {
+                        "value": "dark-bg",
+                        "label": "Light"
+                    }
+                ]
+            },
+            {
+                "type": "header",
+                "content": "Extra"
+            },
+            {
+                "type": "select",
+                "id": "show_only_desktop_or_mobile",
+                "label": "Show only on desktop/mobile",
+                "default": "",
+                "options": [
+                    {
+                        "value": "",
+                        "label": "Show always"
+                    },
+                    {
+                        "value": "hidden-sm-up",
+                        "label": "Show only on mobile"
+                    },
+                    {
+                        "value": "hidden-xs-down",
+                        "label": "Show only on desktop"
+                    }
+                ]
+            },
+            {
+                "type": "text",
+                "id": "additional_classes",
+                "label": "Additional classes"
+            }
+        ],
+        "blocks": [],
+        "presets": [
+            {
+                "name": "Newsletter",
+                "category": "07. Others",
+                "settings": {
+                    "title": "NEWSLETTER"
+                }
+            }
+        ]
+    }
+    /*"*/{% endschema %}/*"*/
+</script>

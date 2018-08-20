@@ -1,0 +1,28 @@
+{%- if blog.all_tags.size > 0 -%}
+
+    <!-- BLOG TAGS -->
+    <div class="tags">
+
+        <div class="sidebar-block-content">
+
+            {%- for tag in blog.all_tags -%}
+
+                {%- if current_tags contains tag -%}
+
+                    <button class="btn btn-bordered h5 mr-1 mb-2 disabled">
+                        {{ tag }}
+                    </button>
+
+                {%- else -%}
+
+                    {{ tag | link_to_tag: tag | replace: 'title=', 'class="btn btn-bordered h5 mr-1 mb-2" title=' }}
+
+                {%- endif -%}
+
+            {%- endfor -%}
+
+        </div>
+
+    </div>
+    <!-- / BLOG TAGS -->
+{%- endif -%}

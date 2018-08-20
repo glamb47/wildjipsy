@@ -1,0 +1,41 @@
+{%- assign content_width = settings.article_content_width | default: settings.content_width -%}
+{%- assign article_sidebar = template.suffix | default: settings.article_sidebar -%}
+
+{%- section 'article-header' -%}
+
+<div class="{{ content_width }} pt-8">
+
+    {%- if article_sidebar == 'no-sidebar' -%}
+
+        <div class="article-page">
+            <div class="row">
+                <div class="article-content col-12">
+                    {%- section 'article-template' -%}
+                </div>
+            </div>
+        </div>
+
+    {%- else -%}
+
+        <div class="article-page with-sidebar">
+
+            <div class="row">
+
+                {%- if article_sidebar == 'left-sidebar' -%}
+                    {%- section 'article-sidebar' -%}
+                {%- endif -%}
+
+                <div class="article-content col-12 col-md {% if article_sidebar == 'right-sidebar' %}pr-md-12{% endif %} {% if article_sidebar == 'left-sidebar' %}pl-md-12{% endif %}">
+                    {%- section 'article-template' -%}
+                </div>
+
+                {%- if article_sidebar == 'right-sidebar' -%}
+                    {%- section 'article-sidebar' -%}
+                {%- endif -%}
+
+            </div>
+
+        </div>
+    {%- endif -%}
+
+</div>

@@ -1,0 +1,138 @@
+{%- include 'util-default-colors' -%}
+
+{%- assign menu_item_title_color = '' -%}
+{%- assign menu_item_icon_color = '' -%}
+
+{%- if menu_item_extras -%}
+    {%- if menu_item_extras.title_color != blank and menu_item_extras.title_color != 'rgba(0,0,0,0)' -%}
+        {%- assign menu_item_title_color = menu_item_extras.title_color -%}
+    {%- endif -%}
+
+    {%- if menu_item_extras.icon_color != blank and menu_item_extras.icon_color != 'rgba(0,0,0,0)' -%}
+        {%- assign menu_item_icon_color = menu_item_extras.icon_color -%}
+    {%- endif -%}
+{%- endif -%}
+
+{%- assign menu_handle = linklists[child_list_handle].handle -%}
+
+    {%- if link.url contains '#mega-menu' -%}
+
+        <div uib-accordion-group class="panel-default mega-menu-item" template-url="nav-accordion-template.html">
+
+            <uib-accordion-heading>
+
+                <div class="nav-item">
+
+                    <div class="nav-link link col {{ nav_link_padding_class }} {{ nav_link_align_class }}">
+
+                        <div class="nav-link-context" style="color: {{ menu_item_title_color }};">
+
+                            {%- if menu_item_extras and menu_item_extras.icon_class != '' -%}
+                                <i class="{{ menu_item_extras.icon_class }} s-4 mr-1"
+                                   style="color: {{ menu_item_icon_color }}"></i>
+                            {%- endif -%}
+
+                            <span class="nav-link-title">
+                               {{ link.title }}
+                            </span>
+
+                            {%- if menu_item_extras and menu_item_extras.badge_text != '' -%}
+                                <div class="badge"
+                                     style="background-color:{{ menu_item_extras.badge_bg_color | default: jasper_color_primary }};color:{{ menu_item_extras.badge_fg_color }}">
+                                    <span>{{ menu_item_extras.badge_text }}</span>
+                                    <span class="arrow"
+                                          style="border-color:{{ menu_item_extras.badge_bg_color | default: jasper_color_primary }}"></span>
+                                </div>
+                            {%- endif -%}
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </uib-accordion-heading>
+
+            <div ng-cloak>
+                {{ dropdown_separator }}
+                <div js-include="'{{ link.url | replace:'#','' }}'" class="mega-menu collapsable"></div>
+                {{ dropdown_separator }}
+            </div>
+
+        </div>
+
+        {%- elsif linklists[child_list_handle].links != blank -%}
+
+        <div uib-accordion-group class="panel-default" template-url="nav-accordion-template.html">
+
+            <uib-accordion-heading>
+
+                <div class="nav-item">
+
+                    <div
+                        class="nav-link col link {% if link.active %}active{% endif %} {{ nav_link_padding_class }} {{ nav_link_align_class }}">
+
+                        <div class="nav-link-context" style="color: {{ menu_item_title_color }};">
+                            {%- if menu_item_extras and menu_item_extras.icon_class != '' -%}
+                                <i class="{{ menu_item_extras.icon_class }} s-4 mr-1"
+                                   style="color: {{ menu_item_icon_color }}"></i>
+                            {%- endif -%}
+
+                            <span class="nav-link-title">
+                                {{ link.title }}
+                            </span>
+
+                            {%- if menu_item_extras and menu_item_extras.badge_text != '' -%}
+                                <div class="badge"
+                                     style="background-color:{{ menu_item_extras.badge_bg_color | default: jasper_color_primary }};color:{{ menu_item_extras.badge_fg_color }}">
+                                    <span>{{ menu_item_extras.badge_text }}</span>
+                                    <span class="arrow"
+                                          style="border-color:{{ menu_item_extras.badge_bg_color | default: jasper_color_primary }}"></span>
+                                </div>
+                            {%- endif -%}
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </uib-accordion-heading>
+
+            <div ng-cloak>
+                {{ dropdown_separator }}
+                {%- include 'nav-item-collapse-subitems' menu_handle: menu_handle -%}
+                {{ dropdown_separator }}
+            </div>
+
+        </div>
+
+
+    {%- else -%}
+
+        <div class="nav-item">
+
+            <a class="nav-link col link {% if link.active %}active{% endif %} {{ nav_link_padding_class }} {{ nav_link_align_class }}"
+               href="{% if link.url contains '#' %}{{ shop.url }}{% endif %}{{ link.url }}"
+               {% if template == "index" %}js-scroll-to-section{% endif %}>
+
+                {%- if menu_item_extras and menu_item_extras.icon_class != '' -%}
+                    <i class="{{ menu_item_extras.icon_class }} s-4 mr-1" style="color: {{ menu_item_icon_color }}"></i>
+                {%- endif -%}
+
+                <span class="nav-link-title" style="color: {{ menu_item_title_color }};">
+                    {{ link.title }}
+                </span>
+
+                {%- if menu_item_extras and menu_item_extras.badge_text != '' -%}
+                    <div class="badge"
+                         style="background-color:{{ menu_item_extras.badge_bg_color | default: jasper_color_primary }};color:{{ menu_item_extras.badge_fg_color }}">
+                        <span>{{ menu_item_extras.badge_text }}</span>
+                        <span class="arrow"
+                              style="border-color:{{ menu_item_extras.badge_bg_color | default: jasper_color_primary }}"></span>
+                    </div>
+                {%- endif -%}
+
+            </a>
+
+        </div>
+
+    {%- endif -%}

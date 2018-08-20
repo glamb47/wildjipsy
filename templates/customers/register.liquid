@@ -1,0 +1,52 @@
+<div class="container mb-12 mt-sm-12">
+
+    <div class="row flex-items-center">
+
+        <div class="col-12 form-content">
+
+            <!-- PAGE HEADER -->
+            <div class="page-header py-14 text-bold text-center">
+                {{ 'customer.register.title' | t }}
+            </div>
+            <!-- / PAGE HEADER -->
+
+            <!-- REGISTER FORM -->
+            {%- form 'create_customer' -%}
+
+            {%- include 'form-errors' -%}
+
+            <div class="form-group">
+                <input class="form-control" type="text" name="customer[first_name]" id="FirstName"
+                       placeholder="{{ 'customer.register.first_name' | t }}"
+                       {% if form.first_name %}value="{{ form.first_name }}"{% endif %} autocapitalize="words"
+                       autofocus>
+            </div>
+
+            <div class="form-group">
+                <input class="form-control" type="text" name="customer[last_name]" id="LastName"
+                       placeholder="{{ 'customer.register.last_name' | t }}"
+                       {% if form.last_name %}value="{{ form.last_name }}"{% endif %} autocapitalize="words">
+            </div>
+
+            <div class="form-group {% if form.errors contains "email" %} has-error{% endif %} ">
+                <input class="form-control" type="email" name="customer[email]" id="Email"
+                       placeholder="{{ 'customer.register.email' | t }}" {% if form.email %} value="{{ form.email }}"{% endif %}
+                       autocorrect="off" autocapitalize="off" required>
+            </div>
+
+            <div class="form-group {% if form.errors contains "password" %} has-error{% endif %}">
+                <input class="form-control" type="password" name="customer[password]" id="CreatePassword"
+                       placeholder="{{ 'customer.register.password' | t }}" required>
+            </div>
+
+            <div class="flex-items-center">
+                <input type="submit" value="{{ 'customer.register.submit' | t }}"
+                       class="btn btn-primary center-block submit-button text-uppercase my-6">
+            </div>
+
+            {%- endform -%}
+            <!-- / REGISTER FORM -->
+
+        </div>
+    </div>
+</div>

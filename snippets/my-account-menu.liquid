@@ -1,0 +1,61 @@
+{%- if shop.customer_accounts_enabled -%}
+
+    <ul class="nav nav-stacked">
+
+        {%- if customer -%}
+
+            <li class="nav-item">
+                <a class="nav-link flex-items-center flex-items-sm-left"
+                   href="/account">{{ 'layout.customer.orders' | t }}</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link flex-items-center flex-items-sm-left"
+                   href="/account/addresses">{{ 'layout.customer.addresses' | t }}</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link flex-items-center flex-items-sm-left"
+                   href="/cart">{{ 'layout.customer.cart' | t }}</a>
+            </li>
+
+            {%- if pages.wishlist != empty and settings.product_wishlist_disabled != true -%}
+            <li class="nav-item">
+                <a class="nav-link flex-items-center flex-items-sm-left"
+                   href="{{ pages.wishlist.url }}">{{ 'layout.customer.wishlist' | t }}</a>
+            </li>
+            {%- endif -%}
+
+            <li class="nav-item">
+                <a class="nav-link flex-items-center flex-items-sm-left"
+                   href="/account/logout">{{ 'layout.customer.log_out' | t }}</a>
+            </li>
+
+        {%- else -%}
+
+            <li class="nav-item">
+                <a class="nav-link flex-items-center flex-items-sm-left"
+                   href="/account/login">{{ 'layout.customer.log_in' | t }}</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link flex-items-center flex-items-sm-left"
+                   href="/account/register">{{ 'layout.customer.create_account' | t }}</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link flex-items-center flex-items-sm-left"
+                   href="/cart">{{ 'layout.customer.cart' | t }}</a>
+            </li>
+
+            {%- if pages.wishlist != empty and settings.product_wishlist_disabled != true -%}
+            <li class="nav-item">
+                <a class="nav-link flex-items-center flex-items-sm-left"
+                   href="{{ pages.wishlist.url }}">{{ 'layout.customer.wishlist' | t }}</a>
+            </li>
+            {%- endif -%}
+
+        {%- endif -%}
+
+    </ul>
+{%- endif -%}

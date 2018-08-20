@@ -1,0 +1,74 @@
+{%- comment -%}
+{# @ Column Count #}
+{%- endcomment -%}
+{%- case column_count_2 -%}
+
+    {%- when '2' -%}
+        {%- assign _column_class_2 = 'col-sm-6' -%}
+
+    {%- when '3' -%}
+        {%- assign _column_class_2 = 'col-sm-6 col-md-4' -%}
+
+    {%- when '4' -%}
+        {%- assign _column_class_2 = 'col-xs-6 col-sm-4 col-md-3' -%}
+
+    {%- when '5' -%}
+        {%- assign _column_class_2 = 'col-sm-6 col-sm-4 col-md-3 col-lg-2-4' -%}
+
+    {%- when '6' -%}
+        {%- assign _column_class_2 = 'col-sm-6 col-sm-4 col-md-3 col-lg-2' -%}
+
+{%- endcase -%}
+
+{%- comment -%}
+{# Calculate the column_min and return the column_class_2 #}
+{%- endcomment -%}
+{%- if column_min_2 -%}
+    {%- assign min_col_count = 12 | divided_by: column_min -%}
+    {%- assign column_class_2 = _column_class_2 | prepend:' ' | prepend:min_col_count | prepend:'col-' -%}
+{%- else -%}
+    {%- assign column_class_2 = _column_class_2 | prepend:'col-12 ' -%}
+{%- endif -%}
+
+{%- comment -%}
+{# @ Column Width #}
+{%- endcomment -%}
+{%- case column_width_2 -%}
+
+    {%- when '1/12' -%}
+        {%- assign column_class_2 = 'col-12 col-sm-6 col-md-1' -%}
+
+    {%- when '2/12' -%}
+        {%- assign column_class_2 = 'col-12 col-sm-6 col-md-2' -%}
+
+    {%- when '3/12' -%}
+        {%- assign column_class_2 = 'col-12 col-sm-6 col-md-3' -%}
+
+    {%- when '4/12' -%}
+        {%- assign column_class_2 = 'col-12 col-sm-6 col-md-4' -%}
+
+    {%- when '5/12' -%}
+        {%- assign column_class_2 = 'col-12 col-sm-6 col-md-5' -%}
+
+    {%- when '6/12' -%}
+        {%- assign column_class_2 = 'col-12 col-sm-6 col-md-6' -%}
+
+    {%- when '7/12' -%}
+        {%- assign column_class_2 = 'col-12 col-sm-6 col-md-7' -%}
+
+    {%- when '8/12' -%}
+        {%- assign column_class_2 = 'col-12 col-sm-6 col-md-8' -%}
+
+    {%- when '9/12' -%}
+        {%- assign column_class_2 = 'col-12 col-sm-6 col-md-9' -%}
+
+    {%- when '10/12' -%}
+        {%- assign column_class_2 = 'col-12 col-sm-6 col-md-10' -%}
+
+    {%- when '11/12' -%}
+        {%- assign column_class_2 = 'col-12 col-sm-6 col-md-11' -%}
+
+    {%- when '12/12' -%}
+        {%- assign column_class_2 = 'col-12 col-sm-12 col-md-12' -%}
+
+{%- endcase -%}

@@ -1,0 +1,134 @@
+<div class="pagination-wrapper"
+     {% if ajax == true %}ng-init="cm.queryParams.page = {{ paginate.current_page }}"{% endif %}>
+
+    <div class="row flex-items-middle py-8">
+
+        <div class="col-12 col-md-3"></div>
+
+        <div class="col-12 col-md flex-items-center">
+
+            <ul class="pagination mb-0">
+
+                {%- if ajax == true -%}
+
+                    {%- if paginate.previous -%}
+
+                        <li class="page-item">
+                            <a class="page-link" ng-click="cm.queryParams.page = {{ paginate.current_page | minus:1 }}"
+                               title="{{ paginate.previous.title }}">&larr;</a>
+                        </li>
+
+                    {%- else -%}
+
+                        <li class="page-item disabled"><span class="page-link">&larr;</span></li>
+
+                    {%- endif -%}
+
+                    {%- for part in paginate.parts -%}
+
+                        {%- if part.is_link -%}
+
+                            <li class="page-item">
+
+                                <a class="page-link" ng-click="cm.queryParams.page = {{ part.title }}"
+                                   title="">{{ part.title }}</a>
+
+                            </li>
+
+                        {%- else -%}
+
+                            {%- if part.title == paginate.current_page -%}
+
+                                <li class="page-item active"><span class="page-link">{{ part.title }}</span></li>
+
+                            {%- else -%}
+
+                                <li class="page-item"><span class="page-link">{{ part.title }}</span></li>
+
+                            {%- endif -%}
+
+                        {%- endif -%}
+
+                    {%- endfor -%}
+
+                    {%- if paginate.next -%}
+
+                        <li class="page-item">
+
+                            <a class="page-link" ng-click="cm.queryParams.page = {{ paginate.current_page | plus:1 }}"
+                               title="{{ paginate.next.title }}">&rarr;</a>
+
+                        </li>
+
+                    {%- else -%}
+
+                        <li class="page-item disabled"><span class="page-link">&rarr;</span></li>
+
+                    {%- endif -%}
+
+                {%- else -%}
+
+                    {%- if paginate.previous -%}
+
+                        <li class="page-item"><a class="page-link" href="{{ paginate.previous.url }}"
+                                                 title="{{ paginate.previous.title }}">&larr;</a></li>
+
+                    {%- else -%}
+
+                        <li class="page-item disabled"><span class="page-link">&larr;</span></li>
+
+                    {%- endif -%}
+
+                    {%- for part in paginate.parts -%}
+
+                        {%- if part.is_link -%}
+
+                            <li class="page-item">
+                                <a class="page-link" href="{{ part.url }}" title="">{{ part.title }}</a>
+                            </li>
+
+                        {%- else -%}
+
+                            {%- if part.title == paginate.current_page -%}
+
+                                <li class="page-item active"><span class="page-link">{{ part.title }}</span></li>
+
+                            {%- else -%}
+
+                                <li class="page-item"><span class="page-link">{{ part.title }}</span></li>
+
+                            {%- endif -%}
+
+                        {%- endif -%}
+
+                    {%- endfor -%}
+
+                    {%- if paginate.next -%}
+
+                        <li class="page-item"><a class="page-link" href="{{ paginate.next.url }}"
+                                                 title="{{ paginate.next.title }}">&rarr;</a>
+                        </li>
+
+                    {%- else -%}
+
+                        <li class="page-item disabled"><span class="page-link">&rarr;</span></li>
+
+                    {%- endif -%}
+
+                {%- endif -%}
+
+            </ul>
+        </div>
+
+        <div class="page-total col-12 col-md-3 text-nowrap text-center text-md-right pt-4 pb-2 py-md-0">
+            {% assign pagination_start =  paginate.current_offset | plus: 1 %}
+            {%- if paginate.next -%}
+                {% assign pagination_end =  paginate.current_offset | plus: paginate.page_size %}
+            {%- else -%}
+                {% assign pagination_end =  paginate.items %}
+            {%- endif -%}
+            {% assign pagination_total =  paginate.items %}
+            {{ 'pagination_html' | t : start:  pagination_start, end :pagination_end, total: pagination_total }}
+        </div>
+    </div>
+</div>

@@ -1,0 +1,84 @@
+<!-- ARTICLE LIST ITEM -->
+<div class="article-list-item animate-on-scroll mb-14">
+
+    {%- if article.image -%}
+
+        {%- assign image_alt = article.title | escape -%}
+
+        <!-- ARTICLE IMAGE -->
+        <p class="mb-8">
+
+            <a href="{{ article.url }}">
+                <img class="article-image img-fluid"
+                     src="{{ article.image.src | img_url: '960x' }}"
+                     srcset="{{ article.image.src | img_url: '960x' }} 1x,
+                             {{ article.image.src | img_url: '960x', scale:2 }} 2x"
+                     alt="{{ article.title.alt | escape }}">
+            </a>
+
+        </p>
+        <!-- / ARTICLE IMAGE -->
+
+    {%- endif -%}
+
+    <!-- ARTICLE TITLE -->
+    <h2 class="mt-0 mb-2"><a href="{{ article.url }}">{{ article.title }}</a></h2>
+    <!-- / ARTICLE TIME -->
+
+    <div class="article-sub-title text-light mb-4 h5">
+
+        <!-- ARTICLE TIME -->
+        <time
+            datetime="{{ article.published_at | date: '%Y-%m-%d' }}">{{ article.published_at | date: format: 'month_day_year' }}</time>
+        <!-- / ARTICLE TIME -->
+
+        {%- if section.settings.show_author -%}
+            <!-- ARTICLE AUTHOR -->
+            <span class="author">
+                <span class="meta-sep mx-1">&#8226;</span>
+                <span>{{ article.author }}</span>
+            </span>
+            <!-- / ARTICLE AUTHOR -->
+        {%- endif -%}
+
+        {%- if article.comments_enabled? and article.comments_count > 0 -%}
+            <!-- COMMENTS COUNT -->
+            <span class="comments-count">
+            <span class="meta-sep mx-1">&#8226;</span>
+                <span>
+                    {{ article.comments_count }}
+                    {%- if article.comments_count == 1 -%}
+                        {{ 'blogs.comments.comment' | t }}
+                    {%- else -%}
+                        {{ 'blogs.comments.comments' | t }}
+                    {%- endif -%}
+                </span>
+            </span>
+            <!-- / COMMENTS COUNT -->
+        {%- endif -%}
+
+        {%- if article.tags.size > 0 -%}
+            <!-- ARTICLE TAGS -->
+            <div class="mt-1">
+                {%- include 'article-tags' -%}
+            </div>
+            <!-- / ARTICLE TAGS -->
+        {%- endif -%}
+
+    </div>
+
+    <!-- ARTICLE EXCERPT -->
+    <div class="excerpt mb-4 text-light h4">
+        {{ article.excerpt_or_content | strip_html | truncate: 350 }}
+    </div>
+    <!-- / ARTICLE EXCERPT -->
+
+    <!-- READ MORE BUTTON -->
+    <a class="text-primary" href="{{ article.url }}">
+        {{ 'blogs.article.read_more' | t }}
+        <span class="glyph-icon">&rarr;</span>
+    </a>
+    <!-- / READ MORE BUTTON -->
+
+</div>
+<!-- / ARTICLE LIST ITEM -->

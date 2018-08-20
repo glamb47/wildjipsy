@@ -1,0 +1,78 @@
+<div class="recently-viewed-products animate-on-scroll">
+
+    <js-recently-viewed-products ng-cloak>
+
+        <div ng-if="vm.products.length > 0" class="row">
+
+            <div class="col-12 py-14">
+
+                <div class="section-title text-uppercase flex-items-middle mb-14 {{ section.settings.arrows_position }}">
+
+                    <h3 class="{{ section.settings.title_alignment }} w-100 mb-0">
+                        {%- if section.settings.title != blank -%}
+                            {{ section.settings.title }}
+                        {%- else -%}
+                            {{ 'products.general.recently_viewed_products_title' | t }}
+                        {%- endif -%}
+                    </h3>
+
+                    {%- if section.settings.arrows_position == 'arrows-top-left' or section.settings.arrows_position == 'arrows-top-right' -%}
+                        <div class="arrows-wrapper flex-nogrow flex-items-middle">
+                            <button class="flickity-prev-next-button previous small" type="button" aria-label="previous"
+                                    bc-flickity-previous
+                                    bc-flickity-id="recently-viewed-products-{{ section.id }}">
+                                <svg viewBox="0 0 100 100">
+                                    <path d="M 10,50 L 60,100 L 70,90 L 30,50  L 70,10 L 60,0 Z" class="arrow"></path>
+                                </svg>
+                            </button>
+
+                            <button class="flickity-prev-next-button next small" type="button" aria-label="next"
+                                    bc-flickity-next
+                                    bc-flickity-id="recently-viewed-products-{{ section.id }}">
+                                <svg viewBox="0 0 100 100">
+                                    <path d="M 10,50 L 60,100 L 70,90 L 30,50  L 70,10 L 60,0 Z" class="arrow"
+                                          transform="translate(100, 100) rotate(180) "></path>
+                                </svg>
+                            </button>
+                        </div>
+                    {%- endif -%}
+
+                </div>
+
+                <div ng-if="vm.productsLoaded">
+
+                    <div class="carousel {{ section.settings.arrows_style }}"
+                         bc-flickity-id="recently-viewed-products-{{ section.id }}"
+                         bc-flickity='{
+                        "draggable": true,
+                        "dragThreshold": 15,
+                        "wrapAround": true,
+                        "prevNextButtons": {% if section.settings.arrows_position == 'arrows-inside' %}true{% else %}false{% endif %},
+                        "pageDots": false,
+                        "groupCells": true,
+                        "imagesLoaded": true,
+                         "adaptiveHeight": true,
+                        "cellAlign": "left" }'
+                         js-flickity-carousel-fix>
+
+                        <div ng-repeat="product in ::vm.products"
+                             class="carousel-item grid-item product-grid-item {{ column_class }} {{ settings.product_style }} {{ settings.product_hover_background }} flex-item"
+                             js-product-single="product">
+
+                            {%- include 'product-item-js-template'
+                            style: settings.product_style,
+                            image_size: image_size -%}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </js-recently-viewed-products>
+
+</div>

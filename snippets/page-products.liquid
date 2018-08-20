@@ -1,0 +1,96 @@
+<div class="products container">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header pt-14 {% if page.content == blank %}pb-14{% endif %}">
+        <h3 class="text-center">{{ page.title | upcase }}</h3>
+    </div>
+    <!-- / PAGE HEADER -->
+
+    {%- if page.content != blank -%}
+        <!-- PAGE CONTENT -->
+        <div class="page-content pt-6 pb-14">
+            {{ page.content }}
+        </div>
+        <!-- PAGE CONTENT -->
+    {%- endif -%}
+
+    {%- assign image_size = 'large' -%}
+
+    {%- if linklists[page.handle].links.size > 0 -%}
+
+        {%- assign number_of_links = 0 -%}
+
+        <!-- PRODUCTS -->
+        <div class="row products pb-14">
+
+            {%- include 'util-column-class' column_count: column_count, column_min: 1 -%}
+
+            {%- for link in linklists[page.handle].links -%}
+
+                {%- if link.type == 'product_link' -%}
+
+                    {%- assign number_of_links = number_of_links | plus: 1 -%}
+
+                    {%- include 'product-item'
+                    product: link.object,
+                    item_class: column_class -%}
+
+                {%- endif -%}
+
+                {%- if link.type == 'collection_link' -%}
+
+                    {%- if link.object.products.size > 0 -%}
+
+                        {%- assign number_of_links = number_of_links | plus: 1 -%}
+
+                        {%- for product in link.object.products -%}
+
+                            {%- include 'product-item'
+                            product: product,
+                            item_class: column_class -%}
+
+                        {%- endfor -%}
+
+                    {%- endif -%}
+
+                {%- endif -%}
+
+            {%- endfor -%}
+
+        </div>
+        <!-- / PRODUCTS -->
+
+        {%- if number_of_links == 0 -%}
+
+            <!-- NO PRODUCT LINK MESSAGE -->
+            <div class="row text-center px-16">
+
+                <p>
+                    There are no links of type <i>Product/Collection</i> in your <b>{{ page.title }}</b> link list.
+                    Go ahead and <a href="/admin/link_lists/{{ linklists[page.handle].id }}" target="_blank"> edit your
+                        link list </a> to use links that point to products/collections.
+                </p>
+
+            </div>
+            <!-- / NO PRODUCT LINK MESSAGE -->
+
+        {%- endif -%}
+
+    {%- else -%}
+
+        <!-- NO LIST LINK MESSAGE -->
+        <div class="row text-center px-16">
+
+            <p>
+                You do not have a link list with a handle set to <kbd>{{ page.handle }}</kbd>, or you do and it's
+                empty. Go ahead and create a link list called <b>{{ page.title }}</b> on your
+                <a href="/admin/links" target="_blank"> Navigation page </a>
+                and populate that link list with links that point to collections, to see collections
+                listed here. Make sure the link list also has a handle set to <kbd>{{ page.handle }}</kbd>.
+            </p>
+
+        </div>
+        <!-- / NO LIST LINK MESSAGE -->
+
+    {%- endif -%}
+</div>

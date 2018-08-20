@@ -1,0 +1,42 @@
+{%- assign dropdown_trigger = trigger | default: settings.menu_trigger -%}
+{%- assign popover_custom_classes = popover_classes | append:' from-' | append: section.id -%}
+
+{%- if settings.enable_multiple_shop_currencies -%}
+    <div class="currency-selector dropdown flex-items-middle"
+         js-currency-selector="{{ settings.shop_currencies }}" ng-cloak js-popover
+         js-popover-options="{ placement: 'bottom-start', trigger: '{{ dropdown_trigger }}', popoverClasses: '{{ popover_custom_classes }}', closeOnClick: true }">
+
+        <div class="btn btn-link dropdown-toggle p-2" js-popover-trigger>
+
+            <span class="flex-items-middle link {% if icon_mode %}text-light text-bold{% endif %}">
+                {%- if settings.show_currency_flags -%}
+                    <span class="mr-1 currency-flag currency-flag-{[{ $root.currentCurrency | lowercase }]}"></span>
+                {%- endif -%}
+                <span ng-bind="$root.currentCurrencyName"></span>
+                {%- unless icon_mode -%}
+                <i class="icon icon-chevron-down s-4 ml-1"></i>
+                {%- endunless -%}
+            </span>
+
+        </div>
+
+        <js-popover-content class="dropdown-menu">
+
+            <ul id="currencies">
+
+                <li class="dropdown-item flex-items-middle" ng-repeat="(currencyISO, currencyName) in cp.currencies"
+                    ng-class="{'active': $root.currentCurrency === currencyISO}"
+                    ng-click="cp.changeCurrency(currencyISO)"
+                >
+                    {%- if settings.show_currency_flags -%}
+                        <span class="mr-2 currency-flag currency-flag-{[{ currencyISO | lowercase }]}"></span>
+                    {%- endif -%}
+                    <span ng-bind="currencyName"></span>
+                </li>
+
+            </ul>
+
+        </js-popover-content>
+
+    </div>
+{%- endif -%}

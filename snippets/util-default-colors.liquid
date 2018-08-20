@@ -1,0 +1,5 @@
+{%- comment -%}
+{# @ Default Colors #}
+{%- endcomment -%}
+{% capture jasper_color_primary %}{% if settings.color_primary == 'rgba(0,0,0,0)' %}#d31e09{% else %}{{ settings.color_primary }}{% endif %}{% endcapture %}
+{% capture jasper_color_secondary %}{% if settings.color_secondary == 'rgba(0,0,0,0)' %}#f7f7f7{% else %}{{ settings.color_secondary }}{% endif %}{% endcapture %}

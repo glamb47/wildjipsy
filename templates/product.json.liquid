@@ -1,0 +1,9 @@
+{%- layout none -%}
+{%- include "util-product-is-new" -%}
+{
+    "product":
+    {{ product | json }},
+    "is_new": {{is_new}},
+    "product_url": "{{ product.url }}",
+    "template_suffix": "{{ product.template_suffix }}"
+}

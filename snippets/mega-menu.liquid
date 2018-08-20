@@ -1,0 +1,272 @@
+<div class="{{ section.settings.content_width }} mega-menu-wrapper"
+     {% if section.settings.content_width == 'custom' and section.settings.content_max_width != blank %}style="width:{{ section.settings.content_max_width }}; max-width:{{ section.settings.content_max_width }}"{% endif %}>
+
+    <div class="mega-menu-content {{ color_brightness }} {{ section.settings.additional_classes }}"
+         style="{{ section_style }}">
+
+        <div class="row">
+
+            {%- for block in section.blocks -%}
+
+                {%- include 'util-column-class' column_width: block.settings.column_width -%}
+                {%- include 'util-image-size' column_width: block.settings.column_width -%}
+
+                <section
+                    class="mega-menu-block {{ column_class }} {{ block.settings.alignment_v }} {{ block.settings.alignment_h }} {{ block.settings.additional_classes }} {{ block.settings.alignment_text }}">
+
+                    <div class="w-100" style="max-width:{{ block.settings.content_inner_max_width }}">
+
+                        {%- case block.type -%}
+
+                        {%- comment -%}
+                        {# @ Vertical link list #}
+                        {%- endcomment -%}
+                        {%- when 'vertical_link_list' -%}
+
+                        {%- if block.settings.list_id != blank -%}
+
+                            {%- assign list = linklists[block.settings.list_id] -%}
+
+                            {%- if block.settings.list_title_url != blank -%}
+                                <a href="{{ block.settings.list_title_url }}"
+                                   class="h5 mb-2 text-bold text-left d-block">
+                                    {%- if block.settings.list_custom_title != blank -%}
+                                        {{ block.settings.list_custom_title }}
+                                    {%- else -%}
+                                        {{ list.title }}
+                                    {%- endif -%}
+                                </a>
+                            {%- else -%}
+                                <div class="h5 mb-2 text-bold text-left">
+                                    {%- if block.settings.list_custom_title != blank -%}
+                                        {{ block.settings.list_custom_title }}
+                                    {%- else -%}
+                                        {{ list.title }}
+                                    {%- endif -%}
+                                </div>
+                            {%- endif -%}
+
+                            <ul class="nav nav-vertical">
+                                {%- for childlink in list.links -%}
+
+                                    <li class="nav-item">
+                                        <a href="{{ childlink.url }}"
+                                           class="nav-link link">
+                                            {{ childlink.title | escape }}
+                                        </a>
+                                    </li>
+
+                                {%- endfor -%}
+                            </ul>
+
+                        {%- endif -%}
+
+                        {%- comment -%}
+                        {# @ Horizontal link list #}
+                        {%- endcomment -%}
+                        {%- when 'horizontal_link_list' -%}
+
+                        {%- if block.settings.list_id != blank -%}
+
+                            {%- assign list = linklists[block.settings.list_id] -%}
+
+                            <div class="flex-items-middle hidden-xs-down">
+
+                                {%- if block.settings.list_title_url != blank -%}
+                                    <a href="{{ block.settings.list_title_url }}"
+                                       class="h5 mr-4 text-bold text-left d-block">
+                                        {%- if block.settings.list_custom_title != blank -%}
+                                            {{ block.settings.list_custom_title }}
+                                        {%- else -%}
+                                            {{ list.title }}:
+                                        {%- endif -%}
+                                    </a>
+                                {%- else -%}
+                                    <div class="h5 mr-4 text-bold text-left">
+                                        {%- if block.settings.list_custom_title != blank -%}
+                                            {{ block.settings.list_custom_title }}
+                                        {%- else -%}
+                                            {{ list.title }}:
+                                        {%- endif -%}
+                                    </div>
+                                {%- endif -%}
+
+                                <ul class="nav nav-horizontal">
+                                    {%- for childlink in list.links -%}
+
+                                        <li class="nav-item">
+                                            <a href="{{ childlink.url }}"
+                                               class="nav-link link">
+                                                {{ childlink.title | escape }}
+                                            </a>
+                                        </li>
+
+                                    {%- endfor -%}
+                                </ul>
+
+                            </div>
+
+                            <div class="hidden-sm-up">
+
+                                <div class="h5 mb-3 text-bold text-left text-uppercase">
+                                    {{ list.title }}
+                                </div>
+
+                                <ul class="nav nav-vertical">
+                                    {%- for childlink in list.links -%}
+
+                                        <li class="nav-item">
+                                            <a href="{{ childlink.url }}"
+                                               class="nav-link link">
+                                                {{ childlink.title | escape }}
+                                            </a>
+                                        </li>
+
+                                    {%- endfor -%}
+                                </ul>
+
+                            </div>
+
+                        {%- endif -%}
+
+                        {%- comment -%}
+                        {# @ Featured product #}
+                        {%- endcomment -%}
+                        {%- when 'featured_product' -%}
+
+                        {%- include 'product-item'
+                        product: all_products[block.settings.product],
+                        hover_bg: block.settings.hover_bg,
+                        style: block.settings.product_style,
+                        sale_badge_style : block.settings.product_sale_badge_style,
+                        hover_buttons_style : block.settings.product_hover_buttons_style,
+                        show_star_rating: block.settings.product_show_star_rating,
+                        image_size: image_size -%}
+
+                        {%- comment -%}
+                        {# @ Product single carousel #}
+                        {%- endcomment -%}
+                        {%- when 'product_single_carousel' -%}
+
+                        {%- assign product_limit = false -%}
+                        {%- if block.settings.product_limit != blank -%}
+                            {%- assign product_limit = block.settings.product_limit -%}
+                        {%- endif -%}
+
+                        {%- assign image_size = '300x' -%}
+                        {%- if settings.enable_product_custom_aspect_ratio -%}
+                            {%- assign product_image_ratio = settings.product_image_aspect_ratio_w | plus :0.0 | divided_by: settings.product_image_aspect_ratio_h -%}
+                            {%- assign image_height = 300 | divided_by: product_image_ratio | round -%}
+                            {%- assign image_size = 300 | append:'x' | append: image_height -%}
+                        {%- endif -%}
+
+                        {%- include 'product-single-carousel'
+                        title: block.settings.title,
+                        collection: collections[block.settings.collection],
+                        product_hover_bg: block.settings.hover_bg,
+                        product_style: block.settings.product_style,
+                        product_sale_badge_style : block.settings.product_sale_badge_style,
+                        product_hover_buttons_style : block.settings.product_hover_buttons_style,
+                        product_show_star_rating: block.settings.product_show_star_rating,
+                        product_image_size: image_size,
+                        product_limit: product_limit -%}
+
+                        {%- comment -%}
+                        {# @ Product list carousel #}
+                        {%- endcomment -%}
+                        {%- when 'product_list_carousel' -%}
+
+                        {%- assign product_limit = false -%}
+                        {%- if block.settings.product_limit != blank -%}
+                            {%- assign product_limit = block.settings.product_limit -%}
+                        {%- endif -%}
+
+                        {%- assign image_size = '120x' -%}
+                        {%- if settings.enable_product_custom_aspect_ratio -%}
+                            {%- assign product_image_ratio = settings.product_image_aspect_ratio_w | plus :0.0 | divided_by: settings.product_image_aspect_ratio_h -%}
+                            {%- assign image_height = 120 | divided_by: product_image_ratio | round -%}
+                            {%- assign image_size = 120 | append:'x' | append: image_height -%}
+                        {%- endif -%}
+
+                        {%- include 'product-list-carousel'
+                        title: block.settings.title,
+                        collection: collections[block.settings.collection],
+                        row_count: block.settings.row_count,
+                        show_separators: block.settings.show_separators,
+                        show_images: block.settings.show_images,
+                        image_size: image_size,
+                        product_limit: product_limit -%}
+
+                        {%- comment -%}
+                        {# @ Collection #}
+                        {%- endcomment -%}
+                        {%- when 'featured_collection' -%}
+
+                        {%- include 'collection-item'
+                        collection: collections[block.settings.collection],
+                        show_product_counts: block.settings.show_product_counts,
+                        hover_bg: block.settings.hover_bg,
+                        image_size: image_size -%}
+
+                        {%- comment -%}
+                        {# @ Article #}
+                        {%- endcomment -%}
+                        {%- when 'featured_article' -%}
+                        {%- assign articleArr = block.settings.article | split: '/' -%}
+
+                        {%- assign article = false -%}
+
+                        {%- for article_item in blogs[articleArr[0]].articles -%}
+                            {%- if  article_item.handle == block.settings.article -%}
+                                {%- assign article = article_item -%}
+                            {%- endif -%}
+                        {%- endfor -%}
+
+                        {%- include 'article-grid-item'
+                        style: block.settings.article_style,
+                        image_size: image_size -%}
+
+                        {%- comment -%}
+                        {# @ Image #}
+                        {%- endcomment -%}
+                        {%- when 'image' -%}
+
+                        <div class="image-wrapper w-100">
+
+                            {%- if block.settings.url != blank -%}
+                            <a href="{{ block.settings.url }}">
+                                {%- endif -%}
+
+                                {%- if block.settings.image != blank -%}
+                                    <img class="img-fluid"
+                                         src="{{ block.settings.image | img_url: image_size }}"
+                                         srcset="{{ block.settings.image | img_url: image_size }} 1x, {{ block.settings.image | img_url: image_size, scale:2 }}, 2x"
+                                         alt="{{ block.settings.image.alt | escape }}">
+                                {%- else -%}
+                                    {{ 'image' | placeholder_svg_tag: 'placeholder-svg img-fluid w-100' }}
+                                {%- endif -%}
+
+                                {%- if block.settings.url != blank -%}
+                            </a>
+                            {%- endif -%}
+                        </div>
+
+                        {%- comment -%}
+                        {# @ Html #}
+                        {%- endcomment -%}
+                        {%- when 'html' -%}
+
+                        {{ block.settings.html }}
+
+                        {%- endcase -%}
+
+                    </div>
+
+                </section>
+
+            {%- endfor -%}
+        </div>
+
+    </div>
+
+</div>

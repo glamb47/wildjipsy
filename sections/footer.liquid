@@ -1,0 +1,1485 @@
+{%- assign content_width = section.settings.content_width | default: settings.content_width -%}
+
+{%- comment -%}
+{# @ CPT: Copyright Text #}
+{%- endcomment -%}
+{%- capture copyright_text -%}
+<div class="copyright-text text-nowrap">
+    {%- if section.settings.copyright_text != blank -%}
+        <span class="text-light">{{ section.settings.copyright_text }}</span>
+    {%- else -%}
+        <span class="text-light">&copy; {{ 'now' | date: "%Y" }}</span>
+        <a class="text-light" href="/" class="text-light">{{ shop.name }},</a>
+        <a class="text-light" href="https://www.shopify.com/" target="_blank">Powered by Shopify</a>
+    {%- endif -%}
+</div>
+{%- endcapture -%}
+
+{%- comment -%}
+{# @ CPT: Footer Columns #}
+{%- endcomment -%}
+{%- capture footer_columns -%}
+
+<div class="footer-columns row text-center text-sm-left py-2">
+
+    {%- for block in section.blocks -%}
+
+        <!-- FOOTER COLUMN -->
+        {%- assign column_width =  block.settings.column_width -%}
+
+        {%- include 'util-column-class' -%}
+
+        <div class="{{ column_class }} py-8" {{ block.shopify_attributes }}>
+
+            {%- case block.type -%}
+
+            {%- comment -%}
+            {# @ - Menu Block #}
+            {%- endcomment -%}
+
+            {%- when 'menu' -%}
+
+            <!-- MENU -->
+
+            {%- if block.settings.show_title -%}
+                <div class="h5 mb-3 font-weight-bold text-uppercase">
+                    {%- if block.settings.title != blank -%}
+                        {{ block.settings.title }}
+                    {%- else -%}
+                        {{ linklists[block.settings.menu].title }}
+                    {%- endif -%}
+                </div>
+            {%- endif -%}
+
+            <ul class="nav nav-stacked">
+
+                {%- for link in linklists[block.settings.menu].links -%}
+                    <li class="nav-item">
+                        <a href="{{ link.url }}"
+                           class="nav-link flex-items-center flex-items-sm-left {% if link.active %}active{% endif %}">
+                            {{ link.title }}
+                        </a>
+                    </li>
+                {%- endfor -%}
+
+            </ul>
+            <!-- / MENU -->
+
+            {%- comment -%}
+            {# @ - Html Block #}
+            {%- endcomment -%}
+
+            {%- when 'html' -%}
+
+            <!-- HTML -->
+            {%- if block.settings.title != blank -%}
+                <div class="h5 mb-3 font-weight-bold text-uppercase">
+                    {{ block.settings.title }}
+                </div>
+            {%- endif -%}
+
+            {{ block.settings.html }}
+            <!-- / HTML -->
+
+            {%- comment -%}
+            {# @ - Page Block #}
+            {%- endcomment -%}
+
+            {%- when 'page' -%}
+
+            <!-- PAGE -->
+            {%- if block.settings.show_title -%}
+                <div class="h5 mb-3 font-weight-bold text-uppercase">
+                    {%- if block.settings.title != blank -%}
+                        {{ block.settings.title }}
+                    {%- else -%}
+                        {{ pages[block.settings.page].title }}
+                    {%- endif -%}
+                </div>
+            {%- endif -%}
+
+            {{ pages[block.settings.page].content }}
+            <!-- / PAGE -->
+
+            {%- comment -%}
+            {# @ - My account menu block #}
+            {%- endcomment -%}
+
+            {%- when 'my-account-menu' -%}
+
+            <!-- MY ACCOUNT MENU -->
+            {%- if block.settings.show_title -%}
+                <div class="h5 mb-3 font-weight-bold text-uppercase">
+                    {%- if block.settings.title != blank -%}
+                        {{ block.settings.title }}
+                    {%- else -%}
+                        {{ 'layout.customer.account' | t }}
+                    {%- endif -%}
+                </div>
+            {%- endif -%}
+
+            {%- include 'my-account-menu' -%}
+            <!-- / MY ACCOUNT MENU -->
+
+            {%- comment -%}
+            {# @ - Newsletter block #}
+            {%- endcomment -%}
+
+            {%- when 'newsletter' -%}
+
+            <!-- NEWSLETTER -->
+            <div class="newsletter-container mx-auto">
+
+                {%- if block.settings.show_title -%}
+                    <div class="h5 mb-3 font-weight-bold text-uppercase">
+                        {%- if block.settings.title != blank -%}
+                            {{ block.settings.title }}
+                        {%- else -%}
+                            {{ 'newsletter.title' | t }}
+                        {%- endif -%}
+                    </div>
+                {%- endif -%}
+
+                {%- include 'newsletter-form' -%}
+
+                {%- if block.settings.show_caption -%}
+                    <div class="text-light mt-4">
+                        {%- if block.settings.caption != blank -%}
+                            {{ block.settings.caption }}
+                        {%- else -%}
+                            <em>{{ 'newsletter.caption' | t }}</em>
+                        {%- endif -%}
+                    </div>
+                {%- endif -%}
+
+            </div>
+            <!-- / NEWSLETTER -->
+
+            {%- endcase -%}
+
+        </div>
+        <!-- / FOOTER COLUMN -->
+
+    {%- endfor -%}
+</div>
+
+{%- endcapture -%}
+
+{%- unless section.settings.hide_footer -%}
+
+{%- include 'util-color-transparentize' color: section.settings.bg_color, opacity: section.settings.bg_opacity -%}
+{%- include 'util-color-brightness' color: color_transparentized, append: '-bg' -%}
+{%- assign bg_color_brightness = color_brightness -%}
+{%- assign bg_color = color_transparentized -%}
+
+<!-- FOOTER -->
+<footer class="{{ section.settings.style }} {{ section.settings.additional_classes }} {{ bg_color_brightness }}"
+        style="background: {{ bg_color }}">
+
+    {%- case section.settings.style -%}
+
+    {%- when 'footer-1' -%}
+    {%- comment -%}
+    {# @ Footer 1 #}
+    {%- endcomment -%}
+
+    <!-- FOOTER STYLE 1 -->
+    <div class="{{ content_width }}">
+
+        {%- if section.settings.show_columns and section.blocks.size > 0 -%}
+
+            <!-- FOOTER COLUMNS -->
+            {{ footer_columns }}
+            <!-- / FOOTER COLUMNS -->
+
+            {%- if section.settings.show_logo or section.settings.show_footer_menu or section.settings.show_copyright_text -%}
+                <hr class="my-0">
+            {%- endif -%}
+
+        {%- endif -%}
+
+        <div class="row flex-items-middle pb-8">
+
+            <div class="col-12 col-md flex-items-middle flex-items-center flex-items-md-left">
+
+                <div class="row flex-grow">
+
+                    {%- if section.settings.show_logo -%}
+
+                        <!-- LOGO -->
+                        <div
+                            class="col-12 col-md flex-items-middle flex-items-center flex-items-md-left flex-nogrow mr-0 mr-md-8 mt-8">
+                            {%- include 'logo' custom_logo: section.settings.footer_logo, image_size: section.settings.logo_max_width -%}
+                        </div>
+                        <!-- / LOGO -->
+
+                    {%- endif -%}
+
+                    {%- if section.settings.show_footer_menu -%}
+
+                        <!-- FOOTER NAVIGATION -->
+                        <div class="footer-menu col-12 col-md flex-items-center flex-items-md-left mt-8">
+                            {%- include 'nav' menu: section.settings.footer_menu -%}
+                        </div>
+                        <!-- / FOOTER NAVIGATION -->
+
+                    {%- endif -%}
+
+                </div>
+
+            </div>
+
+            {%- if section.settings.show_copyright_text -%}
+
+                <!-- COPYRIGHT TEXT -->
+                <div class="col-12 col-md text-center text-md-right copyright-text flex-nogrow mt-8">
+                    {{ copyright_text }}
+                </div>
+                <!-- / COPYRIGHT TEXT -->
+
+            {%- endif -%}
+
+        </div>
+    </div>
+
+    {%- if section.settings.show_social_icons or section.settings.show_methods_of_payment -%}
+
+        <div class="footer-bottom-bar">
+            <div class="{{ content_width }}">
+                <div class="row flex-items-middle py-2">
+
+                    {%- if section.settings.show_social_icons -%}
+                        <!-- SOCIAL ICONS -->
+                        <div class="col-12 col-md text-center text-md-left py-2">
+                            {%- include 'social-links' -%}
+                        </div>
+                        <!-- / SOCIAL ICONS -->
+                    {%- endif -%}
+
+                    {%- if section.settings.show_methods_of_payment -%}
+                        <!-- PAYMENT ICONS -->
+                        <div class="col-12 col-md text-center text-md-right py-2">
+                            {%- include 'payment-type-icons' -%}
+                        </div>
+                        <!-- / PAYMENT ICONS -->
+                    {%- endif -%}
+
+                </div>
+            </div>
+        </div>
+
+    {%- endif -%}
+
+    <!-- / FOOTER STYLE 1 -->
+
+    {%- when 'footer-2' -%}
+    {%- comment -%}
+    {# @ Footer 2 #}
+    {%- endcomment -%}
+
+    <!-- FOOTER STYLE 2 -->
+    <div class="{{ content_width }}">
+
+        {%- if section.settings.show_columns and section.blocks.size > 0 -%}
+
+            <!-- FOOTER COLUMNS -->
+            {{ footer_columns }}
+            <!-- / FOOTER COLUMNS -->
+
+            {%- if section.settings.show_logo or section.settings.show_footer_menu or section.settings.show_copyright_text -%}
+                <hr class="my-0">
+            {%- endif -%}
+
+        {%- endif -%}
+
+
+        <div class="row flex-items-middle pb-8">
+
+            <div class="col-12 col-md text-center text-md-left">
+
+                {%- if section.settings.show_copyright_text -%}
+
+                    <!-- COPYRIGHT TEXT -->
+                    <div class="mt-8">
+                        {{ copyright_text }}
+                    </div>
+                    <!-- / COPYRIGHT TEXT -->
+
+                {%- endif -%}
+
+            </div>
+
+            <div class="col-12 col-md text-center">
+
+                {%- if section.settings.show_logo -%}
+
+                    <!-- LOGO -->
+                    <div class="mt-8">
+                        {%- include 'logo' custom_logo: section.settings.footer_logo, image_size: section.settings.logo_max_width -%}
+                    </div>
+                    <!-- / LOGO -->
+
+                {%- endif -%}
+
+            </div>
+
+            <div class="col-12 col-md flex-items-center flex-items-md-right">
+
+                {%- if section.settings.show_footer_menu -%}
+
+                    <!-- FOOTER NAVIGATION -->
+                    <div class="footer-menu nav nav-inline mt-8">
+                        {%- include 'nav' menu: section.settings.footer_menu -%}
+                    </div>
+                    <!-- / FOOTER NAVIGATION -->
+
+                {%- endif -%}
+
+            </div>
+        </div>
+    </div>
+
+    {%- if section.settings.show_social_icons or section.settings.show_methods_of_payment -%}
+
+        <div class="footer-bottom-bar">
+            <div class="{{ content_width }}">
+                <div class="row flex-items-middle py-2">
+
+                    {%- if section.settings.show_social_icons -%}
+                        <!-- SOCIAL ICONS -->
+                        <div class="col-12 col-md text-center text-md-left py-2">
+                            {%- include 'social-links' -%}
+                        </div>
+                        <!-- / SOCIAL ICONS -->
+                    {%- endif -%}
+
+                    {%- if section.settings.show_methods_of_payment -%}
+                        <!-- PAYMENT ICONS -->
+                        <div class="col-12 col-md text-center text-md-right py-2">
+                            {%- include 'payment-type-icons' -%}
+                        </div>
+                        <!-- / PAYMENT ICONS -->
+                    {%- endif -%}
+
+                </div>
+            </div>
+        </div>
+
+    {%- endif -%}
+
+    <!-- / FOOTER STYLE 2 -->
+
+    {%- when 'footer-3' -%}
+    {%- comment -%}
+    {# @ Footer 3 #}
+    {%- endcomment -%}
+
+    <!-- FOOTER STYLE 3 -->
+    <div class="{{ content_width }}">
+
+        {%- if section.settings.show_columns and section.blocks.size > 0 -%}
+
+            <!-- FOOTER COLUMNS -->
+            {{ footer_columns }}
+            <!-- / FOOTER COLUMNS -->
+
+            {%- if section.settings.show_logo or section.settings.show_footer_menu -%}
+                <hr class="my-0">
+            {%- endif -%}
+
+        {%- endif -%}
+
+        <div class="row flex-items-middle pb-8">
+
+            {%- if section.settings.show_logo -%}
+
+                <!-- LOGO -->
+                <div class="col-12 col-md text-center text-md-left flex-nogrow mt-8">
+                    {%- include 'logo' custom_logo: section.settings.footer_logo, image_size: section.settings.logo_max_width -%}
+                </div>
+                <!-- / LOGO -->
+
+            {%- endif -%}
+
+            {%- if section.settings.show_footer_menu -%}
+
+                <!-- FOOTER NAVIGATION -->
+                <div class="col-12 col-md flex-items-center flex-items-md-right">
+                    <div class="footer-menu nav nav-inline mt-8">
+                        {%- include 'nav' menu: section.settings.footer_menu -%}
+                    </div>
+                </div>
+                <!-- / FOOTER NAVIGATION -->
+
+            {%- endif -%}
+        </div>
+    </div>
+
+    {%- if section.settings.show_copyright_text or section.settings.show_methods_of_payment -%}
+
+        <div class="footer-bottom-bar">
+
+            <div class="{{ content_width }}">
+
+                <div class="row flex-items-middle py-2">
+
+                    {%- if section.settings.show_copyright_text -%}
+
+                        <!-- COPYRIGHT TEXT -->
+                        <div class="col-12 col-md text-center text-md-left my-2">
+                            {{ copyright_text }}
+                        </div>
+                        <!-- / COPYRIGHT TEXT -->
+
+                    {%- endif -%}
+
+                    {%- if section.settings.show_social_icons or section.settings.show_methods_of_payment -%}
+
+                        <div class="col-12 col-md my-2">
+
+                            <div class="row flex-items-middle flex-items-center flex-items-md-right">
+
+                                {%- if section.settings.show_social_icons -%}
+                                    <!-- SOCIAL LINKS -->
+                                    <div class="col-12 col-md text-center text-md-right text-nowrap flex-nogrow">
+                                        {%- include 'social-links' -%}
+                                    </div>
+                                    <!-- / SOCIAL LINKS -->
+                                {%- endif -%}
+
+                                {%- if section.settings.show_methods_of_payment -%}
+                                    <!-- PAYMENT ICONS -->
+                                    <div
+                                        class="col-12 col-md text-center text-md-right text-nowrap flex-nogrow mt-4 mt-md-0 ml-md-8">
+                                        {%- include 'payment-type-icons' -%}
+                                    </div>
+                                    <!-- / PAYMENT ICONS -->
+                                {%- endif -%}
+
+                            </div>
+
+                        </div>
+
+                    {%- endif -%}
+
+                </div>
+            </div>
+        </div>
+    {%- endif -%}
+    <!-- / FOOTER STYLE 3 -->
+
+    {%- when 'footer-4' -%}
+    {%- comment -%}
+    {# @ Footer 4 #}
+    {%- endcomment -%}
+
+    <!-- FOOTER STYLE 4 -->
+    <div class="{{ content_width }}">
+
+        {%- if section.settings.show_columns and section.blocks.size > 0 -%}
+
+            <!-- FOOTER COLUMNS -->
+            {{ footer_columns }}
+            <!-- / FOOTER COLUMNS -->
+
+            {%- if section.settings.show_copyright_text or section.settings.show_methods_of_payment or section.settings.show_social_icons -%}
+                <hr class="my-0">
+            {%- endif -%}
+
+        {%- endif -%}
+
+        <div class="row flex-items-middle pb-8">
+
+            <div class="col-12 col-md">
+
+                <div class="row flex-items-middle flex-items-lg-left text-center text-md-left">
+
+                    {%- if section.settings.show_copyright_text -%}
+
+                        <!-- COPYRIGHT TEXT -->
+                        <div class="col-12 col-md text-nowrap flex-nogrow mt-8">
+                            {{ copyright_text }}
+                        </div>
+                        <!-- / COPYRIGHT TEXT -->
+
+                    {%- endif -%}
+
+                    {%- if section.settings.show_methods_of_payment -%}
+
+                        <!-- PAYMENT ICONS -->
+                        <div class="col-12 col-md mt-8">
+                            {%- include 'payment-type-icons' -%}
+                        </div>
+                        <!-- / PAYMENT ICONS -->
+
+                    {%- endif -%}
+                </div>
+            </div>
+
+            <div class="col-12 col-md text-center text-md-right">
+
+                {%- if section.settings.show_social_icons -%}
+
+                    <!-- SOCIAL LINKS -->
+                    <div class="mt-8">
+                        {%- include 'social-links' -%}
+                    </div>
+                    <!-- / SOCIAL LINKS -->
+
+                {%- endif -%}
+
+            </div>
+        </div>
+    </div>
+    <!-- / FOOTER STYLE 4 -->
+
+    {%- when 'footer-5' -%}
+    {%- comment -%}
+    {# @ Footer 5 #}
+    {%- endcomment -%}
+
+    <!-- FOOTER STYLE 5 -->
+    <div class="{{ content_width }}">
+
+        {%- if section.settings.show_logo -%}
+
+            <div class="row">
+
+                <!-- LOGO -->
+                <div class="col-12 text-center text-md-left my-8">
+                    {%- include 'logo' custom_logo: section.settings.footer_logo, image_size: section.settings.logo_max_width -%}
+                </div>
+                <!-- / LOGO -->
+
+                {%- if section.settings.show_columns and section.blocks.size > 0 -%}
+                    <div class="col-12 flex-items-center flex-items-md-left">
+                        <hr class="w-8 m-0">
+                    </div>
+                    {%- elsif section.settings.show_copyright_text or section.settings.show_methods_of_payment or section.settings.show_social_icons -%}
+                    <div class="col-12 flex-items-center flex-items-md-left">
+                        <hr class="w-8 m-0">
+                    </div>
+                {%- endif -%}
+
+            </div>
+
+        {%- endif -%}
+
+        {%- if section.settings.show_columns and section.blocks.size > 0 -%}
+
+            <!-- FOOTER COLUMNS -->
+            {{ footer_columns }}
+            <!-- / FOOTER COLUMNS -->
+
+            {%- if section.settings.show_copyright_text or section.settings.show_methods_of_payment or section.settings.show_social_icons -%}
+                <div class="flex-items-center flex-items-md-left">
+                    <hr class="w-8 m-0">
+                </div>
+            {%- endif -%}
+
+        {%- endif -%}
+
+
+        <div class="row flex-items-middle pb-8">
+
+            <div class="col-12 col-md">
+
+                <div class="row flex-items-middle flex-items-lg-left text-center text-md-left">
+
+                    {%- if section.settings.show_copyright_text -%}
+
+                        <!-- COPYRIGHT TEXT -->
+                        <div class="col-12 col-md text-nowrap flex-nogrow pt-8">
+                            {{ copyright_text }}
+                        </div>
+                        <!-- / COPYRIGHT TEXT -->
+
+                    {%- endif -%}
+
+                    {%- if section.settings.show_methods_of_payment -%}
+
+                        <!-- PAYMENT ICONS -->
+                        <div class="col-12 col-md pt-8">
+                            {%- include 'payment-type-icons' -%}
+                        </div>
+                        <!-- / PAYMENT ICONS -->
+
+                    {%- endif -%}
+                </div>
+            </div>
+
+            <div class="col-12 col-md text-center text-md-right">
+
+                {%- if section.settings.show_social_icons -%}
+
+                    <!-- SOCIAL LINKS -->
+                    <div class="pt-8">
+                        {%- include 'social-links' -%}
+                    </div>
+                    <!-- / SOCIAL LINKS -->
+
+                {%- endif -%}
+
+            </div>
+        </div>
+
+    </div>
+    <!-- / FOOTER STYLE 5 -->
+
+    {%- when 'footer-6' -%}
+    {%- comment -%}
+    {# @ Footer 6 #}
+    {%- endcomment -%}
+
+    <!-- FOOTER STYLE 6 -->
+    <div class="{{ content_width }}">
+
+        <div class="row">
+
+            <div class="left-column col-12 col-lg flex-lg-nogrow text-center text-nowrap my-4 mr-0 mr-lg-16">
+
+                <div class="row">
+
+                    {%- if section.settings.show_logo -%}
+
+                        <!-- LOGO -->
+                        <div class="col-12 flex-items-center flex-items-lg-left mt-4">
+                            {%- include 'logo' custom_logo: section.settings.footer_logo, image_size: section.settings.logo_max_width -%}
+                        </div>
+                        <!-- / LOGO -->
+
+                    {%- endif -%}
+
+                    {%- if section.settings.show_copyright_text -%}
+
+                        <!-- COPYRIGHT TEXT -->
+                        <div class="col-12 flex-items-center flex-items-lg-left mt-4">
+                            {{ copyright_text }}
+                        </div>
+                        <!-- / COPYRIGHT TEXT -->
+
+                    {%- endif -%}
+
+                    {%- if section.settings.show_logo or section.settings.show_copyright_text -%}
+                        {%- if section.settings.show_social_icons or section.settings.show_methods_of_payment -%}
+                            <div class="col-12 flex-items-center flex-items-lg-left">
+                                <hr class="w-8 m-0 mt-6 mb-2">
+                            </div>
+                        {%- endif -%}
+                    {%- endif -%}
+
+                    {%- if section.settings.show_social_icons -%}
+
+                        <!-- SOCIAL LINKS -->
+                        <div class="col-12 flex-items-center flex-items-lg-left mt-4">
+                            {%- include 'social-links' -%}
+                        </div>
+                        <!-- / SOCIAL LINKS -->
+
+                    {%- endif -%}
+
+                    {%- if section.settings.show_methods_of_payment -%}
+
+                        <!-- PAYMENT ICONS -->
+                        <div class="col-12 flex-items-center flex-items-lg-left mt-4">
+                            {%- include 'payment-type-icons' -%}
+                        </div>
+                        <!-- / PAYMENT ICONS -->
+
+                    {%- endif -%}
+
+                </div>
+            </div>
+
+            {%- if section.settings.show_columns and section.blocks.size > 0 -%}
+
+                <!-- FOOTER COLUMNS -->
+                <div class="col-12 col-lg flex-first flex-lg-unordered">
+                    {{ footer_columns }}
+                </div>
+                <!-- / FOOTER COLUMNS -->
+
+            {%- endif -%}
+        </div>
+    </div>
+    <!-- / FOOTER STYLE 6 -->
+
+    {%- when 'footer-7' -%}
+    {%- comment -%}
+    {# @ Footer 7 #}
+    {%- endcomment -%}
+
+    <!-- FOOTER STYLE 7 -->
+    {%- if section.settings.show_columns and section.blocks.size > 0 -%}
+
+        <hr class="m-0">
+
+        <div class="{{ content_width }}">
+
+            <!-- FOOTER COLUMNS -->
+            {{ footer_columns }}
+            <!-- / FOOTER COLUMNS -->
+
+        </div>
+
+    {%- endif -%}
+
+    <div class="text-center pb-8">
+
+        {%- if section.settings.show_logo -%}
+
+            <hr class="m-0">
+
+            <!-- LOGO -->
+            <div class="my-12">
+                {%- include 'logo' custom_logo: section.settings.footer_logo, image_size: section.settings.logo_max_width -%}
+            </div>
+            <!-- / LOGO -->
+
+        {%- endif -%}
+
+        {%- if section.settings.show_footer_menu -%}
+
+            <!-- FOOTER NAVIGATION -->
+            <hr class="m-0">
+
+            <div class="footer-menu nav nav-inline flex-items-center my-4">
+                {%- include 'nav' menu: section.settings.footer_menu -%}
+            </div>
+
+            <hr class="m-0">
+            <!-- / FOOTER NAVIGATION -->
+
+        {%- endif -%}
+
+        {%- if section.settings.show_copyright_text -%}
+
+            <!-- COPYRIGHT TEXT -->
+            <div class="mt-8">
+                {{ copyright_text }}
+            </div>
+            <!-- / COPYRIGHT TEXT -->
+
+        {%- endif -%}
+
+        {%- if section.settings.show_social_icons -%}
+
+            <!-- SOCIAL LINKS -->
+            <div class="mt-8">
+                {%- include 'social-links' -%}
+            </div>
+            <!-- / SOCIAL LINKS -->
+
+        {%- endif -%}
+
+        {%- if section.settings.show_methods_of_payment -%}
+
+            <!-- PAYMENT ICONS -->
+            <div class="mt-8">
+                {%- include 'payment-type-icons' -%}
+            </div>
+            <!-- / PAYMENT ICONS -->
+
+        {%- endif -%}
+
+    </div>
+    <!-- / FOOTER STYLE 7 -->
+
+    {%- endcase -%}
+
+</footer>
+<!-- / FOOTER -->
+
+{%- endunless -%}
+
+<script type="application/json">
+    /*"*/{% schema %}/*"*/
+    {
+        "name": "Footer",
+        "settings": [
+            {
+                "type": "header",
+                "content": "General"
+            },
+            {
+                "type": "checkbox",
+                "id": "hide_footer",
+                "label": "Hide footer completely",
+                "default": false
+            },
+            {
+                "type": "select",
+                "id": "style",
+                "label": "Footer style",
+                "options": [
+                    {
+                        "value": "footer-1",
+                        "label": "Footer 1"
+                    },
+                    {
+                        "value": "footer-2",
+                        "label": "Footer 2"
+                    },
+                    {
+                        "value": "footer-3",
+                        "label": "Footer 3"
+                    },
+                    {
+                        "value": "footer-4",
+                        "label": "Footer 4"
+                    },
+                    {
+                        "value": "footer-5",
+                        "label": "Footer 5"
+                    },
+                    {
+                        "value": "footer-6",
+                        "label": "Footer 6"
+                    },
+                    {
+                        "value": "footer-7",
+                        "label": "Footer 7"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "content_width",
+                "label": "Content width",
+                "options": [
+                    {
+                        "value": "",
+                        "label": "Default"
+                    },
+                    {
+                        "value": "container",
+                        "label": "Container"
+                    },
+                    {
+                        "value": "container-fluid",
+                        "label": "Fluid container"
+                    }
+                ]
+            },
+            {
+                "type": "header",
+                "content": "Background"
+            },
+            {
+                "type": "color",
+                "id": "bg_color",
+                "label": "Background color",
+                "default": "#ffffff"
+            },
+            {
+                "type": "select",
+                "id": "bg_opacity",
+                "label": "Background opacity",
+                "default": "1",
+                "options": [
+                    {
+                        "value": "0",
+                        "label": "0"
+                    },
+                    {
+                        "value": "0.05",
+                        "label": "5"
+                    },
+                    {
+                        "value": "0.10",
+                        "label": "10"
+                    },
+                    {
+                        "value": "0.15",
+                        "label": "15"
+                    },
+                    {
+                        "value": "0.20",
+                        "label": "20"
+                    },
+                    {
+                        "value": "0.25",
+                        "label": "25"
+                    },
+                    {
+                        "value": "0.30",
+                        "label": "30"
+                    },
+                    {
+                        "value": "0.35",
+                        "label": "35"
+                    },
+                    {
+                        "value": "0.40",
+                        "label": "40"
+                    },
+                    {
+                        "value": "0.45",
+                        "label": "45"
+                    },
+                    {
+                        "value": "0.50",
+                        "label": "50"
+                    },
+                    {
+                        "value": "0.55",
+                        "label": "55"
+                    },
+                    {
+                        "value": "0.60",
+                        "label": "60"
+                    },
+                    {
+                        "value": "0.65",
+                        "label": "65"
+                    },
+                    {
+                        "value": "0.70",
+                        "label": "70"
+                    },
+                    {
+                        "value": "0.75",
+                        "label": "75"
+                    },
+                    {
+                        "value": "0.80",
+                        "label": "80"
+                    },
+                    {
+                        "value": "0.85",
+                        "label": "85"
+                    },
+                    {
+                        "value": "0.90",
+                        "label": "90"
+                    },
+                    {
+                        "value": "0.95",
+                        "label": "95"
+                    },
+                    {
+                        "value": "1",
+                        "label": "100"
+                    }
+                ]
+            },
+            {
+                "type": "header",
+                "content": "Elements"
+            },
+            {
+                "type": "paragraph",
+                "content": "Footer Columns"
+            },
+            {
+                "type": "checkbox",
+                "id": "show_columns",
+                "label": "Show columns",
+                "default": true
+            },
+            {
+                "type": "paragraph",
+                "content": "Footer Menu"
+            },
+            {
+                "type": "checkbox",
+                "id": "show_footer_menu",
+                "label": "Show footer menu"
+            },
+            {
+                "type": "link_list",
+                "id": "footer_menu",
+                "label": "Footer menu"
+            },
+            {
+                "type": "paragraph",
+                "content": "Copyright Text"
+            },
+            {
+                "type": "checkbox",
+                "id": "show_copyright_text",
+                "label": "Show copyright text"
+            },
+            {
+                "type": "text",
+                "id": "copyright_text",
+                "label": "Custom copyright text",
+                "info": "Leave blank to show default copyright text"
+            },
+            {
+                "type": "paragraph",
+                "content": "Payment Methods"
+            },
+            {
+                "type": "checkbox",
+                "id": "show_methods_of_payment",
+                "label": "Show payment methods"
+            },
+            {
+                "type": "paragraph",
+                "content": "Social Icons"
+            },
+            {
+                "type": "checkbox",
+                "id": "show_social_icons",
+                "label": "Show social media icons",
+                "info": "You can edit social media links in General settings > Social Media"
+            },
+            {
+                "type": "paragraph",
+                "content": "Logo"
+            },
+            {
+                "type": "checkbox",
+                "id": "show_logo",
+                "label": "Show logo",
+                "default": true
+            },
+            {
+                "type": "text",
+                "id": "logo_max_width",
+                "label": "Logo width (px)",
+                "default": "128",
+                "info": "Images won't be upscaled, so make sure you upload a logo larger than the 'logo width' option. For retina screens, your logo must be at least double the 'logo width' option. For example, if you set the above option to '128', your logo must be at least 256px wide."
+            },
+            {
+                "type": "image_picker",
+                "id": "footer_logo",
+                "label": "Footer logo image",
+                "info": "If empty, logo from general settings will be used"
+            },
+            {
+                "type": "header",
+                "content": "Extra"
+            },
+            {
+                "type": "text",
+                "id": "additional_classes",
+                "label": "Additional classes"
+            }
+        ],
+        "blocks": [
+            {
+                "type": "menu",
+                "name": "Menu",
+                "settings": [
+                    {
+                        "type": "checkbox",
+                        "id": "show_title",
+                        "label": "Show title",
+                        "default": true
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title",
+                        "info": "Leave blank to use menu title"
+                    },
+                    {
+                        "type": "link_list",
+                        "id": "menu",
+                        "label": "Menu"
+                    },
+                    {
+                        "type": "select",
+                        "id": "column_width",
+                        "label": "Column width",
+                        "options": [
+                            {
+                                "value": "1/12",
+                                "label": "1/12"
+                            },
+                            {
+                                "value": "2/12",
+                                "label": "2/12"
+                            },
+                            {
+                                "value": "3/12",
+                                "label": "3/12"
+                            },
+                            {
+                                "value": "4/12",
+                                "label": "4/12"
+                            },
+                            {
+                                "value": "5/12",
+                                "label": "5/12"
+                            },
+                            {
+                                "value": "6/12",
+                                "label": "6/12"
+                            },
+                            {
+                                "value": "7/12",
+                                "label": "7/12"
+                            },
+                            {
+                                "value": "8/12",
+                                "label": "8/12"
+                            },
+                            {
+                                "value": "9/12",
+                                "label": "9/12"
+                            },
+                            {
+                                "value": "10/12",
+                                "label": "10/12"
+                            },
+                            {
+                                "value": "11/12",
+                                "label": "11/12"
+                            },
+                            {
+                                "value": "12/12",
+                                "label": "12/12"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "page",
+                "name": "Page",
+                "settings": [
+                    {
+                        "type": "checkbox",
+                        "id": "show_title",
+                        "label": "Show title",
+                        "default": true
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title",
+                        "info": "Leave blank to use page title"
+                    },
+                    {
+                        "type": "page",
+                        "id": "page",
+                        "label": "Page"
+                    },
+                    {
+                        "type": "select",
+                        "id": "column_width",
+                        "label": "Column width",
+                        "options": [
+                            {
+                                "value": "1/12",
+                                "label": "1/12"
+                            },
+                            {
+                                "value": "2/12",
+                                "label": "2/12"
+                            },
+                            {
+                                "value": "3/12",
+                                "label": "3/12"
+                            },
+                            {
+                                "value": "4/12",
+                                "label": "4/12"
+                            },
+                            {
+                                "value": "5/12",
+                                "label": "5/12"
+                            },
+                            {
+                                "value": "6/12",
+                                "label": "6/12"
+                            },
+                            {
+                                "value": "7/12",
+                                "label": "7/12"
+                            },
+                            {
+                                "value": "8/12",
+                                "label": "8/12"
+                            },
+                            {
+                                "value": "9/12",
+                                "label": "9/12"
+                            },
+                            {
+                                "value": "10/12",
+                                "label": "10/12"
+                            },
+                            {
+                                "value": "11/12",
+                                "label": "11/12"
+                            },
+                            {
+                                "value": "12/12",
+                                "label": "12/12"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "html",
+                "name": "Html",
+                "settings": [
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title"
+                    },
+                    {
+                        "type": "textarea",
+                        "id": "html",
+                        "label": "Html",
+                        "placeholder": "Use basic HTML to format text"
+                    },
+                    {
+                        "type": "select",
+                        "id": "column_width",
+                        "label": "Column width",
+                        "options": [
+                            {
+                                "value": "1/12",
+                                "label": "1/12"
+                            },
+                            {
+                                "value": "2/12",
+                                "label": "2/12"
+                            },
+                            {
+                                "value": "3/12",
+                                "label": "3/12"
+                            },
+                            {
+                                "value": "4/12",
+                                "label": "4/12"
+                            },
+                            {
+                                "value": "5/12",
+                                "label": "5/12"
+                            },
+                            {
+                                "value": "6/12",
+                                "label": "6/12"
+                            },
+                            {
+                                "value": "7/12",
+                                "label": "7/12"
+                            },
+                            {
+                                "value": "8/12",
+                                "label": "8/12"
+                            },
+                            {
+                                "value": "9/12",
+                                "label": "9/12"
+                            },
+                            {
+                                "value": "10/12",
+                                "label": "10/12"
+                            },
+                            {
+                                "value": "11/12",
+                                "label": "11/12"
+                            },
+                            {
+                                "value": "12/12",
+                                "label": "12/12"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "newsletter",
+                "name": "Newsletter",
+                "settings": [
+                    {
+                        "type": "checkbox",
+                        "id": "show_title",
+                        "label": "Show title",
+                        "default": true
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title",
+                        "info": "Leave blank to use original title"
+                    },
+                    {
+                        "type": "checkbox",
+                        "id": "show_caption",
+                        "label": "Show caption",
+                        "default": true
+                    },
+                    {
+                        "type": "textarea",
+                        "id": "caption",
+                        "label": "Caption",
+                        "info": "Leave blank to use original caption"
+                    },
+                    {
+                        "type": "select",
+                        "id": "column_width",
+                        "label": "Column width",
+                        "options": [
+                            {
+                                "value": "1/12",
+                                "label": "1/12"
+                            },
+                            {
+                                "value": "2/12",
+                                "label": "2/12"
+                            },
+                            {
+                                "value": "3/12",
+                                "label": "3/12"
+                            },
+                            {
+                                "value": "4/12",
+                                "label": "4/12"
+                            },
+                            {
+                                "value": "5/12",
+                                "label": "5/12"
+                            },
+                            {
+                                "value": "6/12",
+                                "label": "6/12"
+                            },
+                            {
+                                "value": "7/12",
+                                "label": "7/12"
+                            },
+                            {
+                                "value": "8/12",
+                                "label": "8/12"
+                            },
+                            {
+                                "value": "9/12",
+                                "label": "9/12"
+                            },
+                            {
+                                "value": "10/12",
+                                "label": "10/12"
+                            },
+                            {
+                                "value": "11/12",
+                                "label": "11/12"
+                            },
+                            {
+                                "value": "12/12",
+                                "label": "12/12"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "my-account-menu",
+                "name": "My account menu",
+                "settings": [
+                    {
+                        "type": "checkbox",
+                        "id": "show_title",
+                        "label": "Show title",
+                        "default": true
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title",
+                        "info": "Leave blank to use menu title"
+                    },
+                    {
+                        "type": "select",
+                        "id": "column_width",
+                        "label": "Column width",
+                        "options": [
+                            {
+                                "value": "1/12",
+                                "label": "1/12"
+                            },
+                            {
+                                "value": "2/12",
+                                "label": "2/12"
+                            },
+                            {
+                                "value": "3/12",
+                                "label": "3/12"
+                            },
+                            {
+                                "value": "4/12",
+                                "label": "4/12"
+                            },
+                            {
+                                "value": "5/12",
+                                "label": "5/12"
+                            },
+                            {
+                                "value": "6/12",
+                                "label": "6/12"
+                            },
+                            {
+                                "value": "7/12",
+                                "label": "7/12"
+                            },
+                            {
+                                "value": "8/12",
+                                "label": "8/12"
+                            },
+                            {
+                                "value": "9/12",
+                                "label": "9/12"
+                            },
+                            {
+                                "value": "10/12",
+                                "label": "10/12"
+                            },
+                            {
+                                "value": "11/12",
+                                "label": "11/12"
+                            },
+                            {
+                                "value": "12/12",
+                                "label": "12/12"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "default": {
+            "settings": {
+            },
+            "blocks": [
+                {
+                    "type": "html",
+                    "settings": {
+                        "html": "Sample Html column",
+                        "column_width": "3/12"
+                    }
+                },
+                {
+                    "type": "html",
+                    "settings": {
+                        "html": "Sample Html column",
+                        "column_width": "3/12"
+                    }
+                },
+                {
+                    "type": "html",
+                    "settings": {
+                        "html": "Sample Html column",
+                        "column_width": "3/12"
+                    }
+                },
+                {
+                    "type": "html",
+                    "settings": {
+                        "html": "Sample Html column",
+                        "column_width": "3/12"
+                    }
+                }
+            ]
+        }
+    }
+    /*"*/{% endschema %}/*"*/
+</script>

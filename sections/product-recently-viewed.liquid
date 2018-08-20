@@ -1,0 +1,149 @@
+{%- if section.settings.enabled -%}
+
+    {%- include 'util-column-class' column_count: section.settings.column_count, column_min: section.settings.column_count_mobile -%}
+    {%- assign product_image_ratio = settings.product_image_aspect_ratio_w | plus :0.0 | divided_by: settings.product_image_aspect_ratio_h -%}
+    {%- include 'util-image-size' column_count: section.settings.column_count, image_ratio: product_image_ratio, custom_ratio: settings.enable_product_custom_aspect_ratio -%}
+
+    <!-- RECENTLY VIEWED PRODUCTS -->
+    {%- include 'recently-viewed-products' -%}
+    <!-- / RECENTLY VIEWED PRODUCTS -->
+
+{%- endif -%}
+
+<script type="application/json">
+    /*"*/{% schema %}/*"*/
+    {
+        "name": "Recently viewed products",
+        "settings": [
+            {
+                "type": "checkbox",
+                "id": "enabled",
+                "label": "Enable recently viewed products",
+                "default": true
+            },
+            {
+                "type": "text",
+                "id": "title",
+                "label": "Title"
+            },
+            {
+                "type": "select",
+                "id": "title_alignment",
+                "label": "Title alignment",
+                "default": "text-center",
+                "options": [
+                    {
+                        "value": "text-left",
+                        "label": "Left"
+                    },
+                    {
+                        "value": "text-center",
+                        "label": "Center"
+                    },
+                    {
+                        "value": "text-right",
+                        "label": "Right"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "arrows_position",
+                "label": "Arrows position",
+                "default": "arrows-top-right",
+                "options": [
+                    {
+                        "value": "arrows-top-left",
+                        "label": "Top left"
+                    },
+                    {
+                        "value": "arrows-top-right",
+                        "label": "Top right"
+                    },
+                    {
+                        "value": "arrows-inside",
+                        "label": "Inside"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "arrows_style",
+                "label": "Arrows style",
+                "info": "Adaptive changes the arrow colors to a contrasting color depending on the background color. Arrow styles only available if 'Arrow position' is 'Inside'.",
+                "default": "arrows-adaptive",
+                "options": [
+                    {
+                        "value": "arrows-adaptive",
+                        "label": "Adaptive"
+                    },
+                    {
+                        "value": "arrows-light-rectangle",
+                        "label": "Light - Rectangle"
+                    },
+                    {
+                        "value": "arrows-dark-rectangle",
+                        "label": "Dark - Rectangle"
+                    },
+                    {
+                        "value": "arrows-light-rounded",
+                        "label": "Light - Rounded"
+                    },
+                    {
+                        "value": "arrows-dark-rounded",
+                        "label": "Dark - Rounded"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "column_count",
+                "label": "Column count",
+                "default": "4",
+                "options": [
+                    {
+                        "value": "2",
+                        "label": "2"
+                    },
+                    {
+                        "value": "3",
+                        "label": "3"
+                    },
+                    {
+                        "value": "4",
+                        "label": "4"
+                    },
+                    {
+                        "value": "5",
+                        "label": "5"
+                    },
+                    {
+                        "value": "6",
+                        "label": "6"
+                    }
+                ]
+            },
+            {
+                "type": "header",
+                "content": "Mobile Specific Options"
+            },
+            {
+                "type": "select",
+                "id": "column_count_mobile",
+                "label": "Column count (Mobile)",
+                "default": "1",
+                "options": [
+                    {
+                        "value": "1",
+                        "label": "1"
+                    },
+                    {
+                        "value": "2",
+                        "label": "2"
+                    }
+                ]
+            }
+        ]
+    }
+    /*"*/{% endschema %}/*"*/
+</script>

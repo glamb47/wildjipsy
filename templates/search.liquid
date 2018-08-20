@@ -1,0 +1,119 @@
+<div class="container">
+
+    <div class="row">
+
+        <div class=" col-12 flex-items-center">
+
+            <!-- PAGE HEADER -->
+            <div class="page-header col-12 col-md-7 py-16">
+
+                <form action="/search" method="get" class="search-form" role="search">
+
+                    <div class="row pb-8 flex-items-middle">
+
+                        <div class="col-12 col-sm">
+                            <input class="form-control" type="search" name="q" value="{{ search.terms | escape }}"
+                                   placeholder="{{ 'general.search.placeholder' | t }}" class="input-group-field"
+                                   aria-label="{{ 'general.search.placeholder' | t }}"
+                                   placeholder="{{ 'general.search.placeholder' | t }}">
+                        </div>
+
+                        <div class="col-12 col-sm pl-sm-0 mt-4 mt-sm-0 flex-nogrow flex-items-center">
+                            <select class="form-control custom-select search-type-select appearance-safe" name="type">
+                                <option value="">Everywhere</option>
+                                <option value="product">Product</option>
+                                <option value="page">Page</option>
+                                <option value="article">Post</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <div class="row flex-items-center">
+                        <button type="submit" class="btn btn-primary center-block px-17">
+                            {{ 'general.search.submit' | t }}
+                        </button>
+                    </div>
+
+                </form>
+
+            </div>
+            <!-- / PAGE HEADER -->
+
+        </div>
+
+        <div class="col-12">
+            <hr class="mx-auto my-0 w-20">
+        </div>
+
+        <div class="col-12">
+
+            {%- if search.performed -%}
+
+                {%- paginate search.results by 10 -%}
+
+                {%- if search.results_count == 0 -%}
+
+                    <!-- NO RESULTS MESSAGE -->
+                    <h1 class="h3 text-center py-14">
+                        {{ 'general.search.no_results_html' | t: terms: search.terms }}
+                    </h1>
+                    <!-- / NO RESULTS MESSAGE -->
+
+                {%- else -%}
+
+                    <!-- RESULTS MESSAGE -->
+                    <h1 class="h3 text-center py-14 m-0">
+                        {{ 'general.search.results_for_html' | t: terms: search.terms }}
+                    </h1>
+
+                    <div class="row">
+                        {%- include 'util-column-class' column_count: '4', column_min: 1 -%}
+
+                        {%- for item in search.results -%}
+
+                            <div class="animate-on-scroll {{ column_class }} {{ item.object_type }}">
+
+                                {%- if item.object_type == 'product' -%}
+
+                                    {%- include 'product-item' product: item -%}
+
+                                    {%- elsif item.object_type == 'article' -%}
+
+                                    {%- include 'article-grid-item' article: item -%}
+
+                                {%- else -%}
+
+                                    {%- include 'article-grid-item' article: item -%}
+
+                                {%- endif -%}
+
+                            </div>
+
+                        {%- endfor -%}
+                    </div>
+                    <!-- / RESULTS MESSAGE -->
+
+                {%- endif -%}
+
+                {%- if paginate.pages > 1 -%}
+
+                    <!-- PAGINATION -->
+                    <div class="text-center">
+                        {%- include 'pagination' -%}
+                    </div>
+                    <!-- / PAGINATION -->
+
+                {%- endif -%}
+
+                {%- endpaginate -%}
+
+            {%- else -%}
+
+                <div class="h3 text-center py-14 m-0">{{ 'general.search.title' | t }}</div>
+
+            {%- endif -%}
+
+        </div>
+    </div>
+</div>

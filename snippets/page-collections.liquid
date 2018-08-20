@@ -1,0 +1,81 @@
+<div class="collections container">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header pt-14 {% if page.content == blank %}pb-14{% endif %}">
+        <h3 class="text-center">{{ page.title | upcase }}</h3>
+    </div>
+    <!-- / PAGE HEADER -->
+
+    {%- if page.content != blank -%}
+        <!-- PAGE CONTENT -->
+        <div class="page-content pt-6 pb-14">
+            {{ page.content }}
+        </div>
+        <!-- PAGE CONTENT -->
+    {%- endif -%}
+
+    {%- assign image_size = 'large' -%}
+
+    {%- if linklists[page.handle].links.size > 0 -%}
+
+        {%- assign number_of_links = 0 -%}
+
+        <!-- COLLECTIONS -->
+        <div class="row collections pb-14">
+
+            {%- include 'util-column-class' column_count: column_count, column_min: 1 -%}
+
+            {% capture item_class %}{{ column_class }} animate-on-scroll{% endcapture %}
+
+            {%- for link in linklists[page.handle].links -%}
+
+                {%- if link.type == 'collection_link' -%}
+
+                    {%- assign number_of_links = number_of_links | plus: 1 -%}
+
+                    {%- include 'collection-item'
+                    collection: link.object,
+                    item_class: item_class,
+                    show_product_counts: true -%}
+
+                {%- endif -%}
+
+            {%- endfor -%}
+
+        </div>
+        <!-- / COLLECTIONS -->
+
+        {%- if number_of_links == 0 -%}
+
+            <!-- NO COLLECTION LINK MESSAGE -->
+            <div class="row text-center px-16">
+
+                <p>
+                    There are no links of type <i>Collection</i> in your <b>{{ page.title }}</b> link list.
+                    Go ahead and <a href="/admin/link_lists/{{ linklists[page.handle].id }}" target="_blank"> edit your
+                        link list </a> to use links that point to collections.
+                </p>
+
+            </div>
+            <!-- / NO COLLECTION LINK MESSAGE -->
+
+        {%- endif -%}
+
+    {%- else -%}
+
+        <!-- NO LIST LINK MESSAGE -->
+        <div class="row text-center px-16">
+
+            <p>
+                You do not have a link list with a handle set to <kbd>{{ page.handle }}</kbd>, or you do and it's
+                empty. Go ahead and create a link list called <b>{{ page.title }}</b> on your
+                <a href="/admin/links" target="_blank"> Navigation page </a>
+                and populate that link list with links that point to collections, to see collections
+                listed here. Make sure the link list also has a handle set to <kbd>{{ page.handle }}</kbd>.
+            </p>
+
+        </div>
+        <!-- / NO LIST LINK MESSAGE -->
+
+    {%- endif -%}
+</div>

@@ -1,0 +1,109 @@
+{%- assign content_width = settings.collection_content_width | default: settings.content_width -%}
+
+{%- comment -%}
+{# Figure out the collection page style based on the template suffix #}
+{%- endcomment -%}
+{%- assign templateSuffixCheck = template.suffix | split: '-' | first -%}
+
+{%- if templateSuffixCheck == 'show' -%}
+    {%- assign collection_page_style = settings.collection_page_style -%}
+{%- else -%}
+    {%- assign collection_page_style = template.suffix | split: '_' | first | default: settings.collection_page_style -%}
+{%- endif -%}
+
+<!-- COLLECTION -->
+<div class="{{ collection_page_style }}" js-collection
+     collection="{{ collection | json | escape }}"
+     vendor="{{ collection.current_vendor | json | escape }}">
+
+    {%- section 'collection-header' -%}
+
+    <div id="collection-content-wrapper" class="{{ content_width }}">
+
+        <div class="row">
+
+            {%- case collection_page_style -%}
+
+            {%- comment -%}
+            {# @ No sidebar #}
+            {%- endcomment -%}
+            {%- when 'no-sidebar' -%}
+
+            <div class="collection-content col-12">
+                {%- section 'collection-template' -%}
+                {%- section 'collection-recently-viewed' -%}
+            </div>
+
+            {%- comment -%}
+            {# @ Left Sidebar #}
+            {%- endcomment -%}
+            {%- when 'left-sidebar-with-filters' -%}
+
+            <sidebar class="col flex-nogrow">
+                {%- section 'collection-sidebar' -%}
+            </sidebar>
+
+            <div class="collection-content col-12 col-md pl-md-6">
+                {%- section 'collection-template' -%}
+                {%- section 'collection-recently-viewed' -%}
+            </div>
+
+            {%- comment -%}
+            {# @ Right Sidebar #}
+            {%- endcomment -%}
+            {%- when 'right-sidebar-with-filters' -%}
+
+            <div class="collection-content col-12 col-md pr-md-6">
+                {%- section 'collection-template' -%}
+                {%- section 'collection-recently-viewed' -%}
+            </div>
+
+            <sidebar class="col flex-nogrow">
+                {%- section 'collection-sidebar' -%}
+            </sidebar>
+
+            {%- comment -%}
+            {# @ Popover filters #}
+            {%- endcomment -%}
+            {%- when 'popover-filters' -%}
+            <div class="collection-content col-12 p-relative">
+
+                <!-- COLLECTION POPOVER FILTERS -->
+                <div class="collection-popover-filter-container mb-6 mb-md-0 hidden-sm-down">
+                    <div uib-dropdown
+                         on-toggle="cm.popoverToggled(open)"
+                         auto-close="outsideClick"
+                         is-open="cm.popoverIsOpen">
+
+                        <button class="filter-products-button btn btn-link dropdown-toggle auto-height p-0"
+                                type="button" id="filterProducts"
+                                uib-dropdown-toggle>
+                            <span class="mr-2">
+                                {{ 'collections.general.filter_products' | t }}
+                            </span>
+                            <i class="caret text-light"></i>
+                        </button>
+
+                        <div id="collection-filters-dropdown"
+                             class="collection-filters-dropdown dropdown-menu secondary-bg mt-4" uib-dropdown-menu>
+                            {%- section 'collection-sidebar' -%}
+                        </div>
+                    </div>
+                </div>
+                <!-- / COLLECTION POPOVER FILTERS -->
+
+                {%- section 'collection-template' -%}
+                {%- section 'collection-recently-viewed' -%}
+            </div>
+            {%- endcase -%}
+        </div>
+    </div>
+</div>
+<!-- / COLLECTION -->
+
+{%- unless collection_page_style == 'no-sidebar' -%}
+<button js-bar-toggle="collection-sidebar"
+        class="hidden-md-up btn-fab btn-secondary m-4 align-bottom-right p-fixed z-index-99">
+    <i class="icon-filter"></i>
+</button>
+{%- endunless -%}

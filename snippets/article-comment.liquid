@@ -1,0 +1,28 @@
+{%- comment -%}
+
+This snippet generates the structure of a comment.
+It is used to show not only recent comments, but also comments that were
+just published but not yet approved.
+
+More information:
+- http://docs.shopify.com/themes/liquid-variables/comment
+
+{%- endcomment -%}
+
+<div class="comment">
+
+    <!-- COMMENT TITLE -->
+    <div class="comment-title text-light mb-2">
+        <span>{{ comment.author }}</span>
+        <span class="meta-sep mx-1">&#8226;</span>
+        <time datetime="{{ comment.created_at | date: '%Y-%m-%d' }}">{{ comment.created_at | date: format: 'month_day_year' }}</time>
+    </div>
+    <!-- / COMMENT TITLE -->
+
+    <!-- COMMENT CONTENT -->
+    <div class="comment-content h4">
+        {{ comment.content }}
+    </div>
+    <!-- / COMMENT CONTENT -->
+
+</div>

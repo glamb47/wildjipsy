@@ -1,0 +1,82 @@
+<script>
+    window.jasper.variant_swatch_options = {{ section.settings.variant_swatch_options | json | replace: '\r', '' | replace: '\n', '|' }};
+    window.jasper.product_image_as_swatch_options = {{ section.settings.product_image_as_swatch_options | json | replace: '\r', '' | replace: '\n', '|' }};
+    window.jasper.variant_swatches = {};
+
+    {%- for block in section.blocks -%}
+
+    {%- if block.settings.title != blank -%}
+
+    window.jasper.variant_swatches['{{ block.settings.title | downcase }}'] = {};
+    window.jasper.variant_swatches['{{ block.settings.title | downcase }}']['color'] = '{{ block.settings.color }}';
+
+    {%- if block.settings.image != blank -%}
+    window.jasper.variant_swatches['{{ block.settings.title | downcase }}']['image'] = '{{ block.settings.image | img_url:"master" }}';
+    {%- else -%}
+    window.jasper.variant_swatches['{{ block.settings.title | downcase }}']['image'] = '';
+    {%- endif -%}
+
+    {%- endif -%}
+
+    {%- endfor -%}
+</script>
+
+<script type="application/json">
+    /*"*/{% schema %}/*"*/
+    {
+        "name": "Product option swatches",
+        "settings": [
+            {
+                "type": "header",
+                "content": "Color/Image Preview"
+            },
+            {
+                "type": "textarea",
+                "id": "variant_swatch_options",
+                "label": "Option names",
+                "default": "color",
+                "info": "Enter option names that you want to use custom color/image preview with. Separate multiple option names by pressing enter.",
+                "placeholder": "Enter option name(s)..."
+            },
+            {
+                "type": "paragraph",
+                "content": "You can use [CSS color names](https://www.w3schools.com/cssref/css_colors.asp) as option values in your products to automatically apply the colors. Or alternatively, you can define a color/image per option using the blocks below."
+            },
+            {
+                "type": "header",
+                "content": "Variant Images as Swatch Preview"
+            },
+            {
+                "type": "textarea",
+                "id": "product_image_as_swatch_options",
+                "label": "Option names",
+                "info": "Enter option names that you want to use variant image as preview. Separate multiple option names by pressing enter.",
+                "placeholder": "Enter option name(s)..."
+            }
+        ],
+        "blocks": [
+            {
+                "type": "variant",
+                "name": "Option swatch preview",
+                "settings": [
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Option value"
+                    },
+                    {
+                        "type": "color",
+                        "id": "color",
+                        "label": "Preview color"
+                    },
+                    {
+                        "type": "image_picker",
+                        "id": "image",
+                        "label": "Preview image"
+                    }
+                ]
+            }
+        ]
+    }
+    /*"*/{% endschema %}/*"*/
+</script>

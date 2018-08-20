@@ -1,0 +1,281 @@
+{%- assign content_width = settings.collection_content_width | default: settings.content_width -%}
+
+{%- capture section_style -%}
+background-size: {{ section.settings.bg_size }}; background-repeat: {{ section.settings.bg_repeat }}; background-position: {{ section.settings.bg_position }};
+{%- if section.settings.bg_image != blank -%}background-image: url({{ section.settings.bg_image | img_url: '1920x' }});{%- endif -%}
+{%- if section.settings.bg_color != blank -%}background-color: {{ section.settings.bg_color }};{%- endif -%}
+{%- endcapture -%}
+
+{%- if section.settings.bg_color_type == 'auto' -%}
+    {%- include 'util-color-brightness' color: section.settings.bg_color, append: '-bg' -%}
+{%- else -%}
+    {%- assign color_brightness = section.settings.bg_color_type -%}
+{%- endif -%}
+
+ {%- unless section.settings.show_breadcrumb == false and section.settings.show_title == false and section.settings.show_subtitle == false -%}
+<!-- ARTICLE HEADER -->
+<div
+    class="article-header py-4 {{ color_brightness }} {% if section.settings.bg_parallax == 'enable' %}parallax-bg{% endif %}"
+    style="{{ section_style }}">
+
+    <div class="{{ content_width }}">
+
+        {%- if section.settings.show_breadcrumb -%}
+            <!-- BREADCRUMB -->
+            <div
+                class="flex-items-center flex-items-md-{{ section.settings.breadcrumb_title_alignment }} py-3 py-md-4">
+                {%- include 'breadcrumb' -%}
+            </div>
+            <!-- / BREADCRUMB -->
+        {%- endif -%}
+
+        {%- if section.settings.show_title -%}
+            <!-- ARTICLE TITLE -->
+            <div class="h1 article-title text-uppercase flex-items-center flex-items-md-{{ section.settings.breadcrumb_title_alignment }} text-center text-md-{{ section.settings.breadcrumb_title_alignment }} py-3 py-md-2">
+                {{ article.title }}
+            </div>
+            <!-- / ARTICLE TITLE -->
+        {%- endif -%}
+
+        {%- if section.settings.show_subtitle -%}
+            <!-- ARTICLE SUBTITLE -->
+            <div
+                class="h5 article-sub-title text-light flex-items-center flex-items-md-{{ section.settings.breadcrumb_title_alignment }}  py-2">
+
+                <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+                    {{ article.published_at | date: format: 'month_day_year' }}
+                </time>
+
+                {%- if section.settings.show_author -%}
+                    <div class="author flex-items-middle">
+                        <span class="meta-sep mx-2">&#8226;</span>
+                        <span>{{ article.author }}</span>
+                    </div>
+                {%- endif -%}
+
+            </div>
+            <!-- / ARTICLE SUBTITLE -->
+        {%- endif -%}
+
+    </div>
+
+</div>
+<!-- / ARTICLE HEADER -->
+{%- endunless -%}
+
+<script type="application/json">
+    /*"*/{% schema %}/*"*/
+    {
+        "name": "Article header",
+        "settings": [
+            {
+                "type": "header",
+                "content": "General"
+            },
+            {
+                "type": "checkbox",
+                "id": "show_breadcrumb",
+                "label": "Show breadcrumb",
+                "default": true
+            },
+            {
+                "type": "checkbox",
+                "id": "show_title",
+                "label": "Show title",
+                "default": true
+            },
+            {
+                "type": "checkbox",
+                "id": "show_subtitle",
+                "label": "Show subtitle",
+                "default": true
+            },
+            {
+                "type": "checkbox",
+                "id": "show_author",
+                "label": "Show author",
+                "default": true
+            },
+            {
+                "type": "select",
+                "id": "breadcrumb_title_alignment",
+                "label": "Breadcrumb & Title Alignment",
+                "default": "left",
+                "options": [
+                    {
+                        "value": "left",
+                        "label": "Left"
+                    },
+                    {
+                        "value": "center",
+                        "label": "Center"
+                    },
+                    {
+                        "value": "right",
+                        "label": "Right"
+                    }
+                ]
+            },
+            {
+                "type": "header",
+                "content": "Background"
+            },
+            {
+                "type": "color",
+                "id": "bg_color",
+                "label": "Background color"
+            },
+            {
+                "type": "image_picker",
+                "id": "bg_image",
+                "label": "Background image"
+            },
+            {
+                "type": "select",
+                "id": "bg_parallax",
+                "label": "Parallax effect",
+                "default": "disable",
+                "options": [
+                    {
+                        "value": "enable",
+                        "label": "Enable"
+                    },
+                    {
+                        "value": "disable",
+                        "label": "Disable"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "bg_size",
+                "label": "Background image size",
+                "default": "cover",
+                "options": [
+                    {
+                        "value": "auto",
+                        "label": "Auto"
+                    },
+                    {
+                        "value": "cover",
+                        "label": "Cover"
+                    },
+                    {
+                        "value": "contain",
+                        "label": "Contain"
+                    },
+                    {
+                        "value": "25%",
+                        "label": "25%"
+                    },
+                    {
+                        "value": "50%",
+                        "label": "50%"
+                    },
+                    {
+                        "value": "75%",
+                        "label": "75%"
+                    },
+                    {
+                        "value": "100%",
+                        "label": "100%"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "bg_repeat",
+                "label": "Background repeat",
+                "default": "no-repeat",
+                "options": [
+                    {
+                        "value": "no-repeat",
+                        "label": "No repeat"
+                    },
+                    {
+                        "value": "repeat",
+                        "label": "Repeat"
+                    },
+                    {
+                        "value": "repeat-x",
+                        "label": "Repeat x"
+                    },
+                    {
+                        "value": "repeat-y",
+                        "label": "Repeat y"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "bg_position",
+                "label": "Background position",
+                "default": "center center",
+                "options": [
+                    {
+                        "value": "left top",
+                        "label": "Left Top"
+                    },
+                    {
+                        "value": "left center",
+                        "label": "Left Center"
+                    },
+                    {
+                        "value": "left bottom",
+                        "label": "Left Bottom"
+                    },
+                    {
+                        "value": "right top",
+                        "label": "Right Top"
+                    },
+                    {
+                        "value": "right center",
+                        "label": "Right Center"
+                    },
+                    {
+                        "value": "right bottom",
+                        "label": "Right Bottom"
+                    },
+                    {
+                        "value": "center top",
+                        "label": "Center Top"
+                    },
+                    {
+                        "value": "center center",
+                        "label": "Center Center"
+                    },
+                    {
+                        "value": "center bottom",
+                        "label": "Center Bottom"
+                    }
+                ]
+            },
+            {
+                "type": "header",
+                "content": "Foreground"
+            },
+            {
+                "type": "select",
+                "id": "bg_color_type",
+                "label": "Text color",
+                "default": "auto",
+                "info": "'Auto' will decide text color depending on background color",
+                "options": [
+                    {
+                        "value": "auto",
+                        "label": "Auto"
+                    },
+                    {
+                        "value": "light-bg",
+                        "label": "Dark"
+                    },
+                    {
+                        "value": "dark-bg",
+                        "label": "Light"
+                    }
+                ]
+            }
+        ]
+    }
+    /*"*/{% endschema %}/*"*/
+</script>

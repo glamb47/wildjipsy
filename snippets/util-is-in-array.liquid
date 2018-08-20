@@ -1,0 +1,18 @@
+{%- assign size = 0 -%}
+{%- assign is_in_array = false -%}
+
+ {%- for array_item_raw in array -%}
+
+     {%- assign array_item = array_item_raw | downcase -%}
+     {%- assign check_item = check | downcase -%}
+
+     {%- if array_item == check_item -%}
+         {%- assign size = size | plus: 1 -%}
+         {%- break -%}
+     {%- endif -%}
+
+ {%- endfor -%}
+
+{%- if size > 0 -%}
+    {%- assign is_in_array = true -%}
+{%- endif -%}

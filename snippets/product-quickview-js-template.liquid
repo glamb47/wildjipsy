@@ -1,0 +1,224 @@
+{%- assign show_star_rating = settings.product_show_star_rating -%}
+{%- assign item_image_size = image_size | default: '500x' -%}
+
+<div class="row flex-items-top">
+
+    <div class="col-12 col-md-6 js-images-loaded product-image-slider-wrapper">
+
+        {%- include 'spinner' -%}
+
+        <div class="product-image-slider {{ settings.product_quickview_arrows_style }}"
+             bc-flickity='{
+                          "draggable": true,
+                          "dragThreshold": 15,
+                          "wrapAround": true,
+                          "prevNextButtons": true,
+                          "pageDots": true,
+                          "cellAlign": "left",
+                          "imagesLoaded": true
+                          }'
+             js-flickity-select="{[{ ps.data.productImageIndex }]}" ng-cloak>
+
+            <img class="product-image w-100 img-fluid" ng-repeat="image in ::ps.data.product.images"
+                 ng-src="{[{ps.data.resizeImage(image, '{{ item_image_size }}')}]}" ng-cloak>
+
+        </div>
+
+    </div>
+
+    <!-- CART FORM -->
+    <form id="AddToCartForm"
+          class="cart-form product-info-wrapper col-12 col-md-6 px-16 py-8 p-md-8 pr-md-16 text-center text-md-left"
+          action="/cart/add" method="post"
+          ng-submit="ps.data.addToCart($event)" enctype="multipart/form-data">
+
+        <div class="scroll-border" js-scroll>
+
+            <!-- PRODUCT TITLE -->
+            <a href="{{ shop.url }}/products/{[{ ps.data.product.handle }]}?variant={[{ps.data.selectedVariant.id}]}"
+               class="h1 text-bold title" itemprop="name">
+                {[{ ps.data.product.title }]}
+            </a>
+            <!-- / PRODUCT TITLE -->
+
+            <!-- / PRODUCT PRICES -->
+            <div ng-if="ps.data.product.template_suffix !=='no-offers'"
+                 class="prices pt-2 flex-items-center flex-items-md-left flex-items-middle">
+
+                <!-- PRODUCT PRICE -->
+                <div class="product-price h2">
+                    <span class="js-money" value="{[{ps.data.selectedVariant.price}]}">{[{ps.data.product.price}]}</span>
+                </div>
+                <!-- / PRODUCT PRICE -->
+
+                <!-- SALE PRICE -->
+                <div class="sale-price text-light text-linethrough pl-2"
+                     ng-show="ps.data.selectedVariant.compare_at_price > ps.data.selectedVariant.price">
+                    <span class="js-money" value="{[{ps.data.selectedVariant.compare_at_price}]}">
+                        {[{ps.data.selectedVariant.compare_at_price}]}
+                    </span>
+                </div>
+                <!-- /SALE PRICE -->
+
+            </div>
+            <!-- / PRODUCT PRICES -->
+
+            {%- if show_star_rating == 'show' -%}
+                <!-- PRODUCT STARS -->
+                <div class="product-stars flex-items-center flex-items-md-left">
+                    <span class="shopify-product-reviews-badge" data-id="{[{ ps.data.product.id }]}"></span>
+                </div>
+                <!-- / PRODUCT STARS -->
+            {%- endif -%}
+
+            <!-- PRODUCT DESCRIPTION -->
+            <div class="pt-4 product-description" ng-bind-html="ps.data.product.shortDescription"></div>
+            <!-- / PRODUCT DESCRIPTION -->
+
+            <hr class="my-6">
+
+            <!-- VARIANTS SELECT -->
+            <div ng-if="ps.data.product.variants.length > 0 && ps.data.options[0].values[0] !== 'Default Title'"
+                 class="variants {{ settings.product_quickview_option_select_style }}">
+
+                <div ng-repeat="option in ::ps.data.options" class="option" ng-cloak>
+
+                    <label class="text-uppercase">
+                        {[{option.name}]}
+                    </label>
+
+                    <div>
+                        {%- case settings.product_quickview_option_select_style -%}
+                        {%- when 'swatch' -%}
+
+                        <button type="button" class="btn mr-2 mb-2 swatch"
+                                ng-repeat="value in ::option.values"
+                                tooltip-placement="top" tooltip-popup-delay="300" uib-tooltip="{[{value}]}"
+                                tooltip-enable="ps.data.isInSwatches(option.name) || ps.data.isInProductImageAsSwatches(option.name)"
+                            {% unless settings.product_quickview_show_unavailable_variant_options %}
+                                ng-show="ps.data.checkExist(option.name, value)"
+                            {% endunless %}
+                                ng-click="ps.data.selected.options[option.name] = value;ps.data.updateSelectedVariant()"
+                                ng-class="{'active':ps.data.selected.options[option.name] == value,'p-0 color':ps.data.isInSwatches(option.name) || ps.data.isInProductImageAsSwatches(option.name),'not-exist': !ps.data.checkExist(option.name, value)}">
+
+                            <span
+                                ng-if="!ps.data.isInSwatches(option.name) && !ps.data.isInProductImageAsSwatches(option.name)">
+                                {[{ value }]}
+                            </span>
+
+                            <div class="color-image-preview" ng-if="ps.data.isInSwatches(option.name)"
+                                 ng-style="{'background-color':ps.data.variantColor(value), 'background-image':ps.data.variantImage(value)}">
+                            </div>
+
+                            <div class="color-image-preview"
+                                 ng-if="ps.data.isInProductImageAsSwatches(option.name)"
+                                 ng-style="{'background-image':ps.data.variantProductImage(value)}">
+                            </div>
+
+                        </button>
+
+                        {%- when 'select-box' -%}
+                        <select name="" id="" class="form-control"
+                                ng-model="ps.data.selected.options[option.name]"
+                                ng-change="ps.data.updateSelectedVariant()">
+
+                            <option
+                                {% unless settings.product_quickview_show_unavailable_variant_options %}
+                                ng-show="ps.data.checkExist(option.name, value)"
+                                {% endunless %}
+                                value="{[{ value }]}"
+                                ng-repeat="value in ::option.values">{[{ value }]}
+                            </option>
+                        </select>
+                        {%- endcase -%}
+
+                    </div>
+                </div>
+            </div>
+
+            <select name="id" class="form-control hidden" ng-model="ps.data.selectedVariantId">
+                <option ng-if="variant.available" value="{[{ variant.id }]}"
+                        ng-repeat="variant in ::ps.data.product.variants">
+                    {[{ variant.title }]}
+                </option>
+                <option ng-if="!variant.available" disabled="disabled">
+                    {[{ variant.title }]}
+                    - {{ 'products.product.sold_out' | t }}</option>
+            </select>
+            <!-- / VARIANTS SELECT -->
+
+        </div>
+
+        <div
+            class="product-quantity-buttons-wrapper row w-100 flex-items-center flex-items-md-left flex-items-bottom">
+
+            <!-- QUANTITY -->
+            <div ng-if="ps.data.product.template_suffix !=='no-offers'"
+                 class="col-12 col-md form-group flex-nogrow quantity m-0 mt-4 mb-8 m-md-0 {% unless settings.product_quickview_show_quantity_selector %}hidden-always{% endunless %}">
+
+                <label for="Quantity"
+                       class="text-uppercase text-bold">{{ 'products.product.quantity' | t }}</label>
+
+                <div js-number-input
+                     class="bordered"
+                     step="1"
+                     min="1"
+                     max="ps.data.selectedVariant.inventory_quantity"
+                     limit-max="ps.data.selectedVariant.inventory_management"
+                     input-id="Quantity"
+                     input-name="quantity"
+                     value="ps.data.selected.quantity"
+                     disabled="!ps.data.selectedVariant.available">
+                </div>
+            </div>
+            <!-- / QUANTITY -->
+
+            <div class="col-12 col-md buttons-wrapper flex-items-center flex-items-md-left flex-items-bottom">
+
+                <!-- CART BUTTON -->
+                <button ng-if="ps.data.product.template_suffix !== 'no-offers'"
+                        type="submit" name="add" id="AddToCart2"
+                        class="btn btn-primary cart-button text-uppercase mr-4 px-4"
+                        ng-disabled="!ps.data.selectedVariant.available" ng-cloak>
+                    <span ng-show="ps.data.selectedVariant.available"
+                          id="AddToCartText">
+                        <span
+                            ng-if="ps.data.product.template_suffix !== 'pre-order' && ps.data.product.template_suffix !== 'no-offers'">
+                            {{ 'products.product.add_to_cart' | t }}
+                        </span>
+                        <span ng-if="ps.data.product.template_suffix === 'pre-order'">
+                            {{ 'products.product.pre_order' | t }}
+                        </span>
+                    </span>
+
+                    <span ng-show="!ps.data.selectedVariant.available">{{ 'products.product.sold_out' | t }}</span>
+                </button>
+
+                <a href="{{ shop.url }}/products/{[{ ps.data.product.handle }]}?variant={[{ps.data.selectedVariant.id}]}"
+                   ng-if="ps.data.product.template_suffix === 'no-offers'"
+                   class="btn btn-primary cart-button text-uppercase mr-4 px-4">
+                    {{ 'products.product.view_product' | t }}
+                </a>
+                <!-- / CART BUTTON -->
+
+                {%- if pages.wishlist != empty and settings.product_wishlist_disabled != true -%}
+                    <!-- WISHLIST BUTTON -->
+                    <button ng-cloak type="button" class="btn wishlist-button swatch m-0"
+                            ng-click="ps.data.toggleWishlist($event)"
+                            ng-class="{'active': ps.data.checkInTheWishList()}"
+                            tooltip-placement="top" tooltip-popup-delay="300"
+                            uib-tooltip="{[{ps.data.checkInTheWishList() ? '{{ 'products.product.remove_from_wishlist' | t }}' : '{{ 'products.product.add_to_wishlist' | t }}'}]}">
+                        <i ng-if="ps.data.checkInTheWishList()" class="icon-heart text-light s-3"></i>
+                        <i ng-if="!ps.data.checkInTheWishList()" class="icon-heart-outline text-light s-3"></i>
+                    </button>
+                    <!-- / WISHLIST BUTTON -->
+                {%- endif -%}
+
+            </div>
+
+        </div>
+
+    </form>
+    <!-- / CART FORM -->
+
+</div>

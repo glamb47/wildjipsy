@@ -1,0 +1,409 @@
+{%- if request.host == 'jasper-dev.myshopify.com' or request.host == 'jasper-theme.myshopify.com' -%}
+
+    <div js-bar-toggle="js-theme-options"
+         class="js-theme-options-button btn btn-primary" ng-cloak>
+        <i class="icon icon-settings"></i>
+    </div>
+
+    <div id="js-theme-options" class="js-theme-options-bar"
+         js-bar options='{"fixed":true, "position":"right", "bodyAppend": true}'
+         ng-swipe-right="jb.closeBar()">
+
+        <div class="jasper-bar-content p-0" js-scroll>
+
+            <div class="main-title">
+                <span class="icon icon-palette mr-2"></span>
+                <span>STYLE CONFIGURATOR</span>
+            </div>
+            <div class="main-description">
+                Click on any style to apply. This bar is here for demonstration purposes only and it will not be visible
+                in production shops.
+            </div>
+
+            <uib-accordion close-others="true">
+
+                <!-- HOME PAGE DEMOS -->
+                <div uib-accordion-group class="panel-default"
+                     is-open="{% if template.name == 'index' %}true{% else %}false{% endif %}">
+                    <uib-accordion-heading>
+                        <span class="icon icon-plus"></span>
+                        <span class="icon icon-minus"></span>
+                        <span>HOME PAGE DEMOS</span>
+                    </uib-accordion-heading>
+
+                    <div class="homepage-demos">
+                        <a href="http://jasper-theme.myshopify.com/?preview_theme_id=179294852" target="_blank">
+                            <div class="demo01">
+                                <div class="image"></div>
+                                <div class="title">Demo 1</div>
+                            </div>
+                        </a>
+
+                        <a href="http://jasper-theme.myshopify.com/?preview_theme_id=179294980" target="_blank">
+                            <div class="demo02">
+                                <div class="image"></div>
+                                <div class="title">Demo2</div>
+                            </div>
+                        </a>
+
+                        <a href="http://jasper-theme.myshopify.com/?preview_theme_id=179295108" target="_blank">
+                            <div class="demo03">
+                                <div class="image"></div>
+                                <div class="title">Demo3</div>
+                            </div>
+                        </a>
+
+                        <a href="http://jasper-theme.myshopify.com/?preview_theme_id=179295556" target="_blank">
+                            <div class="demo04">
+                                <div class="image"></div>
+                                <div class="title">Demo4</div>
+                            </div>
+                        </a>
+
+                        <a href="http://jasper-theme.myshopify.com/?preview_theme_id=179296132" target="_blank">
+                            <div class="demo05">
+                                <div class="image"></div>
+                                <div class="title">Demo5</div>
+                            </div>
+                        </a>
+
+                        <a href="http://jasper-theme.myshopify.com/?preview_theme_id=179296196" target="_blank">
+                            <div class="demo06">
+                                <div class="image"></div>
+                                <div class="title">Demo6</div>
+                            </div>
+                        </a>
+
+                        <a href="http://jasper-theme.myshopify.com/?preview_theme_id=179297156" target="_blank">
+                            <div class="demo07">
+                                <div class="image"></div>
+                                <div class="title">Demo7</div>
+                            </div>
+                        </a>
+
+                        <a href="http://jasper-theme.myshopify.com/?preview_theme_id=179297220" target="_blank">
+                            <div class="demo08">
+                                <div class="image"></div>
+                                <div class="title">Demo8</div>
+                            </div>
+                        </a>
+
+                        <a href="http://jasper-theme.myshopify.com/?preview_theme_id=179297284" target="_blank">
+                            <div class="demo09">
+                                <div class="image"></div>
+                                <div class="title">Demo9</div>
+                            </div>
+                        </a>
+
+                        <a href="http://jasper-theme.myshopify.com/?preview_theme_id=179297412" target="_blank">
+                            <div class="demo10">
+                                <div class="image"></div>
+                                <div class="title">Demo10</div>
+                            </div>
+                        </a>
+
+                        <a href="http://jasper-theme.myshopify.com/?preview_theme_id=179297540" target="_blank">
+                            <div class="demo11">
+                                <div class="image"></div>
+                                <div class="title">Demo11</div>
+                            </div>
+                        </a>
+
+                        <a href="http://jasper-theme.myshopify.com/?preview_theme_id=179297668" target="_blank">
+                            <div class="demo12">
+                                <div class="image"></div>
+                                <div class="title">Demo12</div>
+                            </div>
+                        </a>
+
+                        <a href="http://jasper-theme.myshopify.com/?preview_theme_id=179297860" target="_blank">
+                            <div class="demo13">
+                                <div class="image"></div>
+                                <div class="title">Demo13</div>
+                            </div>
+                        </a>
+
+                        <a href="http://jasper-theme.myshopify.com/?preview_theme_id=180117444" target="_blank">
+                            <div class="demo14">
+                                <div class="image"></div>
+                                <div class="title">Demo14</div>
+                            </div>
+                        </a>
+                    </div>
+
+                </div>
+
+                <!-- COLLECTION PAGE STYLES -->
+                <div uib-accordion-group class="panel-default"
+                     is-open="{% if template.name == 'collection' %}true{% else %}false{% endif %}">
+                    <uib-accordion-heading>
+                        <span class="icon icon-plus"></span>
+                        <span class="icon icon-minus"></span>
+                        <span>COLLECTION PAGE STYLES</span>
+                    </uib-accordion-heading>
+
+                    {%- if template.name == 'collection' -%}
+                        {%- assign current_url = canonical_url -%}
+                        {%- assign current_collection_page_style = template.suffix | split:'_' | first | default: settings.collection_page_style -%}
+                        {%- assign current_collection_products_per_row = template.suffix | split:'_' | last | split:'-' | first | default: '3' -%}
+                    {%- else -%}
+                        {%- assign current_url = '/collections/all' -%}
+                        {%- assign current_collection_page_style = settings.collection_page_style -%}
+                        {%- assign current_collection_products_per_row = '3' -%}
+                    {%- endif -%}
+
+                    <div class="collection-sidebars">
+
+                        <div class="group-title">Sidebars</div>
+
+                        {%- assign link = current_url | append:'?view=left-sidebar-with-filters_' | append: current_collection_products_per_row | append: '-columns' -%}
+                        <a href="{{ link }}">
+                            <div class="left-sidebar-with-filters">
+                                <div class="image"></div>
+                                <div class="title">Left Sidebar</div>
+                            </div>
+                        </a>
+
+                        {%- assign link = current_url | append:'?view=right-sidebar-with-filters_' | append: current_collection_products_per_row | append: '-columns' -%}
+                        <a href="{{ link }}">
+                            <div class="right-sidebar-with-filters">
+                                <div class="image"></div>
+                                <div class="title">Right Sidebar</div>
+                            </div>
+                        </a>
+
+                        {%- assign link = current_url | append:'?view=popover-filters_' | append: current_collection_products_per_row | append: '-columns' -%}
+                        <a href="{{ link }}">
+                            <div class="popover-filters">
+                                <div class="image"></div>
+                                <div class="title">Popover Sidebar</div>
+                            </div>
+                        </a>
+
+                        {%- assign link = current_url | append:'?view=no-sidebar_' | append: current_collection_products_per_row | append: '-columns' -%}
+                        <a href="{{ link }}">
+                            <div class="no-sidebar">
+                                <div class="image"></div>
+                                <div class="title">No Sidebar</div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="collection-columns">
+
+                        <div class="group-title">Columns</div>
+
+                        {%- assign link = current_url | append:'?view=' | append: current_collection_page_style | append: '_2-columns' -%}
+                        <a href="{{ link }}">
+                            <div class="columns-2">
+                                <div class="image"></div>
+                                <div class="title">2 columns</div>
+                            </div>
+                        </a>
+
+                        {%- assign link = current_url | append:'?view=' | append: current_collection_page_style | append: '_3-columns' -%}
+                        <a href="{{ link }}">
+                            <div class="columns-3">
+                                <div class="image"></div>
+                                <div class="title">3 columns</div>
+
+                            </div>
+                        </a>
+
+                        {%- assign link = current_url | append:'?view=' | append: current_collection_page_style | append: '_4-columns' -%}
+                        <a href="{{ link }}">
+                            <div class="columns-4">
+                                <div class="image"></div>
+                                <div class="title">4 columns</div>
+                            </div>
+                        </a>
+
+                        {%- assign link = current_url | append:'?view=' | append: current_collection_page_style | append: '_5-columns' -%}
+                        <a href="{{ link }}">
+                            <div class="columns-5">
+                                <div class="image"></div>
+                                <div class="title">5 columns</div>
+                            </div>
+                        </a>
+
+                        {%- assign link = current_url | append:'?view=' | append: current_collection_page_style | append: '_6-columns' -%}
+                        <a href="{{ link }}">
+                            <div class="columns-6">
+                                <div class="image"></div>
+                                <div class="title">6 columns</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- PRODUCT PAGE STYLES -->
+                <div uib-accordion-group class="panel-default"
+                     is-open="{% if template.name == 'product' %}true{% else %}false{% endif %}">
+                    <uib-accordion-heading>
+                        <span class="icon icon-plus"></span>
+                        <span class="icon icon-minus"></span>
+                        <span>PRODUCT PAGE STYLES</span>
+                    </uib-accordion-heading>
+
+                    {%- if template.name == 'product' -%}
+                        {%- assign current_url = canonical_url -%}
+                        {%- assign current_product_page_style = template.suffix | split:'_' | first -%}
+                    {%- else -%}
+                        {%- assign current_url = '/collections/women/products/polka-dot-dress' -%}
+                        {%- assign current_product_page_style = 'style1' -%}
+                    {%- endif -%}
+
+                    <div class="product-styles">
+
+                        {%- assign link = current_url | append:'?view=style1' -%}
+                        <a href="{{ link }}">
+                            <div class="style1">
+                                <div class="image"></div>
+                                <div class="title">Style #1</div>
+                            </div>
+                        </a>
+
+                        {%- assign link = current_url | append:'?view=style2' -%}
+                        <a href="{{ link }}">
+                            <div class="style2">
+                                <div class="image"></div>
+                                <div class="title">Style #2</div>
+                            </div>
+                        </a>
+
+                        {%- assign link = current_url | append:'?view=style3' -%}
+                        <a href="{{ link }}">
+                            <div class="style3">
+                                <div class="image"></div>
+                                <div class="title">Style #3</div>
+                            </div>
+                        </a>
+
+                        {%- assign link = current_url | append:'?view=style4' -%}
+                        <a href="{{ link }}">
+                            <div class="style4">
+                                <div class="image"></div>
+                                <div class="title">Style #4</div>
+                            </div>
+                        </a>
+
+                        {%- assign link = current_url | append:'?view=style5' -%}
+                        <a href="{{ link }}">
+                            <div class="style5">
+                                <div class="image"></div>
+                                <div class="title">Style #5</div>
+                            </div>
+                        </a>
+
+                        {%- assign link = current_url | append:'?view=style6' -%}
+                        <a href="{{ link }}">
+                            <div class="style6">
+                                <div class="image"></div>
+                                <div class="title">Style #6</div>
+                            </div>
+                        </a>
+
+                        {%- assign link = current_url | append:'?view=style7' -%}
+                        <a href="{{ link }}">
+                            <div class="style7">
+                                <div class="image"></div>
+                                <div class="title">Style #7</div>
+                            </div>
+                        </a>
+
+                    </div>
+
+                </div>
+
+                <!-- BLOG PAGE STYLES -->
+                <div uib-accordion-group class="panel-default"
+                     is-open="{% if template.name == 'blog' %}true{% else %}false{% endif %}">
+                    <uib-accordion-heading>
+                        <span class="icon icon-plus"></span>
+                        <span class="icon icon-minus"></span>
+                        <span>BLOG PAGE STYLES</span>
+                    </uib-accordion-heading>
+
+                    {%- assign current_url = '/blogs/news' -%}
+
+                    <div class="blog-sidebar">
+
+                        {%- assign link = current_url | append:'?view=left-sidebar' -%}
+                        <a href="{{ link }}">
+                            <div class="left-sidebar">
+                                <div class="image"></div>
+                                <div class="title">Left Sidebar</div>
+                            </div>
+                        </a>
+
+                        {%- assign link = current_url | append:'?view=right-sidebar' -%}
+                        <a href="{{ link }}">
+                            <div class="right-sidebar">
+                                <div class="image"></div>
+                                <div class="title">Right Sidebar</div>
+                            </div>
+                        </a>
+
+                        {%- assign link = current_url | append:'?view=no-sidebar' -%}
+                        <a href="{{ link }}">
+                            <div class="no-sidebar">
+                                <div class="image"></div>
+                                <div class="title">No Sidebar</div>
+                            </div>
+                        </a>
+
+                    </div>
+
+                </div>
+
+                <!-- ARTICLE PAGE STYLES -->
+                <div uib-accordion-group class="panel-default"
+                     is-open="{% if template.name == 'article' %}true{% else %}false{% endif %}">
+                    <uib-accordion-heading>
+                        <span class="icon icon-plus"></span>
+                        <span class="icon icon-minus"></span>
+                        <span>ARTICLE PAGE STYLES</span>
+                    </uib-accordion-heading>
+
+                    {%- if template.name == 'article' -%}
+                        {%- assign current_url = canonical_url -%}
+                    {%- else -%}
+                        {%- assign current_url = '/blogs/news/still-cold-in-here' -%}
+                    {%- endif -%}
+
+                    <div class="article-sidebar">
+
+                        {%- assign link = current_url | append:'?view=left-sidebar' -%}
+                        <a href="{{ link }}">
+                            <div class="left-sidebar">
+                                <div class="image"></div>
+                                <div class="title">Left Sidebar</div>
+                            </div>
+                        </a>
+
+                        {%- assign link = current_url | append:'?view=right-sidebar' -%}
+                        <a href="{{ link }}">
+                            <div class="right-sidebar">
+                                <div class="image"></div>
+                                <div class="title">Right Sidebar</div>
+                            </div>
+                        </a>
+
+                        {%- assign link = current_url | append:'?view=no-sidebar' -%}
+                        <a href="{{ link }}">
+                            <div class="no-sidebar">
+                                <div class="image"></div>
+                                <div class="title">No Sidebar</div>
+                            </div>
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </uib-accordion>
+
+        </div>
+    </div>
+
+{%- endif -%}

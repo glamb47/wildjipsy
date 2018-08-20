@@ -1,0 +1,44 @@
+{%- if settings.settings.type_base_family_use_google == false and settings.type_base_family contains 'Google' -%}
+    {%- assign type_base_parts = settings.type_base_family | split: '_' -%}
+    {% capture baseGoogleUrl %}{{ type_base_parts[1] }}:{{ type_base_parts[2] }}{% endcapture %}
+    {{ '//fonts.googleapis.com/css?family=' | append: baseGoogleUrl | stylesheet_tag }}
+{%- endif -%}
+
+{%- if settings.type_header_family_use_google == false and settings.type_header_family contains 'Google' -%}
+    {%- unless settings.type_header_family contains type_base_parts[1] -%}
+    {%- assign type_header_parts = settings.type_header_family | split: '_' -%}
+    {% capture headerGoogleUrl %}{{ type_header_parts[1] }}:{{ type_header_parts[2] }}{% endcapture %}
+    {{ '//fonts.googleapis.com/css?family=' | append: headerGoogleUrl | stylesheet_tag }}
+    {%- endunless -%}
+{%- endif -%}
+
+
+{% if settings.type_header_family_use_google or settings.type_base_family_use_google %}
+    <script type="text/javascript">
+        WebFontConfig = {
+            google: {
+                families: [
+                    {%- if settings.type_base_family_use_google and settings.type_base_family_google != blank -%}
+                    '{{ settings.type_base_family_google }}:100,200,300,400,500,600,700,800,900'
+                    {%- endif -%}
+                    {%- if settings.type_base_family_use_google and settings.type_base_family_google != blank and settings.type_header_family_use_google and settings.type_header_family_google != blank -%}
+                    ,
+                    {%- endif -%}
+                    {%- if settings.type_header_family_use_google and settings.type_header_family_google != blank -%}
+                    '{{ settings.type_header_family_google }}:100,200,300,400,500,600,700,800,900'
+                    {%- endif -%}
+                ]
+            }
+        };
+        (function ()
+        {
+            var wf = document.createElement('script');
+            wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+                '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+            wf.type = 'text/javascript';
+            wf.async = 'true';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(wf, s);
+        })();
+    </script>
+{% endif %}

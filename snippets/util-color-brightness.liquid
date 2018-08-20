@@ -1,0 +1,19 @@
+{%- comment -%}
+{# @ Color Brightness #}
+{%- endcomment -%}
+
+{%- if color == blank or color == 'rgba(0,0,0,0)' -%}
+    {%- assign _color = default_color | default: settings.color_primary_bg -%}
+{%- else -%}
+    {%- assign _color = color -%}
+{%- endif -%}
+
+{%- assign _color_brightness = _color | color_brightness -%}
+{%- assign _append = append | default: '' -%}
+{%- assign _prepend = prepend | default: '' -%}
+
+{%- if _color_brightness > 125 -%}
+    {%- assign color_brightness = 'light' | append: _append | prepend: _prepend -%}
+{%- else -%}
+    {%- assign color_brightness = 'dark' | append: _append | prepend: _prepend -%}
+{%- endif -%}

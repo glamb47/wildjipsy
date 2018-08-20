@@ -1,0 +1,35 @@
+{%- assign content_width = settings.home_content_width | default: settings.content_width -%}
+
+{%- if settings.home_sidebar == 'no-sidebar' -%}
+
+    <div class="home-page">
+        {{ content_for_index }}
+    </div>
+
+{%- else -%}
+
+    <div class="home-page with-sidebar {{ content_width }}">
+
+        <div class="row">
+
+            {%- if settings.home_sidebar == 'left-sidebar' -%}
+                <sidebar class="col flex-nogrow">
+                    {%- section 'home-sidebar' -%}
+                </sidebar>
+            {%- endif -%}
+
+            <div
+                class="home-content col-12 col-md {% if settings.home_sidebar == 'right-sidebar' -%}pr-md-6{%- endif -%} {%- if settings.home_sidebar == 'left-sidebar' %}pl-md-6{% endif %}">
+                {{ content_for_index }}
+            </div>
+
+            {%- if settings.home_sidebar == 'right-sidebar' -%}
+                <sidebar class="col flex-nogrow">
+                    {%- section 'home-sidebar' -%}
+                </sidebar>
+            {%- endif -%}
+
+        </div>
+
+    </div>
+{%- endif -%}

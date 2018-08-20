@@ -1,0 +1,266 @@
+{%- assign content_width = section.settings.content_width | default: settings.content_width -%}
+{%- assign number_of_comments = article.comments_count -%}
+
+{%- if comment and comment.created_at -%}
+    {%- assign number_of_comments = article.comments_count | plus: 1 -%}
+{%- endif -%}
+
+{%- paginate article.comments by 5 -%}
+
+<!-- ARTICLE -->
+<article itemscope itemtype="http://schema.org/Article">
+
+    {%- if article.image -%}
+
+        <!-- ARTICLE IMAGE -->
+        {%- assign image_alt = article.title | escape -%}
+        <div class="mb-8">
+            {{ article | img_url: '1024x' | img_tag: image_alt, 'article-image img-fluid' }}
+        </div>
+        <!-- ARTICLE IMAGE -->
+
+    {%- endif -%}
+
+    <!-- ARTICLE CONTENT -->
+    <div class="article-content mb-8 h4" itemprop="articleBody">
+        {{ article.content }}
+    </div>
+    <!-- / ARTICLE CONTENT -->
+
+    {%- if article.tags.size > 0 -%}
+        <!-- ARTICLE TAGS -->
+        {%- include 'article-tags' -%}
+        <!-- / ARTICLE TAGS -->
+    {%- endif -%}
+
+    <div class="article-footer my-14 flex-items-middle flex-wrap">
+
+        <div class="col-12 col-md text-center text-md-left">
+
+            {%- if blog.next_article or blog.previous_article -%}
+
+                <!-- PREV NEXT ARTICLE BUTTONS -->
+                <div class="py-4 py-md-0">
+
+                    {%- if blog.previous_article -%}
+
+                        <span class="left mr-6">
+                            <a href="{{ blog.previous_article }}">
+                               <span class="glyph-icon">&larr;</span> {{ 'blogs.article.older_post' | t }}
+                            </a>
+                        </span>
+
+                    {%- endif -%}
+
+                    {%- if blog.next_article -%}
+
+                        <span class="right">
+                            <a href="{{ blog.next_article }}">{{ 'blogs.article.newer_post' | t }}
+                                <span class="glyph-icon">&rarr;</span>
+                            </a>
+                        </span>
+
+                    {%- endif -%}
+
+                </div>
+                <!-- / PREV NEXT ARTICLE BUTTONS -->
+
+            {%- endif -%}
+
+        </div>
+
+        {%- if settings.social_sharing_blog -%}
+
+            <!-- SOCIAL SHARE -->
+            <div class="col-12 text-center col-md text-md-right py-4">
+                {%- include 'social-sharing' -%}
+            </div>
+            <!-- / SOCIAL SHARE -->
+
+        {%- endif -%}
+
+    </div>
+
+    {%- if blog.comments_enabled? -%}
+
+        <!-- COMMENTS -->
+        <div id="comments">
+
+            {%- if comment and comment.created_at -%}
+
+                <!-- JUST CREATED COMMENT MESSAGE -->
+                <div class="alert alert-success mb-8" role="alert">
+
+                    {%- if blog.moderated? -%}
+                        {{ 'blogs.comments.success_moderated' | t }}
+                    {%- else -%}
+                        {{ 'blogs.comments.success' | t }}
+                    {%- endif -%}
+
+                </div>
+                <!-- / JUST CREATED COMMENT MESSAGE -->
+
+            {%- endif -%}
+
+            {%- if number_of_comments > 0 -%}
+
+                <!-- COMMENT LIST -->
+                <div class="comment-list mb-12">
+
+                    <h3 class="mb-8">{{ 'blogs.comments.comments' | t }}</h3>
+
+                    {%- if comment and comment.created_at -%}
+
+                        <div id="{{ comment.id }}"
+                             class="comment first {% if article.comments_count == 0 %}last{% endif %}">
+                            {%- include 'article-comment' -%}
+                        </div>
+
+                        <hr class="small mx-0">
+
+                    {%- endif -%}
+
+                    {%- for comment in article.comments -%}
+
+                        <!-- COMMENT -->
+                        <div id="{{ comment.id }}"
+                             class="comment {% unless number_of_comments > article.comments_count %}{% if forloop.first %} first{% endif %}{% endunless %}{% if forloop.last %} last{% endif %}">
+                            {%- include 'article-comment' -%}
+                        </div>
+                        <!-- / COMMENT -->
+
+                        <hr class="small mx-0">
+
+                    {%- endfor -%}
+
+                </div>
+                <!-- / COMMENT LIST -->
+
+                {%- if paginate.pages > 1 -%}
+
+                    <!-- PAGINATION -->
+                    {%- include 'pagination' -%}
+                    <!-- / PAGINATION -->
+
+                {%- endif -%}
+
+            {%- endif -%}
+
+            <!-- NEW COMMENT FORM -->
+            <div class="mb-12">
+
+                {%- form 'new_comment', article -%}
+
+                <h3 class="mb-8">{{ 'blogs.comments.form_title' | t }}</h3>
+
+                {%- include 'form-errors' -%}
+
+                <div class="form-group">
+
+                    <input class="form-control {% if form.errors contains "author" %}has-error{% endif %}"
+                           type="text"
+                           name="comment[author]"
+                           placeholder="{{ 'blogs.comments.name' | t }}"
+                           id="CommentAuthor"
+                           value="{{ form.author }}"
+                           autocapitalize="words">
+
+                </div>
+
+                <div class="form-group">
+
+                    <input class="form-control {% if form.errors contains "email" %} has-error{% endif %}"
+                           type="email"
+                           name="comment[email]"
+                           placeholder="{{ 'blogs.comments.email' | t }}"
+                           id="CommentEmail"
+                           value="{{ form.email }}"
+                           autocorrect="off"
+                           autocapitalize="off">
+
+                </div>
+
+                <div class="form-group">
+
+                        <textarea class="form-control {% if form.errors contains "body" %} has-error{% endif %}"
+                                  name="comment[body]" id="CommentBody"
+                                  placeholder="{{ 'blogs.comments.comment' | t }}">
+                            {{ form.body }}
+                        </textarea>
+
+                </div>
+
+                {%- if blog.moderated? -%}
+
+                    <div class="text-light text-italic h6 my-6">
+                        {{ 'blogs.comments.moderated' | t }}
+                    </div>
+
+                {%- endif -%}
+
+                <input type="submit" class="btn btn-primary px-8 text-uppercase"
+                       value="{{ 'blogs.comments.post' | t }}">
+
+                {%- endform -%}
+
+            </div>
+            <!-- / NEW COMMENT FORM -->
+
+        </div>
+        <!-- / COMMENTS -->
+    {%- endif -%}
+
+
+</article>
+<!-- / ARTICLE -->
+
+{%- endpaginate -%}
+
+<script type="application/json">
+    /*"*/{% schema %}/*"*/
+    {
+        "name": "Article",
+        "settings": [
+            {
+                "type": "select",
+                "id": "content_width",
+                "label": "Content width",
+                "options": [
+                    {
+                        "value": "",
+                        "label": "Default"
+                    },
+                    {
+                        "value": "container",
+                        "label": "Container"
+                    },
+                    {
+                        "value": "container-fluid",
+                        "label": "Fluid container"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "sidebar",
+                "label": "Sidebar",
+                "default": "right-sidebar",
+                "options": [
+                    {
+                        "value": "no-sidebar",
+                        "label": "No sidebar"
+                    },
+                    {
+                        "value": "left-sidebar",
+                        "label": "Left Sidebar"
+                    },
+                    {
+                        "value": "right-sidebar",
+                        "label": "Right Sidebar"
+                    }
+                ]
+            }
+        ]
+    }
+    /*"*/{% endschema %}/*"*/
+</script>

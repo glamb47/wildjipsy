@@ -1,0 +1,40 @@
+{%- assign dropdown_trigger = trigger | default: settings.menu_trigger -%}
+{%- assign popover_custom_classes = popover_classes | append:' from-' | append: section.id -%}
+
+{%- if shop.customer_accounts_enabled -%}
+    <div class="my-account-dropdown dropdown" js-popover
+         js-popover-options="{ placement: 'bottom-start', trigger: '{{ dropdown_trigger }}', popoverClasses: '{{ popover_custom_classes }}', closeOnClick: true }">
+
+        <div class="my-account-button btn btn-link dropdown-toggle p-2 {% if icon_mode %}with-icon{% endif %}"
+             js-popover-trigger>
+
+            <span class="flex-items-middle link {% if icon_mode %} text-light{% endif %}">
+                {%- if icon_mode -%}
+                    <i class="icon-account s-6"></i>
+                {%- else -%}
+                    <span>My Account</span>
+                {%- endif -%}
+                {%- unless icon_mode -%}
+                <i class="icon-chevron-down s-4 ml-1"></i>
+                {%- endunless -%}
+            </span>
+
+        </div>
+
+        <div class="customer-links dropdown-menu" js-popover-content>
+            {%- if customer -%}
+                <a class="nav-link" href="/account">{{ 'layout.customer.account' | t }}</a>
+                {%- if pages.wishlist != empty and settings.product_wishlist_disabled != true -%}
+                    <a class="nav-link" href="{{ pages.wishlist.url }}">{{ 'layout.customer.wishlist' | t }}</a>
+                {%- endif -%}
+                <a class="nav-link" href="/account/logout">{{ 'layout.customer.log_out' | t }}</a>
+            {%- else -%}
+                <a class="nav-link" href="/account/login">{{ 'layout.customer.log_in' | t }}</a>
+                <a class="nav-link" href="/account/register">{{ 'layout.customer.create_account' | t }}</a>
+                {%- if pages.wishlist != empty and settings.product_wishlist_disabled != true -%}
+                    <a class="nav-link" href="{{ pages.wishlist.url }}">{{ 'layout.customer.wishlist' | t }}</a>
+                {%- endif -%}
+            {%- endif -%}
+        </div>
+    </div>
+{%- endif -%}

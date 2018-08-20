@@ -1,0 +1,168 @@
+<div class="container mb-12 mt-sm-12">
+
+    <div class="row flex-items-center">
+
+        <div class="col-12 form-content">
+
+            <!-- LOGIN -->
+            <div id="CustomerLoginForm">
+
+                <!-- PAGE HEADER -->
+                <div class="page-header py-14 text-center text-bold">
+                    {{ 'customer.login.title' | t }}
+                </div>
+                <!-- / PAGE HEADER -->
+
+                <!-- LOGIN FORM -->
+                {%- form 'customer_login' -%}
+
+                {%- include 'form-errors' -%}
+
+                <div class="alert alert-success" id="ResetSuccess" style="display:none;">
+                    {{ 'customer.recover_password.success' | t }}
+                </div>
+
+                <div class="form-group {% if form.errors contains "email" %} has-error{% endif %}">
+                    <input class="form-control" type="email"
+                           name="customer[email]" id="CustomerEmail"
+                           placeholder="{{ 'customer.login.email' | t }}"
+                           autocorrect="off" autocapitalize="off" autofocus required>
+                </div>
+
+                {%- if form.password_needed -%}
+
+                    <div class="form-group {% if form.errors contains "password" %} has-error{% endif %}">
+                        <input class="form-control" type="password" value="" name="customer[password]"
+                               id="CustomerPassword"
+                               placeholder="{{ 'customer.login.password' | t }}" required>
+                    </div>
+
+                {%- endif -%}
+
+                <div class="flex-items-center">
+                    <input type="submit" value="{{ 'customer.login.sign_in' | t }}"
+                           class="btn btn-primary submit-button text-uppercase my-6">
+                </div>
+
+                <hr>
+
+                <div class="mt-8 mb-2 text-center">
+                    <a href="#" onclick="showRecoverPasswordForm();return false;">
+                        {{ 'customer.login.forgot_password' | t }}
+                    </a>
+                </div>
+
+                <div class="text-center">
+                    {{ 'layout.customer.create_account' | t | customer_register_link }}
+                </div>
+
+                {%- endform -%}
+                <!-- / LOGIN FORM -->
+
+            </div>
+            <!-- / LOGIN -->
+
+            <!-- RECOVER -->
+            <div id="RecoverPasswordForm" style="display: none;">
+
+                <!-- PAGE HEADER -->
+                <div class="page-header py-14">
+                    <h1 class="text-center text-bold mb-4">{{ 'customer.recover_password.title' | t }}</h1>
+                    <h4 class="text-center text-light">{{ 'customer.recover_password.subtext' | t }}</h4>
+                </div>
+                <!-- / PAGE HEADER -->
+
+                <!-- RECOVER FORM -->
+                {%- form 'recover_customer_password' -%}
+
+                {%- include 'form-errors' -%}
+
+                {%- if form.posted_successfully? -%}
+                    {%- assign reset_success = true -%}
+                {%- endif -%}
+
+                <div class="form-group">
+                    <input class="form-control" type="email" value="" name="email" id="RecoverEmail"
+                           placeholder="{{ 'customer.recover_password.email' | t }}" autocorrect="off"
+                           autocapitalize="off">
+                </div>
+
+                <div class="flex-items-center">
+                    <input type="submit"
+                           class="btn btn-primary center-block submit-button text-uppercase mt-8 mb-6"
+                           value="{{ 'customer.recover_password.submit' | t }}">
+                </div>
+
+                <div class="text-center">
+                    <a href="#" onclick="hideRecoverPasswordForm();return false;">
+                        {{ 'customer.recover_password.cancel' | t }}
+                    </a>
+                </div>
+
+                {%- endform -%}
+                <!-- / RECOVER FORM -->
+
+            </div>
+            <!-- / RECOVER -->
+
+            {%- if shop.checkout.guest_login -%}
+
+                <hr class="w-100 my-14">
+
+                <!-- GUEST LOGIN -->
+                <div class="guest-login">
+
+                    <!-- PAGE HEADER -->
+                    <div class="page-header pb-8">
+                        <h3 class="text-uppercase text-center">{{ 'customer.login.guest_title' | t }}</h3>
+                    </div>
+                    <!-- / PAGE HEADER -->
+
+                    {%- form 'guest_login' -%}
+
+                    <!-- GUEST LOGIN FORM -->
+                    <div class="flex-items-center">
+                        <input type="submit"
+                               class="btn btn-primary mx-auto submit-button text-uppercase my-6"
+                               value="{{ 'customer.login.guest_continue' | t }}">
+                    </div>
+                    <!-- / GUEST LOGIN FORM -->
+
+                    {%- endform -%}
+
+                </div>
+                <!-- / GUEST LOGIN -->
+
+            {%- endif -%}
+        </div>
+    </div>
+</div>
+
+<script>
+    /*
+     Show/hide the recover password form when requested.
+     */
+    function showRecoverPasswordForm()
+    {
+        document.getElementById('RecoverPasswordForm').style.display = 'block';
+        document.getElementById('CustomerLoginForm').style.display = 'none';
+    }
+
+    function hideRecoverPasswordForm()
+    {
+        document.getElementById('RecoverPasswordForm').style.display = 'none';
+        document.getElementById('CustomerLoginForm').style.display = 'block';
+    }
+
+    // Allow deep linking to the recover password form
+    if ( window.location.hash == '#recover' )
+    {
+        showRecoverPasswordForm()
+    }
+
+    // reset_success is only true when the reset form is
+    {%- if reset_success -%}
+    document.getElementById('ResetSuccess').style.display = 'block';
+    {%- endif -%}
+
+</script>

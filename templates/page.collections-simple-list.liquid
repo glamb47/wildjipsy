@@ -1,0 +1,54 @@
+<div class="container mb-12 mt-sm-12">
+
+    <div class="row">
+
+        <div class="col-12">
+
+            <!-- PAGE HEADER -->
+            <div class="page-header py-14 text-center display-4 text-bold">
+                {{ page.title }}
+            </div>
+            <!-- / PAGE HEADER -->
+
+            <!-- PAGE CONTENT -->
+
+            <div class="page-content pb-12">
+                {{ page.content }}
+
+                {%- if linklists[page.handle].links.size > 0 -%}
+
+                    <div class="collections-list row text-center">
+                        {%- for link in linklists[page.handle].links -%}
+                            {%- if link.type == 'collection_link' -%}
+                                {% assign collection = link.object %}
+                                <div class="col-12 col-sm-4 h4 mb-2">
+                                    <a href="{{ collection.url }}">{{ collection.title }}</a>
+                                </div>
+                            {%- endif -%}
+                        {% endfor %}
+                    </div>
+
+
+                {%- else -%}
+
+                    <!-- NO LIST LINK MESSAGE -->
+                    <div class="row text-center px-16">
+
+                        <p>
+                            You do not have a link list with a handle set to <kbd>{{ page.handle }}</kbd>, or you do and
+                            it's
+                            empty. Go ahead and create a link list called <b>{{ page.title }}</b> on your
+                            <a href="/admin/links" target="_blank"> Navigation page </a>
+                            and populate that link list with links that point to collections, to see collections
+                            listed here. Make sure the link list also has a handle set to <kbd>{{ page.handle }}</kbd>.
+                        </p>
+
+                    </div>
+                    <!-- / NO LIST LINK MESSAGE -->
+
+                {%- endif -%}
+
+            </div>
+        </div>
+    </div>
+</div>

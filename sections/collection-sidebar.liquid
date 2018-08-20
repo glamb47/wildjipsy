@@ -1,0 +1,1311 @@
+{%- assign collection_page_style = template.suffix | split: '_' | first | default: settings.collection_page_style -%}
+
+<!-- ASIDE -->
+<div id="collection-sidebar"
+     class="sidebar collection-sidebar visible-md-up"
+     js-bar options='{"fixed":true, "position":"right", "mediaStep":"sm", "bodyAppend": true}'
+     ng-swipe-right="jb.closeBar()">
+    <div class="jasper-bar-content" js-scroll
+         {% unless collection_page_style == 'popover-filters' %}js-scroll-trigger="jb.isActive"{% endunless %}>
+
+        {%- for block in section.blocks -%}
+
+            {%- case block.type -%}
+
+            {%- comment -%}
+            {# @ Filter #}
+            {%- endcomment -%}
+            {%- when 'filter' -%}
+
+            {%- if block.settings.show_filter and block.settings.tags != blank -%}
+
+                {%- include section.settings.collection_filter_behaviour tags_string: block.settings.tags -%}
+
+                {%- if tags.size > 0 -%}
+
+                    <section id="{{ block.id }}" class="sidebar-block filter-block">
+
+                        <div class="sidebar-block-header h4">
+                            {%- if block.settings.title != blank -%}
+                                {{ block.settings.title }}
+                            {%- else -%}
+                                {{ collection.title }}
+                            {%- endif -%}
+                        </div>
+
+                        <div class="sidebar-block-content filter-block-content"
+                            {% if block.settings.enable_show_more %}
+                                js-filter-show-more="{{ block.settings.show_more_height }}"
+                                style="max-height:{{ block.settings.show_more_height }}px;"
+                            {% endif %}
+                        >
+
+                            {%- comment -%}
+                            {# @ List #}
+                            {%- endcomment -%}
+                            {%- case block.settings.filter_style -%}
+
+                            {%- when 'list' -%}
+
+                            <ul class="filter-list list list-unstyled">
+
+                                {%- for tag in tags -%}
+
+                                    {%- include 'util-is-in-array' array: current_tags, check: tag -%}
+
+                                    <li>
+
+                                        <div class="row flex-items-middle m-0">
+
+                                            <div
+                                                ng-class="{'active': cm.tags['{{ block.id }}'] == '{{ tag | handleize }}'}"
+                                                ng-click="cm.tags['{{ block.id }}'] = '{{ tag | handleize }}'"
+                                                class="link col flex-items-middle {% if is_in_array %} active{% endif %}">
+                                                {{ tag }}
+                                            </div>
+
+                                            {%- if is_in_array -%}
+                                                <div class="col flex-nogrow icon-close link deselect-button s-4"
+                                                     ng-init="cm.tags['{{ block.id }}'] = '{{ tag | handleize }}'"
+                                                     ng-click="cm.tags['{{ block.id }}'] = ''"></div>
+                                            {%- endif -%}
+
+                                        </div>
+
+                                    </li>
+
+                                {%- endfor -%}
+
+                            </ul>
+
+                            {%- comment -%}
+                            {# @ Color / Image List #}
+                            {%- endcomment -%}
+                            {%- when 'color-image-list' -%}
+
+                            <ul class="filter-list color-image-list list-unstyled row mr-md-0">
+
+                                {%- for tag in tags -%}
+
+                                    {%- include 'util-is-in-array' array: current_tags, check: tag -%}
+
+                                    <li class="col-12 col-md-6 pr-md-0">
+
+                                        <div class="row flex-items-middle m-0">
+
+                                            <div
+                                                ng-class="{'active': cm.tags['{{ block.id }}'] == '{{ tag | handleize }}'}"
+                                                ng-click="cm.tags['{{ block.id }}'] = '{{ tag | handleize }}'"
+                                                class="col link flex-items-middle {% if is_in_array %}active {% endif %} flex-items-middle">
+
+                                                <div class="color-image-preview"
+                                                     ng-style="{'background-color':cm.variantColor('{{ tag }}'), 'background-image':cm.variantImage('{{ tag }}')}">
+                                                </div>
+
+                                                <div class="col pr-1">{{ tag }}</div>
+
+                                            </div>
+
+                                            {%- if is_in_array -%}
+                                                <div class="col flex-nogrow icon-close link deselect-button s-4"
+                                                     ng-init="cm.tags['{{ block.id }}'] = '{{ tag | handleize }}'"
+                                                     ng-click="cm.tags['{{ block.id }}'] = ''"></div>
+                                            {%- endif -%}
+
+                                        </div>
+
+                                    </li>
+
+                                {%- endfor -%}
+
+                            </ul>
+
+                            {%- comment -%}
+                            {# @ Color / Image Boxed #}
+                            {%- endcomment -%}
+                            {%- when 'color-image-boxed' -%}
+
+                            <div class="filter-list color-image-boxed list-unstyled">
+
+                                {%- for tag in tags -%}
+
+                                    {%- include 'util-is-in-array' array: current_tags, check: tag -%}
+                                    <button class="btn mr-1 mb-2"
+                                            ng-class="{'active': cm.tags['{{ block.id }}'] == '{{ tag | handleize }}'}"
+                                        {%- if is_in_array -%}
+                                            ng-init="cm.tags['{{ block.id }}'] = '{{ tag | handleize }}'"
+                                        {%- endif -%}
+                                        {%- if is_in_array -%}
+                                            ng-click="cm.tags['{{ block.id }}'] = ''"
+                                        {%- else -%}
+                                            ng-click="cm.tags['{{ block.id }}'] = '{{ tag | handleize }}'"
+                                        {%- endif -%}
+                                            class="link {% if is_in_array %}active {% endif %}"
+                                    >
+                                        <div class="color-image-preview"
+                                             ng-style="{'background-color':cm.variantColor('{{ tag }}'), 'background-image':cm.variantImage('{{ tag }}')}">
+                                        </div>
+                                        <span class="tag-title">{{ tag }}</span>
+                                    </button>
+                                {%- endfor -%}
+                            </div>
+
+                            {%- comment -%}
+                            <ul class="filter-list color-image-list list-unstyled row mr-md-0">
+
+                                {%- for tag in tags -%}
+
+                                    {%- include 'util-is-in-array' array: current_tags, check: tag -%}
+
+                                    <li class="col-12 col-md-6 pr-md-0">
+
+                                        <div class="row flex-items-middle m-0">
+
+                                            <div
+                                                ng-class="{'active': cm.tags['{{ block.id }}'] == '{{ tag | handleize }}'}"
+                                                ng-click="cm.tags['{{ block.id }}'] = '{{ tag | handleize }}'"
+                                                class="col link flex-items-middle {% if is_in_array %}active {% endif %} flex-items-middle">
+
+                                                <div class="color-image-preview"
+                                                     ng-style="{'background-color':cm.variantColor('{{ tag }}'), 'background-image':cm.variantImage('{{ tag }}')}">
+                                                </div>
+
+                                                <div class="col pr-1">{{ tag }}</div>
+
+                                            </div>
+
+                                            {%- if is_in_array -%}
+                                                <div class="col flex-nogrow icon-close link deselect-button s-4"
+                                                     ng-init="cm.tags['{{ block.id }}'] = '{{ tag | handleize }}'"
+                                                     ng-click="cm.tags['{{ block.id }}'] = ''"></div>
+                                            {%- endif -%}
+
+                                        </div>
+
+                                    </li>
+
+                                {%- endfor -%}
+
+                            </ul>
+                            {%- endcomment -%}
+
+                            {%- comment -%}
+                            {# @ Boxed Buttons #}
+                            {%- endcomment -%}
+                            {%- when 'boxed-buttons' -%}
+
+                            <div class="filter-list boxed-buttons-list list-unstyled">
+
+                                {%- for tag in tags -%}
+
+                                    {%- include 'util-is-in-array' array: current_tags, check: tag -%}
+
+                                    <button class="btn btn-bordered mr-1 mb-2"
+                                            ng-class="{'active': cm.tags['{{ block.id }}'] == '{{ tag | handleize }}'}"
+
+                                        {%- if is_in_array -%}
+                                            ng-init="cm.tags['{{ block.id }}'] = '{{ tag | handleize }}'"
+                                        {%- endif -%}
+
+                                        {%- if is_in_array -%}
+                                            ng-click="cm.tags['{{ block.id }}'] = ''"
+                                        {%- else -%}
+                                            ng-click="cm.tags['{{ block.id }}'] = '{{ tag | handleize }}'"
+                                        {%- endif -%}
+
+                                            class="link {% if is_in_array %}active {% endif %}">
+                                        {{ tag }}
+                                    </button>
+
+                                {%- endfor -%}
+
+                            </div>
+
+                            {%- endcase -%}
+
+                        </div>
+
+                    </section>
+
+                {%- endif -%}
+
+            {%- endif -%}
+
+            {%- comment -%}
+            {# @ Menu #}
+            {%- endcomment -%}
+            {%- when 'menu' -%}
+
+            <section class="sidebar-block">
+                {%- if block.settings.title != blank -%}
+                    <div class="sidebar-block-header h4">
+                        {{ block.settings.title }}
+                    </div>
+                {%- endif -%}
+
+                <div class="sidebar-block-content">
+
+                    {%- if block.settings.type == 'popover' -%}
+
+                        {%- if settings.collection_page_style == 'left-sidebar-with-filters' -%}
+                            {%- assign popover_direction = 'right-start' -%}
+                        {%- endif -%}
+
+                        {%- if settings.collection_page_style == 'right-sidebar-with-filters' -%}
+                            {%- assign popover_direction = 'left-start' -%}
+                        {%- endif -%}
+
+                        <div class="hidden-sm-down">
+                            {%- include 'nav' with 'vertical'
+                            nav_item:'nav-item-popover',
+                            menu: block.settings.menu,
+                            style: block.settings.style,
+                            align: block.settings.align,
+                            popover_direction: popover_direction,
+                            popover_classes: 'from-sidebar' -%}
+                        </div>
+
+                        <div class="hidden-md-up">
+                            {%- include 'nav' with 'vertical',
+                            nav_item:'nav-item-collapse',
+                            menu: block.settings.menu,
+                            style: block.settings.style,
+                            align: block.settings.align -%}
+                        </div>
+
+                    {%- else -%}
+                        {%- include 'nav' with 'vertical',
+                        nav_item:'nav-item-collapse',
+                        menu: block.settings.menu,
+                        style: block.settings.style,
+                        align: block.settings.align -%}
+                    {%- endif -%}
+                </div>
+            </section>
+
+            {%- comment -%}
+            {# @ Featured product #}
+            {%- endcomment -%}
+            {%- when 'featured_product' -%}
+
+            {%- assign image_size = '300x' -%}
+            {%- if settings.enable_product_custom_aspect_ratio -%}
+                {%- assign product_image_ratio = settings.product_image_aspect_ratio_w | plus :0.0 | divided_by: settings.product_image_aspect_ratio_h -%}
+                {%- assign image_height = 300 | divided_by: product_image_ratio | round -%}
+                {%- assign image_size = 300 | append:'x' | append: image_height -%}
+            {%- endif -%}
+
+            <section class="sidebar-block">
+                {%- if block.settings.title != blank -%}
+                    <div class="sidebar-block-header h4">
+                        {{ block.settings.title }}
+                    </div>
+                {%- endif -%}
+
+                <div class="sidebar-block-content">
+                    {%- include 'product-item'
+                    product: all_products[block.settings.product],
+                    hover_bg: block.settings.hover_bg,
+                    style: block.settings.product_style,
+                    sale_badge_style : block.settings.product_sale_badge_style,
+                    hover_buttons_style : block.settings.product_hover_buttons_style,
+                    show_star_rating: block.settings.product_show_star_rating,
+                    image_size: image_size -%}
+                </div>
+            </section>
+
+            {%- comment -%}
+            {# @ Product list carousel #}
+            {%- endcomment -%}
+            {%- when 'product_list_carousel' -%}
+
+            {%- assign product_limit = false -%}
+            {%- if block.settings.product_limit != blank -%}
+                {%- assign product_limit = block.settings.product_limit -%}
+            {%- endif -%}
+
+            {%- assign image_size = '120x' -%}
+            {%- if settings.enable_product_custom_aspect_ratio -%}
+                {%- assign product_image_ratio = settings.product_image_aspect_ratio_w | plus :0.0 | divided_by: settings.product_image_aspect_ratio_h -%}
+                {%- assign image_height = 120 | divided_by: product_image_ratio | round -%}
+                {%- assign image_size = 120 | append:'x' | append: image_height -%}
+            {%- endif -%}
+
+            <section class="sidebar-block">
+                {%- include 'product-list-carousel'
+                title: block.settings.title,
+                collection: collections[block.settings.collection],
+                row_count: block.settings.row_count,
+                show_separators: block.settings.show_separators,
+                show_images: block.settings.show_images,
+                image_size: image_size,
+                product_limit: product_limit -%}
+            </section>
+
+            {%- comment -%}
+            {# @ Product single carousel #}
+            {%- endcomment -%}
+            {%- when 'product_single_carousel' -%}
+
+            {%- assign product_limit = false -%}
+            {%- if block.settings.product_limit != blank -%}
+                {%- assign product_limit = block.settings.product_limit -%}
+            {%- endif -%}
+
+            {%- assign image_size = '300x' -%}
+            {%- if settings.enable_product_custom_aspect_ratio -%}
+                {%- assign product_image_ratio = settings.product_image_aspect_ratio_w | plus :0.0 | divided_by: settings.product_image_aspect_ratio_h -%}
+                {%- assign image_height = 300 | divided_by: product_image_ratio | round -%}
+                {%- assign image_size = 300 | append:'x' | append: image_height -%}
+            {%- endif -%}
+
+            <section class="sidebar-block">
+                {%- include 'product-single-carousel'
+                title: block.settings.title,
+                collection: collections[block.settings.collection],
+                product_hover_bg: block.settings.hover_bg,
+                product_style: block.settings.product_style,
+                product_sale_badge_style: block.settings.product_sale_badge_style,
+                product_hover_buttons_style: block.settings.product_hover_buttons_style,
+                product_show_star_rating: block.settings.product_show_star_rating,
+                product_image_size: image_size,
+                product_limit: product_limit -%}
+            </section>
+
+            {%- comment -%}
+            {# @ Featured collection #}
+            {%- endcomment -%}
+            {%- when 'featured_collection' -%}
+
+            {%- assign image_size = '300x' -%}
+
+            {%- if settings.enable_collection_custom_aspect_ratio -%}
+                {%- assign collection_image_ratio = settings.collection_image_aspect_ratio_w | plus :0.0 | divided_by: settings.collection_image_aspect_ratio_h -%}
+                {%- assign image_height = 300 | divided_by: collection_image_ratio | round -%}
+                {%- assign image_size = 300 | append:'x' | append: image_height -%}
+            {%- endif -%}
+
+            <section class="sidebar-block">
+                {%- if block.settings.title != blank -%}
+                    <div class="sidebar-block-header h4">
+                        {{ block.settings.title }}
+                    </div>
+                {%- endif -%}
+
+                <div class="sidebar-block-content">
+                    {%- include 'collection-item'
+                    collection: collections[block.settings.collection],
+                    show_product_counts: block.settings.show_product_counts,
+                    hover_bg: block.settings.hover_bg,
+                    image_size: image_size -%}
+                </div>
+            </section>
+
+            {%- comment -%}
+            {# @ Featured article #}
+            {%- endcomment -%}
+            {%- when 'featured_article' -%}
+
+            {%- assign image_size = '300x' -%}
+
+            {%- if settings.enable_article_custom_aspect_ratio -%}
+                {%- assign article_image_ratio = settings.article_image_aspect_ratio_w | plus :0.0 | divided_by: settings.article_image_aspect_ratio_h -%}
+                {%- assign image_height = 300 | divided_by: article_image_ratio | round -%}
+                {%- assign image_size = 300 | append:'x' | append: image_height -%}
+            {%- endif -%}
+
+            {%- assign articleArr = block.settings.article | split: '/' -%}
+
+            {%- assign article = false -%}
+
+            {%- for article_item in blogs[articleArr[0]].articles -%}
+                {%- if  article_item.handle == block.settings.article -%}
+                    {%- assign article = article_item -%}
+                {%- endif -%}
+            {%- endfor -%}
+
+            <section class="sidebar-block">
+                {%- if block.settings.title != blank -%}
+                    <div class="sidebar-block-header h4">
+                        {{ block.settings.title }}
+                    </div>
+                {%- endif -%}
+                <div class="sidebar-block-content">
+                    {%- include 'article-grid-item'
+                    style: block.settings.article_style,
+                    image_size: image_size -%}
+                </div>
+            </section>
+
+            {%- comment -%}
+            {# @ Article list carousel #}
+            {%- endcomment -%}
+            {%- when 'article_list_carousel' -%}
+
+            {%- assign image_size = '120x' -%}
+
+            {%- if settings.enable_article_custom_aspect_ratio -%}
+                {%- assign article_image_ratio = settings.article_image_aspect_ratio_w | plus :0.0 | divided_by: settings.article_image_aspect_ratio_h -%}
+                {%- assign image_height = 120 | divided_by: article_image_ratio | round -%}
+                {%- assign image_size = 120 | append:'x' | append: image_height -%}
+            {%- endif -%}
+
+            {%- assign article_limit = false -%}
+            {%- if block.settings.article_limit != blank -%}
+                {%- assign article_limit = block.settings.article_limit -%}
+            {%- endif -%}
+
+            <section class="sidebar-block">
+                {%- include 'article-list-carousel'
+                title: block.settings.title,
+                blog: blogs[block.settings.blog],
+                row_count: block.settings.row_count,
+                show_separators: block.settings.show_separators,
+                show_images: block.settings.show_images,
+                image_size: image_size,
+                article_limit: article_limit -%}
+            </section>
+
+            {%- comment -%}
+            {# @ Article single carousel #}
+            {%- endcomment -%}
+            {%- when 'article_single_carousel' -%}
+
+            {%- assign image_size = '300x' -%}
+
+            {%- if settings.enable_article_custom_aspect_ratio -%}
+                {%- assign article_image_ratio = settings.article_image_aspect_ratio_w | plus :0.0 | divided_by: settings.article_image_aspect_ratio_h -%}
+                {%- assign image_height = 300 | divided_by: article_image_ratio | round -%}
+                {%- assign image_size = 300 | append:'x' | append: image_height -%}
+            {%- endif -%}
+
+            {%- assign article_limit = false -%}
+            {%- if block.settings.article_limit != blank -%}
+                {%- assign article_limit = block.settings.article_limit -%}
+            {%- endif -%}
+
+            <section class="sidebar-block">
+                {%- include 'article-single-carousel'
+                title: block.settings.title,
+                blog: blogs[block.settings.blog],
+                row_count: block.settings.row_count,
+                image_size: image_size,
+                article_limit: article_limit -%}
+            </section>
+
+            {%- comment -%}
+            {# @ Image #}
+            {%- endcomment -%}
+            {%- when 'image' -%}
+
+            {%- if block.settings.title != blank -%}
+                <div class="sidebar-block-header h4">
+                    {{ block.settings.title }}
+                </div>
+            {%- endif -%}
+
+            <div class="sidebar-block-content">
+
+                <div class="image-wrapper w-100">
+
+                    {% if block.settings.url != blank %}<a href="{{ block.settings.url }}">{% endif %}
+
+                        {%- if block.settings.image != blank -%}
+                            <img class="img-fluid w-100"
+                                 src="{{ block.settings.image | img_url: '300x' }}"
+                                 srcset="{{ block.settings.image | img_url: '300x' }} 1x, {{ block.settings.image | img_url: '300x', scale:2 }} 2x"
+                                 alt="{{ block.settings.image.alt | escape }}">
+                        {%- else -%}
+                            {{ 'image' | placeholder_svg_tag: 'placeholder-svg img-fluid w-100' }}
+                        {%- endif -%}
+
+                        {% if block.settings.url != blank %}</a>{% endif %}
+                </div>
+
+            </div>
+
+            {%- comment -%}
+            {# @ Html #}
+            {%- endcomment -%}
+            {%- when 'html' -%}
+
+            <section class="sidebar-block">
+
+                {%- if block.settings.title != blank -%}
+                    <div class="sidebar-block-header h4">
+                        {{ block.settings.title }}
+                    </div>
+                {%- endif -%}
+
+                <div class="sidebar-block-content">
+
+                    <div class="grid-item html-grid-item {{ column_class }} {{ item_class }} flex-item mb-4">
+                        {%- if block.settings.html != blank -%}
+                            {{ block.settings.html }}
+                        {%- else -%}
+                            <span>Insert HTML code..</span>
+                        {%- endif -%}
+                    </div>
+
+                </div>
+
+            </section>
+
+            {%- endcase -%}
+
+        {%- endfor -%}
+
+    </div>
+</div>
+<!-- / ASIDE -->
+
+<script type="application/json">
+    /*"*/{% schema %}/*"*/
+    {
+        "name": "Collection sidebar",
+        "settings": [
+            {
+                "type": "radio",
+                "id": "collection_filter_behaviour",
+                "label": "Collection filtering behaviour",
+                "default": "util-collection-filter-standard",
+                "options": [
+                    {
+                        "value": "util-collection-filter-basic",
+                        "label": "Basic"
+                    },
+                    {
+                        "value": "util-collection-filter-standard",
+                        "label": "Standard"
+                    },
+                    {
+                        "value": "util-collection-filter-advanced",
+                        "label": "Advanced (Not recommended)"
+                    }
+                ]
+            },
+            {
+                "type": "paragraph",
+                "content": "Basic: All filters will be shown at all times regardless of their availabilities. Most basic and the fastest filtering."
+            },
+            {
+                "type": "paragraph",
+                "content": "Standard: Uses Shopify's standard feature to get the tags of the products from the current page. Standard filtering will eliminate all other options when a filter is active: e.g. If none of the products have 'Red' and 'Blue' together, clicking 'Red' filter will eliminate the 'Blue' filter even if there may be a product with a 'Blue' tag within the collection."
+            },
+            {
+                "type": "paragraph",
+                "content": "Advanced: Custom filtering solution. Advanced filter will check all filters against all products, one by one: e.g. If none of the products have 'Red' and 'Blue' together, clicking 'Red' filter will NOT eliminate the 'Blue' filter as there may be a product with a 'Blue' tag within the collection. Very heavy and not recommended if there are a lot of products with a lot of tags."
+            }
+        ],
+        "blocks": [
+            {
+                "type": "filter",
+                "name": "Filter",
+                "settings": [
+                    {
+                        "type": "checkbox",
+                        "id": "show_filter",
+                        "label": "Show filter",
+                        "default": true
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title"
+                    },
+                    {
+                        "type": "select",
+                        "id": "filter_style",
+                        "label": "Filter Style",
+                        "default": "list",
+                        "options": [
+                            {
+                                "value": "list",
+                                "label": "List"
+                            },
+                            {
+                                "value": "color-image-list",
+                                "label": "Color/Image list"
+                            },
+                            {
+                                "value": "color-image-boxed",
+                                "label": "Color/Image boxed"
+                            },
+                            {
+                                "value": "boxed-buttons",
+                                "label": "Boxed buttons"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "textarea",
+                        "id": "tags",
+                        "placeholder": "Tags to filter. Multiple tags can be separated by comma (,)",
+                        "label": "Tags",
+                        "default": "Short, Midi, Long, Day, Evening, Long Sleeve, Short Sleeve, Skinny, Straight, Mini, Coat, Puffer, Quilted, Parka, Trench, Sweater, Tank Top"
+                    },
+                    {
+                        "type": "checkbox",
+                        "id": "enable_show_more",
+                        "label": "Enable show more",
+                        "default": true
+                    },
+                    {
+                        "type": "text",
+                        "id": "show_more_height",
+                        "label": "Show more height (px)",
+                        "default": "200",
+                        "info": "If the filter content exceeds the given height, show more button will appear"
+                    }
+                ]
+            },
+            {
+                "type": "menu",
+                "name": "Menu",
+                "settings": [
+                    {
+                        "type": "header",
+                        "content": "Menu"
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title"
+                    },
+                    {
+                        "type": "link_list",
+                        "id": "menu",
+                        "label": "Menu"
+                    },
+                    {
+                        "type": "select",
+                        "id": "type",
+                        "label": "Type",
+                        "options": [
+                            {
+                                "value": "collapsible",
+                                "label": "Collapsible menu"
+                            },
+                            {
+                                "value": "popover",
+                                "label": "Popover menu"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "style",
+                        "label": "Style",
+                        "options": [
+                            {
+                                "value": "simple",
+                                "label": "Simple"
+                            },
+                            {
+                                "value": "classic",
+                                "label": "Classic"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "align",
+                        "label": "Alignment",
+                        "options": [
+                            {
+                                "value": "left",
+                                "label": "Left"
+                            },
+                            {
+                                "value": "center",
+                                "label": "Center"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "featured_product",
+                "name": "Product",
+                "settings": [
+                    {
+                        "type": "header",
+                        "content": "Product"
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title"
+                    },
+                    {
+                        "label": "Product",
+                        "id": "product",
+                        "type": "product"
+                    },
+                    {
+                        "type": "select",
+                        "id": "product_style",
+                        "label": "Product style",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "style1",
+                                "label": "Style 1"
+                            },
+                            {
+                                "value": "style2",
+                                "label": "Style 2"
+                            },
+                            {
+                                "value": "style3",
+                                "label": "Style 3"
+                            },
+                            {
+                                "value": "style4",
+                                "label": "Style 4"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "product_sale_badge_style",
+                        "label": "Sale badge style",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "text",
+                                "label": "\"Sale\" text"
+                            },
+                            {
+                                "value": "percentage",
+                                "label": "Percentage of discount"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "product_hover_buttons_style",
+                        "label": "Hover buttons style",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "text-buttons",
+                                "label": "Text buttons"
+                            },
+                            {
+                                "value": "icon-buttons",
+                                "label": "Icon buttons"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "product_show_star_rating",
+                        "label": "Star rating",
+                        "default": "",
+                        "info": "This option requires [Product Reviews App](https://apps.shopify.com/product-reviews)",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "show",
+                                "label": "Show"
+                            },
+                            {
+                                "value": "hide",
+                                "label": "Hide"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "product_list_carousel",
+                "name": "Product list carousel",
+                "settings": [
+                    {
+                        "type": "header",
+                        "content": "Product list carousel"
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title"
+                    },
+                    {
+                        "type": "collection",
+                        "id": "collection",
+                        "label": "Collection"
+                    },
+                    {
+                        "type": "select",
+                        "id": "row_count",
+                        "label": "Row count",
+                        "default": "3",
+                        "options": [
+                            {
+                                "value": "1",
+                                "label": "1"
+                            },
+                            {
+                                "value": "2",
+                                "label": "2"
+                            },
+                            {
+                                "value": "3",
+                                "label": "3"
+                            },
+                            {
+                                "value": "4",
+                                "label": "4"
+                            },
+                            {
+                                "value": "5",
+                                "label": "5"
+                            },
+                            {
+                                "value": "6",
+                                "label": "6"
+                            },
+                            {
+                                "value": "7",
+                                "label": "7"
+                            },
+                            {
+                                "value": "8",
+                                "label": "8"
+                            },
+                            {
+                                "value": "9",
+                                "label": "9"
+                            },
+                            {
+                                "value": "10",
+                                "label": "10"
+                            }
+                        ]
+                    },
+                    {
+                        "id": "product_limit",
+                        "type": "text",
+                        "label": "Product limit",
+                        "info": "Leave empty for not to limit",
+                        "default": "9"
+                    },
+                    {
+                        "type": "checkbox",
+                        "id": "show_separators",
+                        "label": "Show separators",
+                        "default": true
+                    },
+                    {
+                        "type": "checkbox",
+                        "id": "show_images",
+                        "label": "Show images",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "type": "product_single_carousel",
+                "name": "Product single carousel",
+                "settings": [
+                    {
+                        "type": "header",
+                        "content": "Product single carousel"
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title"
+                    },
+                    {
+                        "label": "Collection",
+                        "id": "collection",
+                        "type": "collection"
+                    },
+                    {
+                        "type": "select",
+                        "id": "product_style",
+                        "label": "Product style",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "style1",
+                                "label": "Style 1"
+                            },
+                            {
+                                "value": "style2",
+                                "label": "Style 2"
+                            },
+                            {
+                                "value": "style3",
+                                "label": "Style 3"
+                            },
+                            {
+                                "value": "style4",
+                                "label": "Style 4"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "product_sale_badge_style",
+                        "label": "Sale badge style",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "text",
+                                "label": "\"Sale\" text"
+                            },
+                            {
+                                "value": "percentage",
+                                "label": "Percentage of discount"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "product_hover_buttons_style",
+                        "label": "Hover buttons style",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "text-buttons",
+                                "label": "Text buttons"
+                            },
+                            {
+                                "value": "icon-buttons",
+                                "label": "Icon buttons"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "product_show_star_rating",
+                        "label": "Star rating",
+                        "default": "",
+                        "info": "This option requires [Product Reviews App](https://apps.shopify.com/product-reviews)",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "show",
+                                "label": "Show"
+                            },
+                            {
+                                "value": "hide",
+                                "label": "Hide"
+                            }
+                        ]
+                    },
+                    {
+                        "id": "product_limit",
+                        "type": "text",
+                        "label": "Product limit",
+                        "info": "Leave empty for not to limit",
+                        "default": "9"
+                    }
+                ]
+            },
+            {
+                "type": "featured_collection",
+                "name": "Collection",
+                "settings": [
+                    {
+                        "type": "header",
+                        "content": "Collection"
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title"
+                    },
+                    {
+                        "label": "Collection",
+                        "id": "collection",
+                        "type": "collection"
+                    },
+                    {
+                        "type": "select",
+                        "id": "hover_bg",
+                        "label": "Hover background color",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "hover-light",
+                                "label": "Light"
+                            },
+                            {
+                                "value": "hover-dark",
+                                "label": "Dark"
+                            },
+                            {
+                                "value": "hover-transparent",
+                                "label": "Transparent"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "checkbox",
+                        "id": "show_product_counts",
+                        "label": "Show Product Count"
+                    }
+                ]
+            },
+            {
+                "type": "featured_article",
+                "name": "Article",
+                "settings": [
+                    {
+                        "type": "header",
+                        "content": "Article"
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title"
+                    },
+                    {
+                        "label": "Article",
+                        "id": "article",
+                        "type": "article"
+                    },
+                    {
+                        "type": "select",
+                        "id": "article_style",
+                        "label": "Article style",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "classic",
+                                "label": "Classic"
+                            },
+                            {
+                                "value": "small-card",
+                                "label": "Small Card"
+                            },
+                            {
+                                "value": "tall-card",
+                                "label": "Tall Card"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "article_list_carousel",
+                "name": "Article list carousel",
+                "settings": [
+                    {
+                        "type": "header",
+                        "content": "Article list carousel"
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title"
+                    },
+                    {
+                        "type": "blog",
+                        "id": "blog",
+                        "label": "Blog"
+                    },
+                    {
+                        "type": "select",
+                        "id": "row_count",
+                        "label": "Row count",
+                        "default": "3",
+                        "options": [
+                            {
+                                "value": "1",
+                                "label": "1"
+                            },
+                            {
+                                "value": "2",
+                                "label": "2"
+                            },
+                            {
+                                "value": "3",
+                                "label": "3"
+                            },
+                            {
+                                "value": "4",
+                                "label": "4"
+                            },
+                            {
+                                "value": "5",
+                                "label": "5"
+                            },
+                            {
+                                "value": "6",
+                                "label": "6"
+                            },
+                            {
+                                "value": "7",
+                                "label": "7"
+                            },
+                            {
+                                "value": "8",
+                                "label": "8"
+                            },
+                            {
+                                "value": "9",
+                                "label": "9"
+                            },
+                            {
+                                "value": "10",
+                                "label": "10"
+                            }
+                        ]
+                    },
+                    {
+                        "id": "article_limit",
+                        "type": "text",
+                        "label": "Article limit",
+                        "info": "Leave empty for not to limit",
+                        "default": "9"
+                    },
+                    {
+                        "type": "checkbox",
+                        "id": "show_separators",
+                        "label": "Show separators",
+                        "default": true
+                    },
+                    {
+                        "type": "checkbox",
+                        "id": "show_images",
+                        "label": "Show images",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "type": "article_single_carousel",
+                "name": "Article single carousel",
+                "settings": [
+                    {
+                        "type": "header",
+                        "content": "Article single carousel"
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title"
+                    },
+                    {
+                        "type": "blog",
+                        "id": "blog",
+                        "label": "Blog"
+                    },
+                    {
+                        "type": "select",
+                        "id": "article_style",
+                        "label": "Article style",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "classic",
+                                "label": "Classic"
+                            },
+                            {
+                                "value": "small-card",
+                                "label": "Small Card"
+                            },
+                            {
+                                "value": "tall-card",
+                                "label": "Tall Card"
+                            }
+                        ]
+                    },
+                    {
+                        "id": "article_limit",
+                        "type": "text",
+                        "label": "Article limit",
+                        "info": "Leave empty for not to limit",
+                        "default": "9"
+                    }
+                ]
+            },
+            {
+                "type": "image",
+                "name": "Image",
+                "settings": [
+                    {
+                        "type": "header",
+                        "content": "Image"
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title"
+                    },
+                    {
+                        "type": "image_picker",
+                        "id": "image",
+                        "label": "Image"
+                    },
+                    {
+                        "type": "url",
+                        "id": "url",
+                        "label": "Link url"
+                    }
+                ]
+            },
+            {
+                "type": "html",
+                "name": "Html",
+                "settings": [
+                    {
+                        "type": "header",
+                        "content": "Custom html"
+                    },
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title"
+                    },
+                    {
+                        "type": "textarea",
+                        "id": "html",
+                        "label": "Html",
+                        "placeholder": "Use basic HTML to format text",
+                        "default": "Custom Html"
+                    }
+                ]
+            }
+        ]
+    }
+    /*"*/{% endschema %}/*"*/
+</script>

@@ -1,0 +1,1061 @@
+{%- assign content_width = section.settings.content_width | default: settings.content_width -%}
+
+{%- include 'util-section-bg-color'
+auto_bg_color: section.settings.auto_bg_color,
+bg_color: section.settings.bg_color,
+bg_opacity: section.settings.bg_opacity -%}
+
+{%- capture section_style -%}
+background-size: {{ section.settings.bg_size }}; background-repeat: {{ section.settings.bg_repeat }}; background-position: {{ section.settings.bg_position }};
+{%- if section.settings.bg_image != blank -%}background-image: url({{ section.settings.bg_image | img_url: '1920x' }});{%- endif -%}
+background-color: {{ section_bg_color }};
+{%- endcapture -%}
+
+{%- if section.settings.bg_color_type == 'auto' -%}
+    {%- include 'util-color-brightness' color: section_bg_color, append: '-bg' -%}
+{%- else -%}
+    {%- assign color_brightness = section.settings.bg_color_type -%}
+{%- endif -%}
+
+<section id="{{ section.settings.custom_id }}"
+         class="section section-h-{{ section.settings.section_height }} {{ section.settings.additional_classes }} {{ section.settings.show_only_desktop_or_mobile }} {{ color_brightness }} {% if section.settings.bg_parallax == 'enable' %}parallax-bg{% endif %}"
+         style="{{ section_style }}"
+         {% if section.settings.section_height == "window-height" %}js-fill-height{% endif %}>
+
+    <div class="section-content {{ content_width }}">
+
+        {%- if section.settings.show_title and section.settings.title != blank -%}
+            <h3 class="section-title text-uppercase py-12 m-0 {{ section.settings.title_alignment }} animate-on-scroll">
+                {{ section.settings.title }}
+            </h3>
+        {%- endif -%}
+
+        {%- include 'util-column-class' column_count: section.settings.column_count, column_min: section.settings.column_count_mobile -%}
+        {%- include 'util-image-size' column_count: section.settings.column_count -%}
+
+        {%- capture item_class -%} {{ column_class }} {% unless section.settings.masonry %}
+        animate-on-scroll{% endunless %} {%- endcapture -%}
+
+        <div class="{% if section.settings.masonry %} animate-on-scroll{% endif %}">
+
+            <div class="grid row {% if section.settings.masonry %} grid-masonry{% endif %}">
+
+                {%- for block in section.blocks limit: section.blocks.size -%}
+
+                    {%- case block.type -%}
+
+                    {%- comment -%}
+                    {# @ featured_collection#}
+                    {%- endcomment -%}
+                    {%- when 'featured_collection' -%}
+
+                    {%- assign collection_image_ratio = settings.collection_image_aspect_ratio_w | plus :0.0 | divided_by: settings.collection_image_aspect_ratio_h -%}
+                    {%- include 'util-image-size' column_count: section.settings.column_count, image_ratio: collection_image_ratio, custom_ratio: settings.enable_collection_custom_aspect_ratio -%}
+
+                    {%- include 'collection-item'
+                    collection: collections[block.settings.collection],
+                    style: block.settings.collection_style,
+                    item_class: item_class,
+                    show_product_counts: section.settings.show_product_counts,
+                    hover_bg: section.settings.hover_bg,
+                    image_size: image_size -%}
+
+                    {%- comment -%}
+                    {# @ collection_products#}
+                    {%- endcomment -%}
+                    {%- when 'collection_products' -%}
+
+                    {%- assign product_image_ratio = settings.product_image_aspect_ratio_w | plus :0.0 | divided_by: settings.product_image_aspect_ratio_h -%}
+                    {%- include 'util-image-size' column_count: section.settings.column_count, image_ratio: product_image_ratio, custom_ratio: settings.enable_product_custom_aspect_ratio -%}
+
+                    {%- assign collection = collections[block.settings.collection] -%}
+
+                    {%- assign product_limit = false -%}
+                    {%- if block.settings.product_limit != blank -%}
+                        {%- assign product_limit = block.settings.product_limit -%}
+                    {%- endif -%}
+
+                    {%- if collection.products.size > 0 -%}
+
+                        {%- for product in collection.products limit: product_limit -%}
+
+                            {%- include 'product-item'
+                            product: product,
+                            hover_bg: section.settings.hover_bg,
+                            style: block.settings.product_style,
+                            item_class: item_class,
+                            sale_badge_style : block.settings.product_sale_badge_style,
+                            hover_buttons_style : block.settings.product_hover_buttons_style,
+                            show_star_rating: block.settings.product_show_star_rating,
+                            image_size: image_size -%}
+
+                        {%- endfor -%}
+
+                    {%- endif -%}
+
+                    {%- comment -%}
+                    {# @ featured_product#}
+                    {%- endcomment -%}
+                    {%- when 'featured_product' -%}
+
+                    {%- assign product_image_ratio = settings.product_image_aspect_ratio_w | plus :0.0 | divided_by: settings.product_image_aspect_ratio_h -%}
+                    {%- include 'util-image-size' column_count: section.settings.column_count, image_ratio: product_image_ratio, custom_ratio: settings.enable_product_custom_aspect_ratio -%}
+
+                    {%- include 'product-item'
+                    product: all_products[block.settings.product],
+                    hover_bg: section.settings.hover_bg,
+                    style: block.settings.product_style,
+                    item_class: item_class,
+                    sale_badge_style : block.settings.product_sale_badge_style,
+                    hover_buttons_style : block.settings.product_hover_buttons_style,
+                    show_star_rating: block.settings.product_show_star_rating,
+                    image_size: image_size -%}
+
+                    {%- comment -%}
+                    {# @ featured_article#}
+                    {%- endcomment -%}
+                    {%- when 'featured_article' -%}
+
+                    {%- assign article_image_ratio = settings.article_image_aspect_ratio_w | plus :0.0 | divided_by: settings.article_image_aspect_ratio_h -%}
+                    {%- include 'util-image-size' column_count: section.settings.column_count, image_ratio: article_image_ratio, custom_ratio: settings.enable_article_custom_aspect_ratio -%}
+
+                    {%- assign articleArr = block.settings.article | split: '/' -%}
+                    {%- assign article = false -%}
+
+                    {%- for article_item in blogs[articleArr[0]].articles -%}
+                        {%- if  article_item.handle == block.settings.article -%}
+                            {%- assign article = article_item -%}
+                        {%- endif -%}
+                    {%- endfor -%}
+
+                    {%- include 'article-grid-item'
+                    style: block.settings.article_style,
+                    item_class: item_class,
+                    image_size: image_size -%}
+
+                    {%- comment -%}
+                    {# @ html#}
+                    {%- endcomment -%}
+                    {%- when 'html' -%}
+
+                    <div class="grid-item html-grid-item {{ column_class }} {{ item_class }} flex-item mb-4">
+                        {%- if block.settings.html != blank -%}
+                            {{ block.settings.html }}
+                        {%- else -%}
+                            <span>Insert HTML code..</span>
+                        {%- endif -%}
+                    </div>
+
+                    {%- endcase -%}
+
+                {%- endfor -%}
+
+                {%- if section.settings.masonry -%}
+                    <div class="grid-sizer col-1 invisible"></div>
+                {%- endif -%}
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<script type="application/json">
+    /*"*/{% schema %}/*"*/
+    {
+        "name": "Grid",
+        "class": "index-section",
+        "settings": [
+            {
+                "type": "header",
+                "content": "General"
+            },
+            {
+                "type": "checkbox",
+                "id": "show_title",
+                "label": "Show title",
+                "default": true
+            },
+            {
+                "type": "text",
+                "id": "title",
+                "label": "Title"
+            },
+            {
+                "type": "select",
+                "id": "title_alignment",
+                "label": "Title alignment",
+                "default": "text-center",
+                "options": [
+                    {
+                        "value": "text-left",
+                        "label": "Left"
+                    },
+                    {
+                        "value": "text-center",
+                        "label": "Center"
+                    },
+                    {
+                        "value": "text-right",
+                        "label": "Right"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "section_height",
+                "label": "Section height",
+                "default": "auto",
+                "options": [
+                    {
+                        "label": "Auto",
+                        "value": "auto"
+                    },
+                    {
+                        "label": "Fill the window height",
+                        "value": "window-height"
+                    },
+                    {
+                        "label": "Extra Small",
+                        "value": "x-small"
+                    },
+                    {
+                        "label": "Small",
+                        "value": "small"
+                    },
+                    {
+                        "label": "Medium",
+                        "value": "medium"
+                    },
+                    {
+                        "label": "Large",
+                        "value": "large"
+                    },
+                    {
+                        "label": "Extra Large",
+                        "value": "x-large"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "content_width",
+                "label": "Content width",
+                "options": [
+                    {
+                        "value": "",
+                        "label": "Default"
+                    },
+                    {
+                        "value": "container",
+                        "label": "Container"
+                    },
+                    {
+                        "value": "container-fluid",
+                        "label": "Fluid container"
+                    },
+                    {
+                        "value": "container-fullwidth",
+                        "label": "Full width"
+                    }
+                ]
+            },
+            {
+                "type": "text",
+                "id": "custom_id",
+                "label": "Section ID",
+                "info": "Add an id to your section. It can be used in 'Scroll Navigation' and 'Custom CSS'"
+            },
+            {
+                "type": "header",
+                "content": "Background"
+            },
+            {
+                "type": "select",
+                "id": "auto_bg_color",
+                "label": "Background color",
+                "default": "transparent",
+                "options": [
+                    {
+                        "value": "transparent",
+                        "label": "Transparent"
+                    },
+                    {
+                        "value": "custom",
+                        "label": "Custom"
+                    },
+                    {
+                        "value": "primary-color",
+                        "label": "Primary Color"
+                    },
+                    {
+                        "value": "primary-bg-color",
+                        "label": "Primary Background Color"
+                    },
+                    {
+                        "value": "secondary-color",
+                        "label": "Secondary Color"
+                    },
+                    {
+                        "value": "secondary-bg-color",
+                        "label": "Secondary Background Color"
+                    }
+                ]
+            },
+            {
+                "type": "color",
+                "id": "bg_color",
+                "label": "Background color",
+                "info": "Only applicable if 'Background Color' option is 'Custom'"
+            },
+            {
+                "type": "select",
+                "id": "bg_opacity",
+                "label": "Background opacity",
+                "default": "1",
+                "options": [
+                    {
+                        "value": "0",
+                        "label": "0"
+                    },
+                    {
+                        "value": "0.05",
+                        "label": "5"
+                    },
+                    {
+                        "value": "0.10",
+                        "label": "10"
+                    },
+                    {
+                        "value": "0.15",
+                        "label": "15"
+                    },
+                    {
+                        "value": "0.20",
+                        "label": "20"
+                    },
+                    {
+                        "value": "0.25",
+                        "label": "25"
+                    },
+                    {
+                        "value": "0.30",
+                        "label": "30"
+                    },
+                    {
+                        "value": "0.35",
+                        "label": "35"
+                    },
+                    {
+                        "value": "0.40",
+                        "label": "40"
+                    },
+                    {
+                        "value": "0.45",
+                        "label": "45"
+                    },
+                    {
+                        "value": "0.50",
+                        "label": "50"
+                    },
+                    {
+                        "value": "0.55",
+                        "label": "55"
+                    },
+                    {
+                        "value": "0.60",
+                        "label": "60"
+                    },
+                    {
+                        "value": "0.65",
+                        "label": "65"
+                    },
+                    {
+                        "value": "0.70",
+                        "label": "70"
+                    },
+                    {
+                        "value": "0.75",
+                        "label": "75"
+                    },
+                    {
+                        "value": "0.80",
+                        "label": "80"
+                    },
+                    {
+                        "value": "0.85",
+                        "label": "85"
+                    },
+                    {
+                        "value": "0.90",
+                        "label": "90"
+                    },
+                    {
+                        "value": "0.95",
+                        "label": "95"
+                    },
+                    {
+                        "value": "1",
+                        "label": "100"
+                    }
+                ]
+            },
+            {
+                "type": "image_picker",
+                "id": "bg_image",
+                "label": "Background image"
+            },
+            {
+                "type": "select",
+                "id": "bg_parallax",
+                "label": "Parallax effect",
+                "default": "disable",
+                "options": [
+                    {
+                        "value": "enable",
+                        "label": "Enable"
+                    },
+                    {
+                        "value": "disable",
+                        "label": "Disable"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "bg_size",
+                "label": "Background image size",
+                "default": "cover",
+                "options": [
+                    {
+                        "value": "auto",
+                        "label": "Auto"
+                    },
+                    {
+                        "value": "cover",
+                        "label": "Cover"
+                    },
+                    {
+                        "value": "contain",
+                        "label": "Contain"
+                    },
+                    {
+                        "value": "25%",
+                        "label": "25%"
+                    },
+                    {
+                        "value": "50%",
+                        "label": "50%"
+                    },
+                    {
+                        "value": "75%",
+                        "label": "75%"
+                    },
+                    {
+                        "value": "100%",
+                        "label": "100%"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "bg_repeat",
+                "label": "Background repeat",
+                "default": "no-repeat",
+                "options": [
+                    {
+                        "value": "no-repeat",
+                        "label": "No repeat"
+                    },
+                    {
+                        "value": "repeat",
+                        "label": "Repeat"
+                    },
+                    {
+                        "value": "repeat-x",
+                        "label": "Repeat x"
+                    },
+                    {
+                        "value": "repeat-y",
+                        "label": "Repeat y"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "bg_position",
+                "label": "Background position",
+                "default": "center center",
+                "options": [
+                    {
+                        "value": "left top",
+                        "label": "Left Top"
+                    },
+                    {
+                        "value": "left center",
+                        "label": "Left Center"
+                    },
+                    {
+                        "value": "left bottom",
+                        "label": "Left Bottom"
+                    },
+                    {
+                        "value": "right top",
+                        "label": "Right Top"
+                    },
+                    {
+                        "value": "right center",
+                        "label": "Right Center"
+                    },
+                    {
+                        "value": "right bottom",
+                        "label": "Right Bottom"
+                    },
+                    {
+                        "value": "center top",
+                        "label": "Center Top"
+                    },
+                    {
+                        "value": "center center",
+                        "label": "Center Center"
+                    },
+                    {
+                        "value": "center bottom",
+                        "label": "Center Bottom"
+                    }
+                ]
+            },
+            {
+                "type": "header",
+                "content": "Foreground"
+            },
+            {
+                "type": "select",
+                "id": "bg_color_type",
+                "label": "Text color",
+                "default": "auto",
+                "info": "'Auto' will decide text color depending on background color",
+                "options": [
+                    {
+                        "value": "auto",
+                        "label": "Auto"
+                    },
+                    {
+                        "value": "light-bg",
+                        "label": "Dark"
+                    },
+                    {
+                        "value": "dark-bg",
+                        "label": "Light"
+                    }
+                ]
+            },
+            {
+                "type": "header",
+                "content": "Grid"
+            },
+            {
+                "type": "checkbox",
+                "id": "masonry",
+                "label": "Masonry",
+                "info": "Enable masonry layout"
+            },
+            {
+                "type": "select",
+                "id": "column_count",
+                "label": "Items per row",
+                "default": "4",
+                "options": [
+                    {
+                        "value": "2",
+                        "label": "2"
+                    },
+                    {
+                        "value": "3",
+                        "label": "3"
+                    },
+                    {
+                        "value": "4",
+                        "label": "4"
+                    },
+                    {
+                        "value": "5",
+                        "label": "5"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "hover_bg",
+                "label": "Hover background color",
+                "options": [
+                    {
+                        "value": "",
+                        "label": "Default"
+                    },
+                    {
+                        "value": "hover-light",
+                        "label": "Light"
+                    },
+                    {
+                        "value": "hover-dark",
+                        "label": "Dark"
+                    },
+                    {
+                        "value": "hover-transparent",
+                        "label": "Transparent"
+                    }
+                ]
+            },
+            {
+                "type": "checkbox",
+                "id": "show_product_counts",
+                "label": "Show product counts"
+            },
+            {
+                "type": "header",
+                "content": "Mobile Specific Options"
+            },
+            {
+                "type": "select",
+                "id": "column_count_mobile",
+                "label": "Number of products per row (Mobile)",
+                "default": "1",
+                "options": [
+                    {
+                        "value": "1",
+                        "label": "1"
+                    },
+                    {
+                        "value": "2",
+                        "label": "2"
+                    }
+                ]
+            },
+            {
+                "type": "header",
+                "content": "Extra"
+            },
+            {
+                "type": "select",
+                "id": "show_only_desktop_or_mobile",
+                "label": "Show only on desktop/mobile",
+                "default": "",
+                "options": [
+                    {
+                        "value": "",
+                        "label": "Show always"
+                    },
+                    {
+                        "value": "hidden-sm-up",
+                        "label": "Show only on mobile"
+                    },
+                    {
+                        "value": "hidden-xs-down",
+                        "label": "Show only on desktop"
+                    }
+                ]
+            },
+            {
+                "type": "text",
+                "id": "additional_classes",
+                "label": "Additional classes"
+            }
+        ],
+        "blocks": [
+            {
+                "type": "featured_collection",
+                "name": "Collection",
+                "settings": [
+                    {
+                        "label": "Collection",
+                        "id": "collection",
+                        "type": "collection"
+                    },
+                    {
+                        "type": "select",
+                        "id": "collection_style",
+                        "label": "Style",
+                        "options": [
+                            {
+                                "value": "classic",
+                                "label": "Classic"
+                            },
+                            {
+                                "value": "sym",
+                                "label": "Symmetric"
+                            },
+                            {
+                                "value": "asym",
+                                "label": "Asymmetric"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "collection_products",
+                "name": "Collection products",
+                "settings": [
+                    {
+                        "label": "Collection",
+                        "id": "collection",
+                        "type": "collection"
+                    },
+                    {
+                        "type": "select",
+                        "id": "product_style",
+                        "label": "Product style",
+                        "default": "",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "style1",
+                                "label": "Style 1"
+                            },
+                            {
+                                "value": "style2",
+                                "label": "Style 2"
+                            },
+                            {
+                                "value": "style3",
+                                "label": "Style 3"
+                            },
+                            {
+                                "value": "style4",
+                                "label": "Style 4"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "product_sale_badge_style",
+                        "label": "Sale badge style",
+                        "default": "",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "text",
+                                "label": "\"Sale\" text"
+                            },
+                            {
+                                "value": "percentage",
+                                "label": "Percentage of discount"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "product_hover_buttons_style",
+                        "label": "Hover buttons style",
+                        "default": "",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "text-buttons",
+                                "label": "Text buttons"
+                            },
+                            {
+                                "value": "icon-buttons",
+                                "label": "Icon buttons"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "product_show_star_rating",
+                        "label": "Star rating",
+                        "default": "",
+                        "info": "This option requires [Product Reviews App](https://apps.shopify.com/product-reviews)",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "show",
+                                "label": "Show"
+                            },
+                            {
+                                "value": "hide",
+                                "label": "Hide"
+                            }
+                        ]
+                    },
+                    {
+                        "id": "product_limit",
+                        "type": "text",
+                        "label": "Product limit",
+                        "info": "Leave empty for not to limit"
+                    }
+                ]
+            },
+            {
+                "type": "featured_product",
+                "name": "Product",
+                "settings": [
+                    {
+                        "label": "Product",
+                        "id": "product",
+                        "type": "product"
+                    },
+                    {
+                        "type": "select",
+                        "id": "product_style",
+                        "label": "Product style",
+                        "default": "",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "style1",
+                                "label": "Style 1"
+                            },
+                            {
+                                "value": "style2",
+                                "label": "Style 2"
+                            },
+                            {
+                                "value": "style3",
+                                "label": "Style 3"
+                            },
+                            {
+                                "value": "style4",
+                                "label": "Style 4"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "product_sale_badge_style",
+                        "label": "Sale badge style",
+                        "default": "",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "text",
+                                "label": "\"Sale\" text"
+                            },
+                            {
+                                "value": "percentage",
+                                "label": "Percentage of discount"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "product_hover_buttons_style",
+                        "label": "Hover buttons style",
+                        "default": "",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "text-buttons",
+                                "label": "Text buttons"
+                            },
+                            {
+                                "value": "icon-buttons",
+                                "label": "Icon buttons"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "select",
+                        "id": "product_show_star_rating",
+                        "label": "Star rating",
+                        "default": "",
+                        "info": "This option requires [Product Reviews App](https://apps.shopify.com/product-reviews)",
+                        "options": [
+                            {
+                                "value": "",
+                                "label": "Default"
+                            },
+                            {
+                                "value": "show",
+                                "label": "Show"
+                            },
+                            {
+                                "value": "hide",
+                                "label": "Hide"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "featured_article",
+                "name": "Article",
+                "settings": [
+                    {
+                        "label": "Article",
+                        "id": "article",
+                        "type": "article"
+                    },
+                    {
+                        "type": "select",
+                        "id": "article_style",
+                        "label": "Article style",
+                        "options": [
+                            {
+                                "value": "classic",
+                                "label": "Classic"
+                            },
+                            {
+                                "value": "small-card",
+                                "label": "Small Card"
+                            },
+                            {
+                                "value": "tall-card",
+                                "label": "Tall Card"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "html",
+                "name": "Html",
+                "settings": [
+                    {
+                        "type": "textarea",
+                        "id": "html",
+                        "label": "HTML",
+                        "placeholder": "html code.."
+                    }
+                ]
+            }
+        ],
+        "presets": [
+            {
+                "name": "Grid (Collections)",
+                "category": "01. Collections",
+                "settings": {
+                    "title": "Featured Collections",
+                    "column_count": "4",
+                    "masonry": false
+                },
+                "blocks": [
+                    {
+                        "type": "featured_collection",
+                        "settings": {
+                            "collection_style": "classic"
+                        }
+                    },
+                    {
+                        "type": "featured_collection",
+                        "settings": {
+                            "collection_style": "classic"
+                        }
+                    },
+                    {
+                        "type": "featured_collection",
+                        "settings": {
+                            "collection_style": "classic"
+                        }
+                    },
+                    {
+                        "type": "featured_collection",
+                        "settings": {
+                            "collection_style": "classic"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "Grid (Collection Products)",
+                "category": "02. Collection Products",
+                "settings": {
+                    "title": "Featured Products",
+                    "column_count": "4",
+                    "masonry": false
+                },
+                "blocks": [
+                    {
+                        "type": "collection_products"
+                    }
+                ]
+            },
+            {
+                "name": "Grid (Products)",
+                "category": "03. Products",
+                "settings": {
+                    "title": "Featured Products",
+                    "column_count": "3",
+                    "masonry": false
+                },
+                "blocks": [
+                    {
+                        "type": "featured_product"
+                    },
+                    {
+                        "type": "featured_product"
+                    },
+                    {
+                        "type": "featured_product"
+                    },
+                    {
+                        "type": "featured_product"
+                    },
+                    {
+                        "type": "featured_product"
+                    },
+                    {
+                        "type": "featured_product"
+                    },
+                    {
+                        "type": "featured_product"
+                    }
+                ]
+            },
+            {
+                "name": "Grid (Articles)",
+                "category": "05. Blog",
+                "settings": {
+                    "title": "Featured Articles",
+                    "column_count": "4",
+                    "masonry": false
+                },
+                "blocks": [
+                    {
+                        "type": "featured_article"
+                    },
+                    {
+                        "type": "featured_article"
+                    },
+                    {
+                        "type": "featured_article"
+                    },
+                    {
+                        "type": "featured_article"
+                    },
+                    {
+                        "type": "featured_article"
+                    },
+                    {
+                        "type": "featured_article"
+                    },
+                    {
+                        "type": "featured_article"
+                    }
+                ]
+            }
+        ]
+    }
+    /*"*/{% endschema %}/*"*/
+</script>

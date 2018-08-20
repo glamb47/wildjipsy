@@ -1,0 +1,430 @@
+{%- assign content_width = section.settings.content_width | default: settings.content_width -%}
+
+{%- capture cart_update_button -%}
+<input type="submit" name="update"
+       class="btn btn-secondary btn-block update-cart-button text-uppercase"
+       value="{{ 'cart.general.update' | t }}">
+{%- endcapture -%}
+
+{%- capture cart_checkout_button -%}
+<input type="submit" name="checkout"
+       class="btn btn-primary btn-block text-uppercase"
+       value="{{ 'cart.general.checkout' | t }}">
+{%- endcapture -%}
+
+<div class="{{ content_width }} pb-12">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header py-14 text-center text-md-left">
+
+        <a href="/collections/all" class="return-link text-light">
+            <span class="glyph-icon">&larr;</span> {{ 'cart.general.continue_shopping' | t }}
+        </a>
+
+        <div class="pt-14">
+            <h1 class="text-bold">{{ 'cart.general.title' | t }}</h1>
+
+            {%- if cart.item_count > 0 -%}
+                <div class="h4 cart-count flex-items-middle flex-items-center flex-items-md-left text-light mt-2 mb-6">
+                    <span class="cart-count-number mr-1">{{ cart.item_count }}</span>
+                    {%- if cart.item_count == 1 -%}
+                        <span class="cart-count-text">{{ 'cart.general.product' | t }}</span>
+                    {%- else -%}
+                        <span class="cart-count-text">{{ 'cart.general.products' | t }}</span>
+                    {%- endif -%}
+                </div>
+            {%- endif -%}
+        </div>
+
+    </div>
+    <!-- / PAGE HEADER -->
+
+    {%- if cart.item_count > 0 -%}
+
+        <!-- CART FORM -->
+        <form action="/cart" method="post" novalidate class="cart">
+
+            <div class="row">
+
+                {%- case section.settings.cart_page_style -%}
+
+                {%- when 'single-column' -%}
+
+                {%- assign first_column_classes = 'col-12' -%}
+                {%- assign second_column_classes = 'col-12 mt-10' -%}
+
+                {%- when 'two-columns' -%}
+
+                {% if settings.aside == 'no-aside' %}
+                    {%- assign first_column_classes = 'col-12 col-md-8 pr-md-20' -%}
+                    {%- assign second_column_classes = 'col-12 col-md-4' -%}
+                {% else %}
+                    {%- assign first_column_classes = 'col-12 col-lg-8 pr-lg-20' -%}
+                    {%- assign second_column_classes = 'col-12 col-lg-4' -%}
+                {% endif %}
+
+                {%- endcase -%}
+
+                <div class="{{ first_column_classes }}">
+
+                    <!-- CART TABLE -->
+                    <div class="cart-table">
+
+                        <!-- TABLE HEADER -->
+                        <div class="table-header row hidden-xs-down">
+                            <div class="col-6">{{ 'cart.label.product_details' | t }}</div>
+                            <div class="col-2 text-center">{{ 'cart.label.price' | t }}</div>
+                            <div class="col-2 text-center">{{ 'cart.label.quantity' | t }}</div>
+                            <div class="col-2 text-center">{{ 'cart.label.total' | t }}</div>
+                        </div>
+                        <!-- / TABLE HEADER -->
+
+                        <div class="table-separator"></div>
+
+                        {%- assign image_size = '240x' -%}
+                        {%- if settings.enable_product_custom_aspect_ratio -%}
+                            {%- assign product_image_ratio = settings.product_image_aspect_ratio_w | plus :0.0 | divided_by: settings.product_image_aspect_ratio_h -%}
+                            {%- assign image_height = 240 | divided_by: product_image_ratio | round -%}
+                            {%- assign image_size = 240 | append:'x' | append: image_height -%}
+                        {%- endif -%}
+
+                        {%- for item in cart.items -%}
+
+                            <!-- TABLE ROW -->
+                            <div class="table-row row">
+
+                                <div class="col-12 col-sm-6">
+
+                                    <div class="row flex-sm-nowrap">
+
+                                        <!-- PRODUCT IMAGE -->
+                                        <div
+                                            class="product-image col-12 col-sm-6 flex-items-middle flex-items-center flex-items-sm-left pb-6 pb-sm-0"
+                                            data-label="{{ 'customer.order.product' | t }}">
+
+                                            <a href="{{ item.url | within: collections.all }}" class="cart-image">
+                                                <img class="img-fluid"
+                                                     src="{{ item | img_url: image_size, crop: settings.product_image_crop }}"
+                                                     srcset="{{ item | img_url: image_size, crop: settings.product_image_crop }} 1x, {{ item | img_url: image_size, scale: 2, crop: settings.product_image_crop }} 2x"
+                                                     alt="{{ item.title | escape }}">
+                                            </a>
+
+                                            <!-- PRODUCT REMOVE BUTTON -->
+                                            <div class="product-remove-button flex-items-middle flex-items-center">
+
+                                                <a href="/cart/change?line={{ forloop.index }}&amp;quantity=0"
+                                                   class="cart-remove" title="{{ 'cart.general.remove' | t }}">
+                                                    <i class="icon icon-close s-4"></i>
+                                                </a>
+
+                                            </div>
+                                            <!-- / PRODUCT REMOVE BUTTON -->
+
+                                        </div>
+                                        <!-- / PRODUCT IMAGE -->
+
+                                        <!-- PRODUCT TITLE -->
+                                        <div
+                                            class="product-title col-12 col-sm-6 flex-items-middle flex-items-center flex-items-sm-left flex-order--1 flex-order-sm-0 text-center text-sm-left py-6 py-sm-0">
+
+                                            <div class="row">
+
+                                                <div class="col-12">
+                                                    <a class="text-bold" href="{{ item.url }}">
+                                                        {{ item.product.title }}
+                                                    </a>
+                                                </div>
+
+                                                {%- unless item.variant.title contains 'Default' -%}
+
+                                                <div class="col-12 pt-1 text-light">
+                                                    {{ item.variant.title }}
+                                                </div>
+
+                                                {%- endunless -%}
+
+                                                {%- if settings.cart_vendor_enable -%}
+                                                    <div class="col-12 pt-2 text-light">{{ item.vendor }}</div>
+                                                {%- endif -%}
+
+                                                {%- assign property_size = item.properties | size -%}
+
+                                                {%- if property_size > 0 -%}
+
+                                                    {%- for p in item.properties -%}
+
+                                                        {%- unless p.last == blank -%}
+
+                                                        {{ p.first }}:
+
+                                                        {%- if p.last contains '/uploads/' -%}
+
+                                                            <a href="{{ p.last }}">{{ p.last | split: '/' | last }}</a>
+
+                                                        {%- else -%}
+
+                                                            {{ p.last }}
+
+                                                        {%- endif -%}
+
+                                                        {%- endunless -%}
+
+                                                    {%- endfor -%}
+
+                                                {%- endif -%}
+
+                                            </div>
+
+                                        </div>
+                                        <!-- / PRODUCT TITLE -->
+
+                                    </div>
+
+                                </div>
+
+                                <!-- PRODUCT PRICE -->
+                                <div
+                                    class="product-price col-12 col-sm-2 flex-items-middle flex-items-center text-center pb-6 pb-sm-0"
+                                    data-label="{{ 'cart.label.price' | t }}">
+
+                                    <div class="row">
+
+                                        <div class="col-12 text-bold text-uppercase pb-2 hidden-sm-up">
+                                            {{ 'cart.label.price' | t }}
+                                        </div>
+
+                                        <div class="col-12 js-money" value="{{ item.price }}">
+                                            {{ item.price | money }}
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                                <!-- / PRODUCT PRICE -->
+
+                                <!-- PRODUCT QUANTITY -->
+                                <div
+                                    class="product-quantity col-12 col-sm-2 flex-items-middle flex-items-center text-center pb-6 pb-sm-0"
+                                    data-label="{{ 'cart.label.quantity' | t }}">
+
+                                    <div class="row">
+
+                                        <div class="col-12 text-bold text-uppercase pb-2 hidden-sm-up">
+                                            {{ 'cart.label.quantity' | t }}
+                                        </div>
+
+                                        <div class="col-12">
+                                            <div js-number-input value="{{ item.quantity }}"
+                                                 step="1"
+                                                 min="0"
+                                                 input-id="updates_{{ item.id }}"
+                                                 input-name="updates[]"
+                                                 editable>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                                <!-- / PRODUCT QUANTITY -->
+
+                                <!-- PRODUCT TOTAL -->
+                                <div
+                                    class="product-total col-12 col-sm-2 flex-items-middle flex-items-center text-center pb-6 pb-sm-0"
+                                    data-label="{{ 'cart.label.total' | t }}">
+
+                                    <div class="row">
+
+                                        <div class="col-12 text-bold text-uppercase pb-2 hidden-sm-up">
+                                            {{ 'cart.label.total' | t }}
+                                        </div>
+
+                                        {%- if item.original_line_price != item.line_price -%}
+                                            <div
+                                                class="col-12 cart-item-original-price js-money text-light text-linethrough"
+                                                value="{{ item.original_line_price }}">
+                                                {{ item.original_line_price | money }}
+                                            </div>
+                                        {%- endif -%}
+
+                                        <div class="col-12 js-money h4 text-bold" value="{{ item.line_price }}">
+                                            {{ item.line_price | money }}
+                                        </div>
+
+                                        {%- for discount in item.discounts -%}
+                                            <div class="col-12 cart-item-discount text-light">
+                                                {{ discount.title }}
+                                            </div>
+                                        {%- endfor -%}
+
+                                    </div>
+                                </div>
+                                <!-- / PRODUCT TOTAL -->
+
+                            </div>
+                            <!-- / TABLE ROW -->
+
+                        {%- endfor -%}
+
+                    </div>
+                    <!-- / CART TABLE -->
+
+                </div>
+
+                <div class="{{ second_column_classes }}">
+
+                    <div class="secondary-bg p-12 flex-column">
+
+                        <!-- CART TOTAL TABLE -->
+                        <div class="total-table pb-8">
+
+                            <div class="cart-subtotal-title text-uppercase h3 text-center text-sm-left">
+                                {{ 'cart.general.subtotal' | t }}
+                            </div>
+
+                            <div class="row flex-items-bottom text-center text-sm-left">
+                                <div class="col-12 col-sm h1 cart-subtotal js-money text-bold"
+                                     value="{{ cart.total_price }}">
+                                    {{ cart.total_price | money }}
+                                </div>
+
+                                {%- if cart.total_discounts > 0 -%}
+                                    {%- assign savings = cart.total_discounts | money -%}
+                                    <div class="col-12 col-sm cart-subtotal-savings text-italic">
+                                        {{ 'cart.general.savings_html' | t: price: savings, priceRaw: cart.total_discounts }}
+                                    </div>
+                                {%- endif -%}
+                            </div>
+
+                        </div>
+                        <!-- CART TOTAL TABLE -->
+
+                        {%- if settings.cart_notes_enable -%}
+
+                            <!-- CART NOTES -->
+                            <div class="cart-notes pt-8">
+
+                                <label class="h4 text-uppercase mb-0 flex-items-middle" for="CartSpecialInstructions">
+                                    {{ 'cart.general.note' | t }}
+                                </label>
+
+                                <div class="form-group pt-4 mb-0">
+                                <textarea id="CartSpecialInstructions" class="form-control" name="note"
+                                          class="input-full"
+                                          rows="5" placeholder="{{ 'cart.general.note_placeholder' | t }}">
+                                    {{ cart.note }}
+                                </textarea>
+                                </div>
+
+                            </div>
+                            <!-- / CART NOTES -->
+
+                        {%- endif -%}
+
+                        <div class="form-bottom pt-8">
+
+                            <!-- CHECKOUT MESSAGE -->
+                            <div class="text-light text-italic mb-8">
+                                {{ 'cart.general.shipping_at_checkout' | t }}
+                            </div>
+
+                            <div ng-if="$root.currentCurrency !== '{{ shop.currency }}'"
+                                 class="text-light text-italic mb-8" ng-cloak>
+                                {{ 'cart.general.currency_message_html' | t : shop_name : shop.name, shop_currency: shop.currency }}
+                            </div>
+                            <!-- / CHECKOUT MESSAGE -->
+
+                            <!-- CART FORM BUTTONS -->
+                            {%- case section.settings.cart_page_style -%}
+
+                            {%- when 'single-column' -%}
+
+                            <div class="row">
+
+                                <div class="col-12 col-md-3 pr-md-0">
+                                    {{ cart_update_button }}
+                                </div>
+
+                                <div class="col-12 col-md-3 mt-2 mt-md-0 pr-md-0">
+                                    {{ cart_checkout_button }}
+                                </div>
+
+                            </div>
+
+                            {%- when 'two-columns' -%}
+
+                            <div>
+                                {{ cart_update_button }}
+                            </div>
+
+                            <div class="mt-2">
+                                {{ cart_checkout_button }}
+                            </div>
+
+                            {%- endcase -%}
+                            <!-- / CART FORM BUTTONS -->
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </form>
+        <!-- / CART FORM -->
+
+    {%- else -%}
+
+        <!-- EMPTY CART MESSAGE -->
+        <p>{{ 'cart.general.empty' | t }}</p>
+        <!-- / EMPTY CART MESSAGE -->
+
+    {%- endif -%}
+</div>
+
+<script type="application/json">
+    /*"*/{% schema %}/*"*/
+    {
+        "name": "Cart",
+        "settings": [
+            {
+                "type": "select",
+                "id": "content_width",
+                "label": "Content width",
+                "options": [
+                    {
+                        "value": "",
+                        "label": "Default"
+                    },
+                    {
+                        "value": "container",
+                        "label": "Container"
+                    },
+                    {
+                        "value": "container-fluid",
+                        "label": "Fluid container"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "cart_page_style",
+                "label": "Cart page style",
+                "default": "two-columns",
+                "options": [
+                    {
+                        "value": "single-column",
+                        "label": "Single column"
+                    },
+                    {
+                        "value": "two-columns",
+                        "label": "Two columns"
+                    }
+                ]
+            }
+        ]
+    }
+    /*"*/{% endschema %}/*"*/
+</script>

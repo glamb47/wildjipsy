@@ -1,0 +1,33 @@
+{%- comment -%}
+{# @ Section BgColor #}
+{%- endcomment -%}
+
+{%- assign _section_bg_color = 'rgba(0,0,0,0)' -%}
+
+{%- unless auto_bg_color == 'transparent' -%}
+
+    {%- case auto_bg_color -%}
+
+        {%- when 'custom' -%}
+        {%- assign _section_bg_color = bg_color -%}
+
+        {%- when 'primary-color' -%}
+        {%- assign _section_bg_color = settings.color_primary -%}
+
+        {%- when 'primary-bg-color' -%}
+        {%- assign _section_bg_color = settings.color_primary_bg -%}
+
+        {%- when 'secondary-color' -%}
+        {%- assign _section_bg_color = settings.color_secondary -%}
+
+        {%- when 'secondary-bg-color' -%}
+        {%- assign _section_bg_color = settings.color_secondary_bg -%}
+
+    {%- endcase -%}
+
+    {%- include 'util-color-transparentize' color: _section_bg_color, opacity: bg_opacity -%}
+    {%- assign _section_bg_color = color_transparentized -%}
+
+{%- endunless -%}
+
+{%- assign section_bg_color = _section_bg_color -%}

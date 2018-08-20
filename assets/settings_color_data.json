@@ -1,0 +1,525 @@
+{
+    "presets": {
+        "Default (Light)": {
+            "color_primary": "#DF1A0B",
+            "checkout_button_color": "#DF1A0B",
+            "color_secondary": "#3C4251",
+            "checkout_accent_color": "#3C4251",
+            "color_primary_bg": "#FFFFFF",
+            "checkout_body_background_color": "#FFFFFF",
+            "color_secondary_bg": "#F7F7F7",
+            "checkout_sidebar_background_color": "#F7F7F7",
+            "color_body_bg": "#F7F7F7",
+            "sections": {
+                "aside": {
+                    "settings": {
+                        "bg_color": "#F7F7F7"
+                    }
+                },
+                "header": {
+                    "settings": {
+                        "top_bg_color": "#F7F7F7",
+                        "top_bg_opacity": "1",
+                        "middle_bg_color": "#FFFFFF",
+                        "middle_bg_opacity": "1",
+                        "bottom_bg_color": "#FFFFFF",
+                        "bottom_bg_opacity": "1",
+                        "sticky_bg_color": "#FFFFFF",
+                        "sticky_bg_opacity": "1"
+                    }
+                },
+                "footer": {
+                    "settings": {
+                        "bg_color": "#FFFFFF"
+                    }
+                }
+            }
+        },
+        "Beach (Light)": {
+            "color_primary": "#93A7AB",
+            "checkout_button_color": "#93A7AB",
+            "color_secondary": "#F18153",
+            "checkout_accent_color": "#F18153",
+            "color_primary_bg": "#F2E6DA",
+            "checkout_body_background_color": "#F2E6DA",
+            "color_secondary_bg": "#556270",
+            "checkout_sidebar_background_color": "#556270",
+            "color_body_bg": "#F7F7F7",
+            "sections": {
+                "aside": {
+                    "settings": {
+                        "bg_color": "#556270"
+                    }
+                },
+                "header": {
+                    "settings": {
+                        "top_bg_color": "#556270",
+                        "top_bg_opacity": "1",
+                        "middle_bg_color": "#556270",
+                        "middle_bg_opacity": "1",
+                        "bottom_bg_color": "#556270",
+                        "bottom_bg_opacity": "1",
+                        "sticky_bg_color": "#556270",
+                        "sticky_bg_opacity": "1"
+                    }
+                },
+                "footer": {
+                    "settings": {
+                        "bg_color": "#556270"
+                    }
+                }
+            }
+        },
+        "Rocky Mountain (Light)": {
+            "color_primary": "#3299BB",
+            "checkout_button_color": "#3299BB",
+            "color_secondary": "#FF9900",
+            "checkout_accent_color": "#FF9900",
+            "color_primary_bg": "#E9E9E9",
+            "checkout_body_background_color": "#E9E9E9",
+            "color_secondary_bg": "#424242",
+            "checkout_sidebar_background_color": "#424242",
+            "color_body_bg": "#F7F7F7",
+            "sections": {
+                "aside": {
+                    "settings": {
+                        "bg_color": "#424242"
+                    }
+                },
+                "header": {
+                    "settings": {
+                        "top_bg_color": "#E9E9E9",
+                        "top_bg_opacity": "1",
+                        "middle_bg_color": "#E9E9E9",
+                        "middle_bg_opacity": "1",
+                        "bottom_bg_color": "#E9E9E9",
+                        "bottom_bg_opacity": "1",
+                        "sticky_bg_color": "#E9E9E9",
+                        "sticky_bg_opacity": "1"
+                    }
+                },
+                "footer": {
+                    "settings": {
+                        "bg_color": "#E9E9E9"
+                    }
+                }
+            }
+        },
+        "Tech (Light)": {
+            "color_primary": "#4DBCE9",
+            "checkout_button_color": "#4DBCE9",
+            "color_secondary": "#D1E751",
+            "checkout_accent_color": "#D1E751",
+            "color_primary_bg": "#FFFFFF",
+            "checkout_body_background_color": "#FFFFFF",
+            "color_secondary_bg": "#252525",
+            "checkout_sidebar_background_color": "#252525",
+            "color_body_bg": "#F7F7F7",
+            "sections": {
+                "aside": {
+                    "settings": {
+                        "bg_color": "#252525"
+                    }
+                },
+                "header": {
+                    "settings": {
+                        "top_bg_color": "#FFFFFF",
+                        "top_bg_opacity": "1",
+                        "middle_bg_color": "#FFFFFF",
+                        "middle_bg_opacity": "1",
+                        "bottom_bg_color": "#FFFFFF",
+                        "bottom_bg_opacity": "1",
+                        "sticky_bg_color": "#FFFFFF",
+                        "sticky_bg_opacity": "1"
+                    }
+                },
+                "footer": {
+                    "settings": {
+                        "bg_color": "#FFFFFF"
+                    }
+                }
+            }
+        },
+        "Machu Picchu (Light)": {
+            "color_primary": "#607848",
+            "checkout_button_color": "#607848",
+            "color_secondary": "#C0D860",
+            "checkout_accent_color": "#C0D860",
+            "color_primary_bg": "#F0F0D8",
+            "checkout_body_background_color": "#F0F0D8",
+            "color_secondary_bg": "#604848",
+            "checkout_sidebar_background_color": "#604848",
+            "color_body_bg": "#F7F7F7",
+            "sections": {
+                "aside": {
+                    "settings": {
+                        "bg_color": "#604848"
+                    }
+                },
+                "header": {
+                    "settings": {
+                        "top_bg_color": "#F0F0D8",
+                        "top_bg_opacity": "1",
+                        "middle_bg_color": "#F0F0D8",
+                        "middle_bg_opacity": "1",
+                        "bottom_bg_color": "#F0F0D8",
+                        "bottom_bg_opacity": "1",
+                        "sticky_bg_color": "#F0F0D8",
+                        "sticky_bg_opacity": "1"
+                    }
+                },
+                "footer": {
+                    "settings": {
+                        "bg_color": "#F0F0D8"
+                    }
+                }
+            }
+        },
+        "Sweet Hues (Light)": {
+            "color_primary": "#A391B9",
+            "checkout_button_color": "#A391B9",
+            "color_secondary": "#6080A3",
+            "checkout_accent_color": "#6080A3",
+            "color_primary_bg": "#F6F4F2",
+            "checkout_body_background_color": "#F6F4F2",
+            "color_secondary_bg": "#4D5375",
+            "checkout_sidebar_background_color": "#4D5375",
+            "color_body_bg": "#F7F7F7",
+            "sections": {
+                "aside": {
+                    "settings": {
+                        "bg_color": "#4D5375"
+                    }
+                },
+                "header": {
+                    "settings": {
+                        "top_bg_color": "#F6F4F2",
+                        "top_bg_opacity": "1",
+                        "middle_bg_color": "#F6F4F2",
+                        "middle_bg_opacity": "1",
+                        "bottom_bg_color": "#F6F4F2",
+                        "bottom_bg_opacity": "1",
+                        "sticky_bg_color": "#F6F4F2",
+                        "sticky_bg_opacity": "1"
+                    }
+                },
+                "footer": {
+                    "settings": {
+                        "bg_color": "#F6F4F2"
+                    }
+                }
+            }
+        },
+        "Yoyo (Light)": {
+            "type_header_family": "Google_Lato_300,400,700,900_sans-serif",
+            "type_base_family": "Google_Lato_300,400,700,900_sans-serif",
+            "color_primary": "#00b692",
+            "checkout_button_color": "#00b692",
+            "color_secondary": "#333333",
+            "checkout_accent_color": "#333333",
+            "color_primary_bg": "#FFFFFF",
+            "checkout_body_background_color": "#FFFFFF",
+            "color_secondary_bg": "#F7F7F7",
+            "checkout_sidebar_background_color": "#F7F7F7",
+            "color_body_bg": "#F7F7F7",
+            "sections": {
+                "aside": {
+                    "settings": {
+                        "bg_color": "#F7F7F7"
+                    }
+                },
+                "header": {
+                    "settings": {
+                        "top_bg_color": "#F7F7F7",
+                        "top_bg_opacity": "1",
+                        "middle_bg_color": "#FFFFFF",
+                        "middle_bg_opacity": "1",
+                        "bottom_bg_color": "#FFFFFF",
+                        "bottom_bg_opacity": "1",
+                        "sticky_bg_color": "#FFFFFF",
+                        "sticky_bg_opacity": "1"
+                    }
+                },
+                "footer": {
+                    "settings": {
+                        "bg_color": "#FFFFFF"
+                    }
+                }
+            }
+        },
+        "Alia (Light)": {
+            "type_header_family": "Google_Montserrat_300,400,600,700_sans-serif",
+            "type_base_family": "Google_Roboto_300,400,500,700_sans-serif",
+            "color_primary": "#ff9c9c",
+            "checkout_button_color": "#ff9c9c",
+            "color_secondary": "#3c4251",
+            "checkout_accent_color": "#3c4251",
+            "color_primary_bg": "#FFFFFF",
+            "checkout_body_background_color": "#FFFFFF",
+            "color_secondary_bg": "#F7F7F7",
+            "checkout_sidebar_background_color": "#F7F7F7",
+            "color_body_bg": "#F7F7F7",
+            "sections": {
+                "aside": {
+                    "settings": {
+                        "bg_color": "#F7F7F7"
+                    }
+                },
+                "header": {
+                    "settings": {
+                        "top_bg_color": "#F7F7F7",
+                        "top_bg_opacity": "1",
+                        "middle_bg_color": "#FFFFFF",
+                        "middle_bg_opacity": "1",
+                        "bottom_bg_color": "#131313",
+                        "bottom_bg_opacity": "1",
+                        "sticky_bg_color": "#FFFFFF",
+                        "sticky_bg_opacity": "1"
+                    }
+                },
+                "footer": {
+                    "settings": {
+                        "bg_color": "#131313"
+                    }
+                }
+            }
+        },
+        "Bello (Light)": {
+            "type_header_family": "Google_Open+Sans_300,400,600,700_sans-serif",
+            "type_base_family": "Google_Open+Sans_300,400,600,700_sans-serif",
+            "color_primary": "#0095e0",
+            "checkout_button_color": "#0095e0",
+            "color_secondary": "#62b962",
+            "checkout_accent_color": "#62b962",
+            "color_primary_bg": "#FFFFFF",
+            "checkout_body_background_color": "#FFFFFF",
+            "color_secondary_bg": "#F7F7F7",
+            "checkout_sidebar_background_color": "#F7F7F7",
+            "color_body_bg": "#F7F7F7",
+            "sections": {
+                "aside": {
+                    "settings": {
+                        "bg_color": "#F7F7F7"
+                    }
+                },
+                "header": {
+                    "settings": {
+                        "top_bg_color": "#00578d",
+                        "top_bg_opacity": "1",
+                        "middle_bg_color": "#0063a0",
+                        "middle_bg_opacity": "1",
+                        "bottom_bg_color": "#F5F5F5",
+                        "bottom_bg_opacity": "1",
+                        "sticky_bg_color": "#F5F5F5",
+                        "sticky_bg_opacity": "1"
+                    }
+                },
+                "footer": {
+                    "settings": {
+                        "bg_color": "#25251d"
+                    }
+                }
+            }
+        },
+        "Slate (Dark)": {
+            "color_primary": "#4ECDC4",
+            "checkout_button_color": "#4ECDC4",
+            "color_secondary": "#FF6B6B",
+            "checkout_accent_color": "#FF6B6B",
+            "color_primary_bg": "#556270",
+            "checkout_body_background_color": "#556270",
+            "color_secondary_bg": "#374350",
+            "checkout_sidebar_background_color": "#374350",
+            "color_body_bg": "#F7F7F7",
+            "sections": {
+                "article-header": {
+                    "settings": {
+                        "bg_color": "rgba(0,0,0,0)"
+                    }
+                },
+                "blog-header": {
+                    "settings": {
+                        "bg_color": "rgba(0,0,0,0)"
+                    }
+                },
+                "collection-header": {
+                    "settings": {
+                        "bg_color": "rgba(0,0,0,0)"
+                    }
+                },
+                "aside": {
+                    "settings": {
+                        "bg_color": "#374350"
+                    }
+                },
+                "header": {
+                    "settings": {
+                        "top_bg_color": "#556270",
+                        "top_bg_opacity": "1",
+                        "middle_bg_color": "#556270",
+                        "middle_bg_opacity": "1",
+                        "bottom_bg_color": "#556270",
+                        "bottom_bg_opacity": "1",
+                        "sticky_bg_color": "#556270",
+                        "sticky_bg_opacity": "1"
+                    }
+                },
+                "footer": {
+                    "settings": {
+                        "bg_color": "#556270"
+                    }
+                }
+            }
+        },
+        "Royalty (Dark)": {
+            "color_primary": "#CC2A41",
+            "checkout_button_color": "#CC2A41",
+            "color_secondary": "#64908A",
+            "checkout_accent_color": "#64908A",
+            "color_primary_bg": "#351330",
+            "checkout_body_background_color": "#351330",
+            "color_secondary_bg": "#424254",
+            "checkout_sidebar_background_color": "#424254",
+            "color_body_bg": "#F7F7F7",
+            "sections": {
+                "article-header": {
+                    "settings": {
+                        "bg_color": "rgba(0,0,0,0)"
+                    }
+                },
+                "blog-header": {
+                    "settings": {
+                        "bg_color": "rgba(0,0,0,0)"
+                    }
+                },
+                "collection-header": {
+                    "settings": {
+                        "bg_color": "rgba(0,0,0,0)"
+                    }
+                },
+                "aside": {
+                    "settings": {
+                        "bg_color": "#424254"
+                    }
+                },
+                "header": {
+                    "settings": {
+                        "top_bg_color": "#351330",
+                        "top_bg_opacity": "1",
+                        "middle_bg_color": "#351330",
+                        "middle_bg_opacity": "1",
+                        "bottom_bg_color": "#351330",
+                        "bottom_bg_opacity": "1",
+                        "sticky_bg_color": "#351330",
+                        "sticky_bg_opacity": "1"
+                    }
+                },
+                "footer": {
+                    "settings": {
+                        "bg_color": "#351330"
+                    }
+                }
+            }
+        },
+        "Entrapped (Dark)": {
+            "color_primary": "#B9D7D9",
+            "checkout_button_color": "#B9D7D9",
+            "color_secondary": "#7B3B3B",
+            "checkout_accent_color": "#7B3B3B",
+            "color_primary_bg": "#2A2829",
+            "checkout_body_background_color": "#2A2829",
+            "color_secondary_bg": "#493736",
+            "checkout_sidebar_background_color": "#493736",
+            "color_body_bg": "#F7F7F7",
+            "sections": {
+                "article-header": {
+                    "settings": {
+                        "bg_color": "rgba(0,0,0,0)"
+                    }
+                },
+                "blog-header": {
+                    "settings": {
+                        "bg_color": "rgba(0,0,0,0)"
+                    }
+                },
+                "collection-header": {
+                    "settings": {
+                        "bg_color": "rgba(0,0,0,0)"
+                    }
+                },
+                "aside": {
+                    "settings": {
+                        "bg_color": "#493736"
+                    }
+                },
+                "header": {
+                    "settings": {
+                        "top_bg_color": "#2A2829",
+                        "top_bg_opacity": "1",
+                        "middle_bg_color": "#2A2829",
+                        "middle_bg_opacity": "1",
+                        "bottom_bg_color": "#2A2829",
+                        "bottom_bg_opacity": "1",
+                        "sticky_bg_color": "#2A2829",
+                        "sticky_bg_opacity": "1"
+                    }
+                },
+                "footer": {
+                    "settings": {
+                        "bg_color": "#2A2829"
+                    }
+                }
+            }
+        },
+        "Winter Horizon (Dark)": {
+            "color_primary": "#DAD4E3",
+            "checkout_button_color": "#DAD4E3",
+            "color_secondary": "#F3F6F0",
+            "checkout_accent_color": "#F3F6F0",
+            "color_primary_bg": "#657083",
+            "checkout_body_background_color": "#657083",
+            "color_secondary_bg": "#A8BCC5",
+            "checkout_sidebar_background_color": "#A8BCC5",
+            "color_body_bg": "#F7F7F7",
+            "sections": {
+                "article-header": {
+                    "settings": {
+                        "bg_color": "rgba(0,0,0,0)"
+                    }
+                },
+                "blog-header": {
+                    "settings": {
+                        "bg_color": "rgba(0,0,0,0)"
+                    }
+                },
+                "collection-header": {
+                    "settings": {
+                        "bg_color": "rgba(0,0,0,0)"
+                    }
+                },
+                "aside": {
+                    "settings": {
+                        "bg_color": "#A8BCC5"
+                    }
+                },
+                "header": {
+                    "settings": {
+                        "top_bg_color": "#657083",
+                        "top_bg_opacity": "1",
+                        "middle_bg_color": "#657083",
+                        "middle_bg_opacity": "1",
+                        "bottom_bg_color": "#657083",
+                        "bottom_bg_opacity": "1",
+                        "sticky_bg_color": "#657083",
+                        "sticky_bg_opacity": "1"
+                    }
+                },
+                "footer": {
+                    "settings": {
+                        "bg_color": "#657083"
+                    }
+                }
+            }
+        }
+    }
+}

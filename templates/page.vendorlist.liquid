@@ -1,0 +1,61 @@
+<div class="container mb-12 mt-sm-12">
+
+    <div class="row">
+
+        <div class="col-12">
+
+            <!-- PAGE HEADER -->
+            <div class="page-header py-14 text-center display-4 text-bold">
+                {{ page.title }}
+            </div>
+            <!-- / PAGE HEADER -->
+
+            <!-- PAGE CONTENT -->
+
+            <div class="page-content pb-12">
+                {{ page.content }}
+                <div class="vendor-list row text-center">
+                    {%- assign cols_count = 3 -%}
+                    {%- assign items_per_col = shop.vendors.size | divided_by: cols_count -%}
+                    {%- assign row_num = 0 -%}
+
+                    {%- for product_vendor in shop.vendors -%}
+                    {%- assign row_num = row_num  | plus: 1 -%}
+
+                    {%- if row_num == 1 -%}
+                    <div class="col-12 col-sm-4 h4 mb-2">
+                        {%- endif -%}
+
+                        {%- if row_num > items_per_col -%}
+                    </div>
+                    <div class="col-12 col-sm-4 h4 mb-2">
+                        {%- assign items_per_col = items_per_col | plus: items_per_col -%}
+                        {% endif %}
+
+                        {%- assign its_a_match = false -%}
+                        {%- capture my_collection_handle -%} {{ product_vendor | handleize | strip | escape }} {%- endcapture -%}
+                        {%- assign my_collection_handle_stripped = my_collection_handle | strip | escape -%}
+                        {%- for collection in collections -%}
+                            {%- if my_collection_handle_stripped == collection.handle -%}
+                                {%- assign its_a_match = true -%}
+                            {% endif %}
+                        {%- endfor -%}
+                        {%- if its_a_match -%}
+                            {%- capture brand -%}
+                            <a href="/collections/{{ product_vendor | handleize }}">{{ product_vendor }}</a>
+                            {%- endcapture -%}
+                        {%- else -%}
+                            {% capture brand %}
+                            {{ product_vendor | link_to_vendor }}
+                            {% endcapture %}
+                        {%- endif -%}
+                        <div class="mb-4">{{ brand }}</div>
+                        {%- endfor -%}
+
+                    </div>
+                    <!-- / PAGE CONTENT -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

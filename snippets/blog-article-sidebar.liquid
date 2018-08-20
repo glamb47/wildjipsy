@@ -1,0 +1,325 @@
+{%- for block in section.blocks -%}
+
+    <section class="sidebar-block">
+
+        {%- case block.type -%}
+
+        {%- comment -%}
+        {# @ Blog Tags#}
+        {%- endcomment -%}
+        {%- when 'blog_tags' -%}
+
+        {%- if block.settings.title != blank -%}
+            <div class="sidebar-block-header h4">
+                {{ block.settings.title }}
+            </div>
+        {%- endif -%}
+
+        {%- include 'blog-tags' -%}
+
+        {%- comment -%}
+        {# @ Menu #}
+        {%- endcomment -%}
+        {%- when 'menu' -%}
+
+        {%- if block.settings.title != blank -%}
+            <div class="sidebar-block-header h4">
+                {{ block.settings.title }}
+            </div>
+        {%- endif -%}
+
+        <div class="sidebar-block-content">
+
+            {%- if block.settings.type == 'popover' -%}
+
+                {%- if settings.blog_sidebar == 'left-sidebar' -%}
+                    {%- assign popover_direction = 'right-start' -%}
+                {%- endif -%}
+
+                {%- if settings.blog_sidebar == 'right-sidebar' -%}
+                    {%- assign popover_direction = 'left-start' -%}
+                {%- endif -%}
+
+                <div class="hidden-sm-down">
+                    {%- include 'nav' with 'vertical'
+                    nav_item:'nav-item-popover',
+                    menu: block.settings.menu,
+                    style: block.settings.style,
+                    align: block.settings.align,
+                    popover_direction: popover_direction,
+                    popover_classes: 'from-sidebar' -%}
+                </div>
+
+                <div class="hidden-md-up">
+                    {%- include 'nav' with 'vertical',
+                    nav_item:'nav-item-collapse',
+                    menu: block.settings.menu,
+                    style: block.settings.style,
+                    align: block.settings.align -%}
+                </div>
+
+            {%- else -%}
+                {%- include 'nav' with 'vertical',
+                nav_item:'nav-item-collapse',
+                menu: block.settings.menu,
+                style: block.settings.style,
+                align: block.settings.align -%}
+            {%- endif -%}
+        </div>
+
+        {%- comment -%}
+        {# @ Featured product #}
+        {%- endcomment -%}
+        {%- when 'featured_product' -%}
+
+        {%- assign image_size = '300x' -%}
+        {%- if settings.enable_product_custom_aspect_ratio -%}
+            {%- assign product_image_ratio = settings.product_image_aspect_ratio_w | plus :0.0 | divided_by: settings.product_image_aspect_ratio_h -%}
+            {%- assign image_height = 300 | divided_by: product_image_ratio | round -%}
+            {%- assign image_size = 300 | append:'x' | append: image_height -%}
+        {%- endif -%}
+
+        {%- if block.settings.title != blank -%}
+            <div class="sidebar-block-header h4">
+                {{ block.settings.title }}
+            </div>
+        {%- endif -%}
+
+        <div class="sidebar-block-content">
+            {%- include 'product-item'
+            product: all_products[block.settings.product],
+            hover_bg: block.settings.hover_bg,
+            style: block.settings.product_style,
+            sale_badge_style : block.settings.product_sale_badge_style,
+            hover_buttons_style : block.settings.product_hover_buttons_style,
+            show_star_rating: block.settings.product_show_star_rating,
+            image_size : image_size -%}
+        </div>
+
+        {%- comment -%}
+        {# @ Product list carousel #}
+        {%- endcomment -%}
+        {%- when 'product_list_carousel' -%}
+
+        {%- assign product_limit = false -%}
+        {%- if block.settings.product_limit != blank -%}
+            {%- assign product_limit = block.settings.product_limit -%}
+        {%- endif -%}
+
+        {%- assign image_size = '120x' -%}
+        {%- if settings.enable_product_custom_aspect_ratio -%}
+            {%- assign product_image_ratio = settings.product_image_aspect_ratio_w | plus :0.0 | divided_by: settings.product_image_aspect_ratio_h -%}
+            {%- assign image_height = 120 | divided_by: product_image_ratio | round -%}
+            {%- assign image_size = 120 | append:'x' | append: image_height -%}
+        {%- endif -%}
+
+        {%- include 'product-list-carousel'
+        title: block.settings.title,
+        collection: collections[block.settings.collection],
+        row_count: block.settings.row_count,
+        show_separators: block.settings.show_separators,
+        show_images: block.settings.show_images,
+        image_size: image_size,
+        product_limit: product_limit -%}
+
+        {%- comment -%}
+        {# @ Product single carousel #}
+        {%- endcomment -%}
+        {%- when 'product_single_carousel' -%}
+
+        {%- assign product_limit = false -%}
+        {%- if block.settings.product_limit != blank -%}
+            {%- assign product_limit = block.settings.product_limit -%}
+        {%- endif -%}
+
+        {%- assign image_size = '300x' -%}
+        {%- if settings.enable_product_custom_aspect_ratio -%}
+            {%- assign product_image_ratio = settings.product_image_aspect_ratio_w | plus :0.0 | divided_by: settings.product_image_aspect_ratio_h -%}
+            {%- assign image_height = 300 | divided_by: product_image_ratio | round -%}
+            {%- assign image_size = 300 | append:'x' | append: image_height -%}
+        {%- endif -%}
+
+        {%- include 'product-single-carousel'
+        title: block.settings.title,
+        collection: collections[block.settings.collection],
+        product_hover_bg: block.settings.hover_bg,
+        product_style: block.settings.product_style,
+        product_sale_badge_style: block.settings.product_sale_badge_style,
+        product_hover_buttons_style: block.settings.product_hover_buttons_style,
+        product_show_star_rating: block.settings.product_show_star_rating
+        product_image_size: image_size,
+        product_limit: product_limit -%}
+
+        {%- comment -%}
+        {# @ Featured collection #}
+        {%- endcomment -%}
+        {%- when 'featured_collection' -%}
+
+        {%- assign image_size = '300x' -%}
+
+        {%- if settings.enable_collection_custom_aspect_ratio -%}
+            {%- assign collection_image_ratio = settings.collection_image_aspect_ratio_w | plus :0.0 | divided_by: settings.collection_image_aspect_ratio_h -%}
+            {%- assign image_height = 300 | divided_by: collection_image_ratio | round -%}
+            {%- assign image_size = 300 | append:'x' | append: image_height -%}
+        {%- endif -%}
+
+        {%- if block.settings.title != blank -%}
+            <div class="sidebar-block-header h4">
+                {{ block.settings.title }}
+            </div>
+        {%- endif -%}
+
+        <div class="sidebar-block-content">
+            {%- include 'collection-item'
+            collection: collections[block.settings.collection],
+            show_product_counts: block.settings.show_product_counts,
+            hover_bg: block.settings.hover_bg,
+            image_size: image_size -%}
+        </div>
+
+        {%- comment -%}
+        {# @ Featured article #}
+        {%- endcomment -%}
+        {%- when 'featured_article' -%}
+
+        {%- assign image_size = '300x' -%}
+
+        {%- if settings.enable_article_custom_aspect_ratio -%}
+            {%- assign article_image_ratio = settings.article_image_aspect_ratio_w | plus :0.0 | divided_by: settings.article_image_aspect_ratio_h -%}
+            {%- assign image_height = 300 | divided_by: article_image_ratio | round -%}
+            {%- assign image_size = 300 | append:'x' | append: image_height -%}
+        {%- endif -%}
+
+        {%- assign articleArr = block.settings.article | split: '/' -%}
+
+        {%- assign article = false -%}
+
+        {%- for article_item in blogs[articleArr[0]].articles -%}
+            {%- if  article_item.handle == block.settings.article -%}
+                {%- assign article = article_item -%}
+            {%- endif -%}
+        {%- endfor -%}
+
+        {%- if block.settings.title != blank -%}
+            <div class="sidebar-block-header h4">
+                {{ block.settings.title }}
+            </div>
+        {%- endif -%}
+
+        <div class="sidebar-block-content">
+            {%- include 'article-grid-item'
+            style: block.settings.article_style,
+            image_size: image_size -%}
+        </div>
+
+        {%- comment -%}
+        {# @ Article list carousel #}
+        {%- endcomment -%}
+        {%- when 'article_list_carousel' -%}
+
+        {%- assign image_size = '120x' -%}
+
+        {%- if settings.enable_article_custom_aspect_ratio -%}
+            {%- assign article_image_ratio = settings.article_image_aspect_ratio_w | plus :0.0 | divided_by: settings.article_image_aspect_ratio_h -%}
+            {%- assign image_height = 120 | divided_by: article_image_ratio | round -%}
+            {%- assign image_size = 120 | append:'x' | append: image_height -%}
+        {%- endif -%}
+
+        {%- assign article_limit = false -%}
+        {%- if block.settings.article_limit != blank -%}
+            {%- assign article_limit = block.settings.article_limit -%}
+        {%- endif -%}
+
+        {%- include 'article-list-carousel'
+        title: block.settings.title,
+        blog: blogs[block.settings.blog],
+        row_count: block.settings.row_count,
+        show_separators: block.settings.show_separators,
+        show_images: block.settings.show_images,
+        image_size: image_size,
+        article_limit: article_limit -%}
+
+        {%- comment -%}
+        {# @ Article single carousel #}
+        {%- endcomment -%}
+        {%- when 'article_single_carousel' -%}
+
+        {%- assign image_size = '300x' -%}
+
+        {%- if settings.enable_article_custom_aspect_ratio -%}
+            {%- assign article_image_ratio = settings.article_image_aspect_ratio_w | plus :0.0 | divided_by: settings.article_image_aspect_ratio_h -%}
+            {%- assign image_height = 300 | divided_by: article_image_ratio | round -%}
+            {%- assign image_size = 300 | append:'x' | append: image_height -%}
+        {%- endif -%}
+
+        {%- assign article_limit = false -%}
+        {%- if block.settings.article_limit != blank -%}
+            {%- assign article_limit = block.settings.article_limit -%}
+        {%- endif -%}
+
+        {%- include 'article-single-carousel'
+        title: block.settings.title,
+        blog: blogs[block.settings.blog],
+        row_count: block.settings.row_count,
+        image_size: image_size,
+        article_limit: article_limit -%}
+
+        {%- comment -%}
+        {# @ Image #}
+        {%- endcomment -%}
+        {%- when 'image' -%}
+
+        {%- if block.settings.title != blank -%}
+            <div class="sidebar-block-header h4">
+                {{ block.settings.title }}
+            </div>
+        {%- endif -%}
+
+        <div class="sidebar-block-content">
+
+            <div class="image-wrapper w-100">
+
+                {% if block.settings.url != blank %}<a href="{{ block.settings.url }}">{% endif %}
+
+                    {%- if block.settings.image != blank -%}
+                        <img class="img-fluid w-100"
+                             src="{{ block.settings.image | img_url: '300x' }}"
+                             srcset="{{ block.settings.image | img_url: '300x' }} 1x, {{ block.settings.image | img_url: '300x', scale:2 }} 2x"
+                             alt="{{ block.settings.image.alt | escape }}">
+                    {%- else -%}
+                        {{ 'image' | placeholder_svg_tag: 'placeholder-svg img-fluid w-100' }}
+                    {%- endif -%}
+
+                    {% if block.settings.url != blank %}</a>{% endif %}
+            </div>
+
+        </div>
+
+        {%- comment -%}
+        {# @ Html #}
+        {%- endcomment -%}
+        {%- when 'html' -%}
+
+        {%- if block.settings.title != blank -%}
+            <div class="sidebar-block-header h4">
+                {{ block.settings.title }}
+            </div>
+        {%- endif -%}
+
+        <div class="sidebar-block-content">
+
+            <div class="grid-item html-grid-item {{ column_class }} {{ item_class }} flex-item mb-4">
+                {%- if block.settings.html != blank -%}
+                    {{ block.settings.html }}
+                {%- else -%}
+                    <span>Insert HTML code..</span>
+                {%- endif -%}
+            </div>
+
+        </div>
+
+        {%- endcase -%}
+
+    </section>
+
+{%- endfor -%}

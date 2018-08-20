@@ -1,0 +1,91 @@
+{%- if block -%}
+    {%- assign nav_id = block.id -%}
+    {%- assign popover_from = 'from-block' -%}
+{%- else -%}
+    {%- assign nav_id = section.id -%}
+    {%- assign popover_from = 'from-section' -%}
+{%- endif -%}
+
+{%- assign nav_opt = nav | default:'horizontal' -%}
+{%- assign nav_item_opt = nav_item | default:'nav-item-popover' -%}
+{%- assign nav_style = style | default:'simple' -%}
+{%- assign popover_placement = popover_direction | default:'right-start' -%}
+
+{%- if nav_opt == 'horizontal' -%}
+    {%- assign wrapper_class = 'nav-horizontal nav-inline' -%}
+    {%- assign nav_link_padding_class = 'py-6' -%}
+{%- endif -%}
+
+{%- if nav_opt == 'vertical' -%}
+    {%- assign wrapper_class = 'nav-vertical py-6' -%}
+    {%- assign nav_link_padding_class = 'py-2 px-4' -%}
+{%- endif -%}
+
+{%- if align == 'center' -%}
+    {%- assign nav_link_align_class = 'flex-items-center' -%}
+    {%- elsif align == 'right' -%}
+    {%- assign nav_link_align_class = 'flex-items-right' -%}
+{%- else -%}
+    {%- assign nav_link_align_class = 'flex-items-left' -%}
+{%- endif -%}
+
+{%- capture dropdown_separator -%}
+{%- if align == 'center' -%}
+    <hr class="separator w-16">
+{%- else -%}
+    <div class="separator px-2">
+        <hr>
+    </div>
+{%- endif -%}
+{%- endcapture -%}
+
+{%- if mobile_header == true -%}
+    {%- assign nav_is_mobile = true -%}
+{%- else -%}
+    {%- assign nav_is_mobile = false -%}
+{%- endif -%}
+
+<ul class="{{ wrapper_class }} {{ nav_item_opt }} {{ nav_style }} nav text-nowrap nav-align-{{ align }}">
+
+    {%- if nav_item_opt == 'nav-item-collapse' -%}
+    <uib-accordion close-others="true">
+        {%- endif -%}
+
+        {%- for link in linklists[menu].links -%}
+
+            {%- assign menu_item_extras = false -%}
+            {%- for menu_extra in menu_extras -%}
+                {%- assign menu_extra_title = menu_extra.settings.title | downcase -%}
+                {%- assign link_title = link.title | downcase -%}
+                {%- if menu_extra_title == link_title -%}
+                    {%- assign menu_item_extras = menu_extra.settings -%}
+                    {%- break -%}
+                {%- endif -%}
+            {%- endfor -%}
+
+            {%- assign child_list_handle = link.title | handleize -%}
+            {%- include nav_item_opt child_list_handle: child_list_handle -%}
+
+        {%- endfor -%}
+
+        {%- if nav_item_opt == 'nav-item-collapse' -%}
+    </uib-accordion>
+
+    <script type="text/ng-template" id="nav-accordion-template.html">
+        <div class="panel-heading">
+            <div class="panel-title">
+                <a href tabindex="0" class="accordion-toggle" ng-click="toggleOpen()"
+                   ng-class="{'active':isOpen}"
+                   uib-accordion-transclude="heading">
+                      <span uib-accordion-header ng-class="{'text-muted': isDisabled}">
+                        {{ heading }}
+                      </span>
+                </a>
+            </div>
+        </div>
+        <div class="panel-collapse collapse" uib-collapse="!isOpen">
+            <div class="panel-body" style="text-align: right" ng-transclude></div>
+        </div>
+    </script>
+    {%- endif -%}
+</ul>

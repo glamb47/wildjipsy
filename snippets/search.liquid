@@ -1,0 +1,79 @@
+{% capture headerSearchId %}{{ section.id }}-search{% endcapture %}
+<div id="{{ headerSearchId }}" class="header-search"
+    {% if search_style == 'dropdown' %} uib-dropdown is-open="searchDropdownOpen"{% endif %}
+    {% if search_style == 'basic' %}js-basic-search{% endif %}>
+
+    {%- unless search_style == 'input-group' or search_style == 'input-field' -%}
+
+    <div class="search-button link p-2 {% if icon_mode %} with-icon text-light{% endif %}"
+         {% if search_style == 'basic' %}js-basic-search-button{% endif %}
+        {% if search_style == 'dropdown' %} uib-dropdown-toggle {% endif %}
+        {% if search_style == 'full-page' %}js-bar-toggle="search-bar"{% endif %}
+        {% if search_style == 'mobile-search' %}js-bar-toggle="mobile-search-bar"{% endif %}>
+
+        {%- if icon_mode -%}
+            <i class="icon icon-magnify s-6"></i>
+        {%- else -%}
+            <span>{{ 'general.search.placeholder' | t }}</span>
+        {%- endif -%}
+    </div>
+
+    {%- endunless -%}
+
+    {%- if search_style == 'input-group' -%}
+        <form action="/search" method="get" class="search-form clearfix" role="search">
+
+            <div class="input-group">
+                <input class="search-input form-control" type="search" name="q" value="{{ search.terms | escape }}"
+                       aria-label="{{ 'general.search.placeholder' | t }}" class="search-input"
+                       placeholder="{{ 'general.search.placeholder' | t }}">
+
+                <span class="input-group-btn">
+                    <button type="submit" class="p-2 btn btn-secondary" type="button">
+                         <i class="icon icon-magnify s-5"></i>
+                    </button>
+                 </span>
+            </div>
+
+        </form>
+    {% endif %}
+
+    {%- if search_style == 'input-field' -%}
+        <div class="input-field">
+            <js-quick-search ng-cloak
+                             options="{
+                    formClass:'search-form',
+                    inputClass:'search-input form-control',
+                    inputPlaceholder:'{{ 'general.search.placeholder' | t }}'
+                    }">
+            </js-quick-search>
+            <i class="icon icon-magnify s-5 text-light"></i>
+        </div>
+    {%- endif -%}
+
+    {%- if search_style == 'basic' -%}
+        <div class="basic-search ng-hide" js-basic-search-form ng-cloak>
+            <js-quick-search ng-cloak
+                             options="{
+                    formClass:'search-form',
+                    inputClass:'search-input p-2',
+                    inputPlaceholder:'{{ 'general.search.placeholder' | t }}'
+                    }">
+            </js-quick-search>
+        </div>
+    {%- endif -%}
+
+    {%- if search_style == 'dropdown' -%}
+        <div class="dropdown-search px-0" uib-dropdown-menu>
+            <js-quick-search ng-cloak
+                             focus-trigger="searchDropdownOpen"
+                             options="{
+                    formClass:'search-form',
+                    inputClass:'search-input',
+                    inputPlaceholder:'{{ 'general.search.placeholder' | t }}'
+                    }">
+            </js-quick-search>
+
+        </div>
+    {%- endif -%}
+</div>

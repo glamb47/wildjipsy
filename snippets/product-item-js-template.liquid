@@ -1,0 +1,600 @@
+{%- assign current_variant = product.selected_or_first_available_variant -%}
+{%- assign sale_badge_style = settings.product_sale_badge_style -%}
+{%- assign hover_buttons_style = settings.product_hover_buttons_style -%}
+{%- assign show_star_rating = settings.product_show_star_rating -%}
+{%- assign item_image_size = image_size | default: '1024x' -%}
+
+{%- comment -%}
+    {#@ CPT: Product Badges #}
+{%- endcomment -%}
+{%- capture product_badges -%}
+
+    <!-- SALE BADGE-->
+    <span ng-if="ps.productSalePercentage && product.template_suffix !=='no-offers'" class="badge-sale tag tag-primary">
+
+    {%- if sale_badge_style == 'percentage' -%}
+        <span>-{[{ ps.productSalePercentage | number:0 }]}%</span>
+    {%- endif -%}
+
+        {%- if sale_badge_style == 'text' -%}
+            <span class="badge-text">{{ 'products.product.sale' | t }}</span>
+        {%- endif -%}
+
+</span>
+    <!-- / SALE BADGE-->
+
+    {%- if settings.product_new_badge_enabled -%}
+        <!-- NEW BADGE-->
+        <span ng-if="ps.product.is_new" class="badge-new tag tag-default">
+     <span class="badge-text">{{ 'products.product.new' | t }}</span>
+</span>
+        <!-- / NEW BADGE-->
+    {%- endif -%}
+
+    <!-- SOLD OUT BADGE-->
+    <span ng-if="!product.available" class="badge-sold-out tag align-middle-center p-3"
+          ng-class="{'sold-out':!product.available}">
+    <span class="badge-text">{{ 'products.product.sold_out' | t }}</span>
+</span>
+    <!-- / SOLD OUT BADGE-->
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Product Image #}
+{%- endcomment -%}
+{%- capture product_image -%}
+
+    <!-- PRODUCT IMAGE -->
+    <a ng-href="{[{ product.url }]}">
+        <div class="image-wrapper">
+            <img class="product-image img-fluid"
+                 ng-src="{[{vm.resizeImage(product.featured_image,'{{ item_image_size }}')}]}"
+                 alt="{[{ product.title }]}" ng-class="{'sold-out':!product.available}">
+        </div>
+    </a>
+    <!-- / PRODUCT IMAGE -->
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Product Image With Hover #}
+{%- endcomment -%}
+{%- capture product_image_with_hover -%}
+
+    <!-- PRODUCT IMAGE -->
+    <a ng-href="{[{ product.url }]}">
+        <div class="image-wrapper">
+            <img class="product-image img-fluid" ng-repeat="image in ::product.images | limitTo:2"
+                 ng-src="{[{vm.resizeImage(image,'{{ item_image_size }}')}]}"
+                 ng-class="{'listen-hover':product.images.length > 1, 'sold-out':!product.available}"
+                 alt="{[{ product.title }]}">
+        </div>
+    </a>
+    <!-- / PRODUCT IMAGE -->
+
+{%- endcapture -%}
+
+
+{%- comment -%}
+    {#@ CPT: Product Image Slider #}
+{%- endcomment -%}
+{%- capture product_image_slider -%}
+
+    <!-- PRODUCT IMAGE SLIDER -->
+    <div class="image-wrapper">
+
+        {{ product_sale_badge }}
+        {{ product_new_badge }}
+
+        <!-- PRODUCT IMAGE SLIDE -->
+        <slick ng-if="product.images.length > 1" class="product-image-slider arrows-light-rectangle" settings="ps.slickConfig">
+            <a class="product-image" ng-href="{[{ product.url }]}" ng-repeat="image in ::product.images">
+                <img class="img-fluid w-100"
+                     ng-class="{'sold-out':!product.available}"
+                     data-lazy="{[{vm.resizeImage(image,'{{ item_image_size }}')}]}"
+                     alt="{[{ image.alt }]}">
+            </a>
+        </slick>
+        <!-- / PRODUCT IMAGE SLIDE  -->
+
+        <a ng-if="product.images.length === 1" ng-href="{[{ product.url }]}">
+            <div class="image-wrapper">
+                <img class="product-image img-fluid"
+                     ng-src="{[{vm.resizeImage(product.featured_image,'{{ item_image_size }}')}]}"
+                     alt="{[{ product.title }]}" ng-class="{'sold-out':!product.available}">
+            </div>
+        </a>
+
+    </div>
+    <!-- / PRODUCT IMAGE SLIDER -->
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Product Title #}
+{%- endcomment -%}
+{%- capture product_title -%}
+
+    <!-- PRODUCT TITLE -->
+    <a ng-href="{[{ product.url }]}" class="product-title mt-4 mb-1 text-medium text-center">
+        {[{ product.title }]}
+    </a>
+    <!-- / PRODUCT TITLE -->
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Product Price #}
+{%- endcomment -%}
+{%- capture product_price -%}
+
+    <!-- PRODUCT PRICE -->
+    <div class="product-price flex-items-center flex-items-middle text-light pb-3">
+
+        <div ng-if="product.template_suffix !== 'no-offers'" class="flex-items-middle">
+
+            <div class="price" ng-class="{'text-danger': product.compare_at_price}" ng-if="product.price_varies">
+                <span>{{ 'products.general.from' | t }}</span>
+                <span class="js-money" value="{[{product.price}]}">
+                {[{product.formattedPrice}]}
+            </span>
+            </div>
+
+            <div class="price js-money" ng-class="{'text-danger': product.compare_at_price}"
+                 ng-if="!product.price_varies"
+                 value="{[{product.price}]}">
+                {[{product.formattedPrice}]}
+            </div>
+
+            <div class="js-money sale-price pl-1 text-linethrough"
+                 ng-if="product.compare_at_price && product.compare_at_price > product.price"
+                 value="{[{product.compare_at_price}]}">
+                {[{product.formattedCompareAtPrice}]}
+            </div>
+
+        </div>
+
+    </div>
+    <!-- / PRODUCT PRICE -->
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Product Stars #}
+{%- endcomment -%}
+{%- capture product_stars -%}
+
+    {%- if show_star_rating == 'show' -%}
+        <!-- PRODUCT STARS -->
+        <div ng-if="product.available" class="product-stars">
+            <span class="shopify-product-reviews-badge" data-id="{[{ product.id }]}"></span>
+        </div>
+        <!-- / PRODUCT STARS -->
+    {%- endif -%}
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Product Vendor #}
+{%- endcomment -%}
+{%- capture product_vendor -%}
+
+    <!-- PRODUCT VENDOR -->
+    <div class="product-vendor pb-2">
+        {[{ product.vendor }]}
+    </div>
+    <!-- / PRODUCT VENDOR -->
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Text Action Button - Quickview #}
+{%- endcomment -%}
+{%- capture text_action_button_quickview -%}
+    {%- unless settings.product_quickview_disabled -%}
+        <div ng-if="product.available" class="col-12 flex-items-center">
+            <button class="btn btn-bordered quick-view-button" ng-click="ps.quickView($event)">QUICK VIEW</button>
+        </div>
+    {%- endunless -%}
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Text Action Button - Wishlist #}
+{%- endcomment -%}
+{%- capture text_action_button_wishlist -%}
+
+    {%- if pages.wishlist != empty and settings.product_wishlist_disabled != true -%}
+        <div class="col-12 flex-items-center">
+            <button class="btn btn-bordered add-to-wishlist-button mt-2 flex-items-center"
+                    ng-click="ps.toggleWishlist($event)">
+            <span ng-if="!ps.checkInTheWishList()" class="flex-items-middle">
+                <i class="icon-heart-outline s-4 mr-1"></i>
+                <span>{{ 'products.product.wishlist' | t | upcase }}</span>
+            </span>
+                <span ng-if="ps.checkInTheWishList()" class="flex-items-middle">
+                <i class="icon-heart s-4 mr-1"></i>
+                <span>{{ 'products.product.wishlist' | t | upcase }}</span>
+            </span>
+            </button>
+        </div>
+    {%- endif -%}
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Text Action Button - Cart #}
+{%- endcomment -%}
+{%- capture text_action_button_cart -%}
+
+    <div ng-if="product.available && product.template_suffix !== 'no-offers'"
+         class="add-to-cart-button-wrapper col-12 flex-items-center">
+
+        <a ng-if="product.variants.length > 1" ng-href="{[{ product.url }]}"
+           class="btn btn-bordered btn-primary select-options-button mt-2 hover-primary-bg flex-items-center flex-items-middle">
+            {{ 'products.product.select_options' | t | upcase }}
+        </a>
+
+        <button ng-if="product.variants.length <= 1"
+                class="btn btn-bordered btn-primary add-to-cart-button mt-2 hover-primary-bg"
+                ng-click="ps.addToCart($event)">
+            <span
+                ng-if="product.template_suffix !=='pre-order'">{{ 'products.product.add_to_cart' | t | upcase }}</span>
+            <span ng-if="product.template_suffix ==='pre-order'">{{ 'products.product.pre_order' | t | upcase }}</span>
+        </button>
+
+    </div>
+
+    <div ng-if="!product.available || product.template_suffix === 'no-offers'"
+         class="add-to-cart-button-wrapper col-12 flex-items-center">
+
+        <a ng-href="{[{ product.url }]}"
+           class="btn btn-bordered btn-primary select-options-button mt-2 hover-primary-bg flex-items-center flex-items-middle">
+            {{ 'products.product.view_product' | t | upcase }}
+        </a>
+
+    </div>
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Text Action Buttons #}
+{%- endcomment -%}
+{%- capture text_action_buttons -%}
+    {{ text_action_button_quickview }}
+    {{ text_action_button_wishlist }}
+    {{ text_action_button_cart }}
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Icon Action Button - Quickview #}
+{%- endcomment -%}
+{%- capture icon_action_button_quickview -%}
+
+    {%- unless settings.product_quickview_disabled -%}
+        <button class="btn btn-bordered quick-view-button icon-button" ng-click="ps.quickView($event)">
+            <i class="icon-magnify s-4" uib-tooltip="{{ 'products.product.quick_view' | t }}" tooltip-popup-delay="300"
+               tooltip-append-to-body="true"></i>
+        </button>
+    {%- endunless -%}
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Icon Action Button - Wishlist #}
+{%- endcomment -%}
+{%- capture icon_action_button_wishlist -%}
+
+    {%- if pages.wishlist != empty and settings.product_wishlist_disabled != true -%}
+        <button class="btn btn-bordered add-to-wishlist-button icon-button"
+                ng-click="ps.toggleWishlist($event)">
+            <i ng-if="ps.checkInTheWishList()" class="icon-heart s-4"
+               uib-tooltip="{{ 'products.product.remove_from_wishlist' | t }}"
+               tooltip-popup-delay="300" tooltip-append-to-body="true"></i>
+
+            <i ng-if="!ps.checkInTheWishList()" class="icon-heart-outline s-4"
+               uib-tooltip="{{ 'products.product.add_to_wishlist' | t }}"
+               tooltip-popup-delay="300" tooltip-append-to-body="true"></i>
+        </button>
+    {%- endif -%}
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Icon Action Button - Cart #}
+{%- endcomment -%}
+{%- capture icon_action_button_cart -%}
+
+    <a ng-if="product.variants.length > 1 && product.available && product.template_suffix !=='no-offers'"
+       class="btn btn-bordered select-options-button icon-button hover-primary-bg">
+        <i class="icon-shopping s-4" uib-tooltip="{{ 'products.product.select_options' | t }}"
+           tooltip-popup-delay="300" tooltip-append-to-body="true"></i>
+    </a>
+
+    <button ng-if="product.variants.length <= 1 && product.available && product.template_suffix !=='no-offers'"
+            class="btn btn-bordered add-to-cart-button icon-button hover-primary-bg"
+            ng-click="ps.addToCart($event)">
+        <i class="icon-shopping s-4" uib-tooltip="{{ 'products.product.add_to_cart' | t }}"
+           tooltip-popup-delay="300" tooltip-append-to-body="true"></i>
+    </button>
+
+    <a ng-href="{[{ product.url }]}"
+       ng-if="product.available && product.template_suffix !=='no-offers'"
+       class="btn btn-bordered select-options-button icon-button hover-primary-bg">
+        <i class="icon-shopping s-4" uib-tooltip="{{ 'products.product.view_product' | t }}"
+           tooltip-popup-delay="300" tooltip-append-to-body="true"></i>
+    </a>
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Icon Action Buttons #}
+{%- endcomment -%}
+{%- capture icon_action_buttons -%}
+    {{ icon_action_button_quickview }}
+    {{ icon_action_button_wishlist }}
+    {{ icon_action_button_cart }}
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Product Overlay #}
+{%- endcomment -%}
+{%- capture product_overlay -%}
+
+    <!-- OVERLAY -->
+    <div class="overlay {{ settings.grid_item_overlay_animation }}">
+
+        <div class="overlay-buttons flex-bottom">
+            {%- if hover_buttons_style == 'icon-buttons' -%}
+
+                <div class="flex-items-center icon-buttons mb-8">
+                    <div class="flex-items-center">
+                        {{ icon_action_buttons }}
+                    </div>
+                </div>
+
+            {%- endif -%}
+
+            {%- if hover_buttons_style == 'text-buttons' -%}
+
+                <div class="row text-buttons mb-8">
+                    {{ text_action_buttons }}
+                </div>
+
+            {%- endif -%}
+        </div>
+
+        <a ng-href="{[{ product.url }]}" class="overlay-link"></a>
+    </div>
+    <!-- / OVERLAY -->
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Product Overlay Alt #}
+{%- endcomment -%}
+{%- capture product_overlay_alt -%}
+
+    <!-- OVERLAY -->
+    <div
+        class="overlay overlay-alt flex-column flex-items-center flex-items-middle {{ settings.grid_item_overlay_animation }}">
+
+        <div class="product-stars-wrapper">
+            {{ product_stars }}
+        </div>
+
+        <div class="overlay-buttons flex-items-middle flex-items-center">
+            {{ text_action_button_quickview }}
+        </div>
+
+        <a ng-href="{[{ product.url }]}" class="overlay-link"></a>
+    </div>
+
+    <!-- / OVERLAY -->
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Item - Style 1 #}
+{%- endcomment -%}
+{%- capture item_style1 -%}
+
+    <div class="product-top">
+        {{ product_badges }}
+        {{ product_image }}
+        {{ product_overlay }}
+    </div>
+
+    <div class="product-bottom">
+        {{ product_title }}
+        {{ product_price }}
+        {{ product_stars }}
+        <div class="mobile-add-to-cart-button show-when-disable-grid-item-hover-on-mobile">
+            {{ text_action_button_cart }}
+        </div>
+    </div>
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Item - Style 2 #}
+{%- endcomment -%}
+{%- capture item_style2 -%}
+
+    <div class="product-top">
+        {{ product_badges }}
+        {{ product_title }}
+    </div>
+
+    {{ product_image }}
+
+    <div class="product-bottom">
+        {{ product_price }}
+        {{ product_stars }}
+        <div class="mobile-add-to-cart-button show-when-disable-grid-item-hover-on-mobile">
+            {{ text_action_button_cart }}
+        </div>
+        {{ product_overlay }}
+    </div>
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Item - Style 3 #}
+{%- endcomment -%}
+{%- capture item_style3 -%}
+
+    <div class="product-top">
+        {{ product_badges }}
+        {{ product_title }}
+        {{ product_stars }}
+    </div>
+
+    {{ product_image_with_hover }}
+
+    <div class="product-bottom row">
+
+        <div class="col-12">
+            {{ product_price }}
+        </div>
+
+        <div class="col-12 flex-items-middle flex-items-center">
+            {{ icon_action_button_quickview }}
+            {{ icon_action_button_wishlist }}
+            {{ icon_action_button_cart }}
+        </div>
+
+    </div>
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Item - Style 4 #}
+{%- endcomment -%}
+{%- capture item_style4 -%}
+
+    <div class="product-top">
+        {{ product_badges }}
+        {{ product_image }}
+        {{ product_overlay_alt }}
+    </div>
+
+    <div class="product-bottom">
+        {{ product_title }}
+        <div class="product-hover-action-wrapper mb-4">
+            {{ product_price }}
+            <div class="cart-wishlist-wrapper flex-items-middle">
+                {{ text_action_button_cart }}
+                {{ icon_action_button_wishlist }}
+            </div>
+        </div>
+        <div class="mobile-add-to-cart-button show-when-disable-grid-item-hover-on-mobile">
+            {{ text_action_button_cart }}
+        </div>
+    </div>
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Item - Style 4 alt #}
+{%- endcomment -%}
+{%- capture item_style4_alt -%}
+
+    <div class="product-top">
+        {{ product_badges }}
+        {{ product_image_slider }}
+    </div>
+
+    <div class="product-bottom">
+
+        <div ng-if="option.name === 'color' || option.name === 'Color'" ng-repeat="option in ::ps.options"
+             class="option" ng-cloak>
+            <button type="button" class="btn swatch"
+                    ng-repeat="value in ::option.values"
+                    tooltip-placement="top" tooltip-popup-delay="300"
+                    uib-tooltip="{[{value}]}"
+                    tooltip-enable="ps.isInSwatches(option.name) || ps.isInProductImageAsSwatches(option.name)"
+                {% unless section.settings.show_unavailable_variant_options %}
+                    ng-show="ps.checkExist(option.name, value)"
+                {% endunless %}
+                    ng-click="ps.selected.options[option.name] = value;ps.updateSelectedVariant();ps.slickGoTo()"
+                    ng-class="{'active':ps.selected.options[option.name] == value,'p-0 color': ps.isInSwatches(option.name) || ps.isInProductImageAsSwatches(option.name),'not-exist': !ps.checkExist(option.name, value)}">
+
+                    <span ng-if="!ps.isInSwatches(option.name) && !ps.isInProductImageAsSwatches(option.name)">
+                        {[{ value }]}
+                    </span>
+
+                <div class="color-image-preview" ng-if="ps.isInSwatches(option.name)"
+                     ng-style="{'background-color':ps.variantColor(value), 'background-image':ps.variantImage(value)}">
+                </div>
+
+                <div class="color-image-preview" ng-if="ps.isInProductImageAsSwatches(option.name)"
+                     ng-style="{'background-image':ps.variantProductImage(value)}">
+                </div>
+
+            </button>
+        </div>
+
+        <div class="product-title-wrapper flex-items-top flex-items-space-between">
+            {{ product_title }}
+            {{ icon_action_button_quickview }}
+        </div>
+
+        <div class="product-hover-action-wrapper mb-4">
+
+            {{ product_price }}
+
+            <div class="cart-wishlist-wrapper flex-items-middle">
+                {{ text_action_button_cart }}
+                {{ icon_action_button_wishlist }}
+            </div>
+        </div>
+        <div class="mobile-add-to-cart-button show-when-disable-grid-item-hover-on-mobile">
+            {{ text_action_button_cart }}
+        </div>
+    </div>
+
+{%- endcapture -%}
+
+<!-- PRODUCT -->
+<form action="/cart/add" method="post" enctype="multipart/form-data"
+      class="grid-item-content {% if sold_out %}product-sold-out{% endif %}">
+
+    <div class="product-grid-view">
+
+        {%- case style -%}
+
+        {%- when 'style1' -%}
+        {{ item_style1 }}
+
+        {%- when 'style2' -%}
+        {{ item_style2 }}
+
+        {%- when 'style3' -%}
+        {{ item_style3 }}
+
+        {%- when 'style4' -%}
+        {{ item_style4 }}
+
+        {%- when 'style4_alt' -%}
+        {{ item_style4_alt }}
+
+        {%- else -%}
+        {{ item_style1 }}
+
+        {%- endcase -%}
+
+    </div>
+
+    <input name="quantity" type="number" id="Quantity"
+           class="form-control hidden" value="1">
+
+    <select name="id" class="form-control hidden" ng-model="ps.selectedVariantId">
+        <option ng-if="variant.available" value="{[{ variant.id }]}" ng-repeat="variant in ::product.variants">
+            {[{ variant.title }]}
+        </option>
+        <option ng-if="!variant.available" disabled="disabled">
+            {[{ variant.title }]}
+            - {{ 'products.product.sold_out' | t }}</option>
+    </select>
+
+</form>
+<!-- / PRODUCT -->

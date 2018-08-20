@@ -1,0 +1,242 @@
+{%- if section.settings.enabled -%}
+
+    {%- include 'util-column-class' column_count: section.settings.column_count, column_min: section.settings.column_count_mobile -%}
+    {%- assign product_image_ratio = settings.product_image_aspect_ratio_w | plus :0.0 | divided_by: settings.product_image_aspect_ratio_h -%}
+    {%- include 'util-image-size' column_count: section.settings.column_count, image_ratio: product_image_ratio, custom_ratio: settings.enable_product_custom_aspect_ratio -%}
+    {%- assign number_of_products_to_fetch = section.settings.column_count | times: 2 | plus: 1 -%}
+
+    {%- if collection == null or collection.handle == 'frontpage' or collection.handle == 'all' -%}
+        {%- for c in product.collections -%}
+            {%- if c.handle != 'frontpage' and c.handle != 'all' and c.all_products_count > 1 -%}
+                {%- assign collection = c -%}
+                {%- break -%}
+            {%- endif -%}
+        {%- endfor -%}
+    {%- endif -%}
+
+    {%- if collection and collection.products_count > 1 -%}
+
+        <!-- RELATED PRODUCTS -->
+        <div class="related-products row animate-on-scroll">
+
+            <div class="col-12 py-14">
+
+                <div
+                    class="section-title text-uppercase flex-items-middle mb-14 {{ section.settings.arrows_position }}">
+
+                    <h3 class="{{ section.settings.title_alignment }} w-100 mb-0">
+                        {%- if section.settings.title != blank -%}
+                            {{ section.settings.title }}
+                        {%- else -%}
+                            {{ 'products.general.related_products_title' | t }}
+                        {%- endif -%}
+                    </h3>
+
+                    {%- if section.settings.arrows_position == 'arrows-top-left' or section.settings.arrows_position == 'arrows-top-right' -%}
+                        <div class="arrows-wrapper flex-nogrow flex-items-middle">
+                            <button class="flickity-prev-next-button previous small" type="button" aria-label="previous"
+                                    bc-flickity-previous
+                                    bc-flickity-id="related-products-{{ section.id }}">
+                                <svg viewBox="0 0 100 100">
+                                    <path d="M 10,50 L 60,100 L 70,90 L 30,50  L 70,10 L 60,0 Z" class="arrow"></path>
+                                </svg>
+                            </button>
+
+                            <button class="flickity-prev-next-button next small" type="button" aria-label="next"
+                                    bc-flickity-next
+                                    bc-flickity-id="related-products-{{ section.id }}">
+                                <svg viewBox="0 0 100 100">
+                                    <path d="M 10,50 L 60,100 L 70,90 L 30,50  L 70,10 L 60,0 Z" class="arrow"
+                                          transform="translate(100, 100) rotate(180) "></path>
+                                </svg>
+                            </button>
+                        </div>
+                    {%- endif -%}
+
+                </div>
+
+                <div class="carousel {{ section.settings.arrows_style }}"
+                     bc-flickity-id="related-products-{{ section.id }}"
+                     bc-flickity='{
+                          "draggable": true,
+                          "dragThreshold": 15,
+                          "wrapAround": true,
+                          "prevNextButtons": {% if section.settings.arrows_position == 'arrows-inside' %}true{% else %}false{% endif %},
+                          "pageDots": false,
+                          "groupCells": true,
+                          "imagesLoaded": true,
+                          "adaptiveHeight": true,
+                          "cellAlign": "left" }'
+                     js-flickity-carousel-fix>
+
+                    {%- assign current_product = product -%}
+                    {%- assign found_itself = false -%}
+
+                    {%- for product in collection.products limit: number_of_products_to_fetch -%}
+
+                        {%- if product.handle == current_product.handle -%}
+                            {%- assign found_itself = true -%}
+                            {%- continue -%}
+                        {%- endif -%}
+
+                        {%- if found_itself == false and forloop.last == true -%}
+                            {%- break -%}
+                        {%- endif -%}
+
+                        {%- assign item_class = column_class | prepend: 'carousel-item ' -%}
+
+                        {%- include 'product-item'
+                        product: product,
+                        item_class: item_class,
+                        image_size: image_size -%}
+
+                    {%- endfor -%}
+
+                </div>
+
+            </div>
+
+        </div>
+        <!-- / RELATED PRODUCTS -->
+
+    {%- endif -%}
+
+{%- endif -%}
+
+<script type="application/json">
+    /*"*/{% schema %}/*"*/
+    {
+        "name": "Related Products",
+        "settings": [
+            {
+                "type": "checkbox",
+                "id": "enabled",
+                "label": "Enable related products",
+                "default": true
+            },
+            {
+                "type": "text",
+                "id": "title",
+                "label": "Title"
+            },
+            {
+                "type": "select",
+                "id": "title_alignment",
+                "label": "Title alignment",
+                "default": "text-center",
+                "options": [
+                    {
+                        "value": "text-left",
+                        "label": "Left"
+                    },
+                    {
+                        "value": "text-center",
+                        "label": "Center"
+                    },
+                    {
+                        "value": "text-right",
+                        "label": "Right"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "arrows_position",
+                "label": "Arrows position",
+                "default": "arrows-top-right",
+                "options": [
+                    {
+                        "value": "arrows-top-left",
+                        "label": "Top left"
+                    },
+                    {
+                        "value": "arrows-top-right",
+                        "label": "Top right"
+                    },
+                    {
+                        "value": "arrows-inside",
+                        "label": "Inside"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "arrows_style",
+                "label": "Arrows style",
+                "info": "Adaptive changes the arrow colors to a contrasting color depending on the background color. Arrow styles only available if 'Arrow position' is 'Inside'.",
+                "default": "arrows-adaptive",
+                "options": [
+                    {
+                        "value": "arrows-adaptive",
+                        "label": "Adaptive"
+                    },
+                    {
+                        "value": "arrows-light-rectangle",
+                        "label": "Light - Rectangle"
+                    },
+                    {
+                        "value": "arrows-dark-rectangle",
+                        "label": "Dark - Rectangle"
+                    },
+                    {
+                        "value": "arrows-light-rounded",
+                        "label": "Light - Rounded"
+                    },
+                    {
+                        "value": "arrows-dark-rounded",
+                        "label": "Dark - Rounded"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "column_count",
+                "label": "Column count",
+                "default": "4",
+                "options": [
+                    {
+                        "value": "2",
+                        "label": "2"
+                    },
+                    {
+                        "value": "3",
+                        "label": "3"
+                    },
+                    {
+                        "value": "4",
+                        "label": "4"
+                    },
+                    {
+                        "value": "5",
+                        "label": "5"
+                    },
+                    {
+                        "value": "6",
+                        "label": "6"
+                    }
+                ]
+            },
+            {
+                "type": "header",
+                "content": "Mobile Specific Options"
+            },
+            {
+                "type": "select",
+                "id": "column_count_mobile",
+                "label": "Column count (Mobile)",
+                "default": "1",
+                "options": [
+                    {
+                        "value": "1",
+                        "label": "1"
+                    },
+                    {
+                        "value": "2",
+                        "label": "2"
+                    }
+                ]
+            }
+        ]
+    }
+    /*"*/{% endschema %}/*"*/
+</script>

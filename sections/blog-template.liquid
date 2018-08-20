@@ -1,0 +1,190 @@
+{%- paginate blog.articles by section.settings.articles_per_page -%}
+
+<!-- ARTICLES -->
+<div class="articles">
+
+    {%- if section.settings.article_style == 'list' -%}
+
+        {%- for article in blog.articles -%}
+
+            <!-- ARTICLE ITEM -->
+            {%- include 'article-list-item' -%}
+            <!-- / ARTICLE ITEM -->
+
+        {%- endfor -%}
+
+    {%- else -%}
+
+        {%- include 'util-column-class' column_count: section.settings.articles_per_row, column_min: section.settings.articles_per_row_mobile -%}
+        {%- assign article_image_ratio = settings.article_image_aspect_ratio_w | plus :0.0 | divided_by: settings.article_image_aspect_ratio_h -%}
+        {%- include 'util-image-size' column_count: section.settings.articles_per_row, image_ratio: article_image_ratio, custom_ratio: settings.enable_article_custom_aspect_ratio -%}
+
+        {% capture item_class %}{{ column_class }} animate-on-scroll{% endcapture %}
+
+        <div class="row">
+
+            {%- for article in blog.articles -%}
+
+                <!-- ARTICLE ITEM -->
+                {%- include 'article-grid-item'
+                style: section.settings.article_style,
+                image_size: image_size
+                item_class: item_class -%}
+                <!-- / ARTICLE ITEM -->
+
+            {%- endfor -%}
+
+        </div>
+
+    {%- endif -%}
+
+    {%- if blog.articles.size == 0 -%}
+        <p><em>{{ 'blogs.no_posts' | t }}</em></p>
+    {%- endif -%}
+
+    {%- if paginate.pages > 1 -%}
+        <!-- PAGINATON -->
+        {%- include 'pagination' -%}
+        <!-- / PAGINATON -->
+    {%- endif -%}
+
+    <div>
+        <a class="text-light" href="{{ blog.url }}.atom">
+            <span class="icon icon-rss s-6"></span>
+        </a>
+    </div>
+
+</div>
+<!-- / ARTICLES -->
+
+{%- endpaginate -%}
+
+<script type="application/json">
+    /*"*/{% schema %}/*"*/
+    {
+        "name": "Blog",
+        "settings": [
+            {
+                "type": "header",
+                "content": "Articles"
+            },
+            {
+                "type": "checkbox",
+                "id": "show_author",
+                "label": "Show author on article list style",
+                "default": true
+            },
+            {
+                "type": "select",
+                "id": "article_style",
+                "label": "Article listing style",
+                "default": "list",
+                "options": [
+                    {
+                        "value": "classic",
+                        "label": "Classic Grid"
+                    },
+                    {
+                        "value": "small-card",
+                        "label": "Small Card Grid"
+                    },
+                    {
+                        "value": "tall-card",
+                        "label": "Tall Card Grid"
+                    },
+                    {
+                        "value": "list",
+                        "label": "List"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "articles_per_row",
+                "label": "Number of articles per row",
+                "info": "Except the 'List' style",
+                "default": "4",
+                "options": [
+                    {
+                        "value": "2",
+                        "label": "2"
+                    },
+                    {
+                        "value": "3",
+                        "label": "3"
+                    },
+                    {
+                        "value": "4",
+                        "label": "4"
+                    },
+                    {
+                        "value": "5",
+                        "label": "5"
+                    },
+                    {
+                        "value": "6",
+                        "label": "6"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "articles_per_page",
+                "label": "Number of articles per page",
+                "default": "20",
+                "options": [
+                    {
+                        "value": "1",
+                        "label": "1"
+                    },
+                    {
+                        "value": "5",
+                        "label": "5"
+                    },
+                    {
+                        "value": "10",
+                        "label": "10"
+                    },
+                    {
+                        "value": "15",
+                        "label": "15"
+                    },
+                    {
+                        "value": "20",
+                        "label": "20"
+                    },
+                    {
+                        "value": "25",
+                        "label": "25"
+                    },
+                    {
+                        "value": "30",
+                        "label": "30"
+                    }
+                ]
+            },
+            {
+                "type": "header",
+                "content": "Mobile Specific Options"
+            },
+            {
+                "type": "select",
+                "id": "articles_per_row_mobile",
+                "label": "Number of articles per row (Mobile)",
+                "info": "Except the 'List' style",
+                "default": "1",
+                "options": [
+                    {
+                        "value": "1",
+                        "label": "1"
+                    },
+                    {
+                        "value": "2",
+                        "label": "2"
+                    }
+                ]
+            }
+        ]
+    }
+    /*"*/{% endschema %}/*"*/
+</script>

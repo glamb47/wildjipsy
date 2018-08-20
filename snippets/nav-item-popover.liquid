@@ -1,0 +1,135 @@
+{%- include 'util-default-colors' -%}
+
+{%- assign menu_item_title_color = '' -%}
+{%- assign menu_item_icon_color = '' -%}
+
+{%- if menu_item_extras -%}
+    {%- if menu_item_extras.title_color != blank and menu_item_extras.title_color != 'rgba(0,0,0,0)' -%}
+        {%- assign menu_item_title_color = menu_item_extras.title_color -%}
+    {%- endif -%}
+
+    {%- if menu_item_extras.icon_color != blank and menu_item_extras.icon_color != 'rgba(0,0,0,0)' -%}
+        {%- assign menu_item_icon_color = menu_item_extras.icon_color -%}
+    {%- endif -%}
+{%- endif -%}
+
+{%- assign popover_custom_classes = popover_classes | append:' from-' | append: section.id -%}
+
+{%- if link.url contains '#mega-menu' -%}
+
+    {%- assign mega_menu_id = link.url | replace: '#', '' -%}
+
+    <li class="nav-item mega-menu-item popover-placement-{{ popover_placement }}"
+        js-popover
+        js-popover-options="{ placement: '{{ popover_placement }}', popoverClasses: '{{ popover_custom_classes }}', appendToBody: true }"
+        mega-menu-id="{{ mega_menu_id }}">
+
+        <a ng-href="{[{ $root.megamenus['{{ mega_menu_id }}'].title_link }]}"
+           class="nav-link link {{ nav_link_padding_class }} {{ nav_link_align_class }} has-children"
+           js-popover-trigger>
+
+            <div class="nav-link-context" style="color: {{ menu_item_title_color }};">
+                {%- if menu_item_extras and menu_item_extras.icon_class != '' -%}
+                    <i class="{{ menu_item_extras.icon_class }} s-4 mr-1"
+                       style="color: {{ menu_item_icon_color }}"></i>
+                {%- endif -%}
+
+                <span class="nav-link-title">
+                    {{ link.title | upcase}}
+                </span>
+            </div>
+
+            {%- if menu_item_extras and menu_item_extras.badge_text != '' -%}
+                <div class="badge"
+                     style="background-color:{{ menu_item_extras.badge_bg_color | default: jasper_color_primary }};color:{{ menu_item_extras.badge_fg_color }}">
+                    <span>{{ menu_item_extras.badge_text }}</span>
+                    <span class="arrow"
+                          style="border-color:{{ menu_item_extras.badge_bg_color | default: jasper_color_primary }}"></span>
+                </div>
+            {%- endif -%}
+
+        </a>
+
+        <js-popover-content class="popover mega-menu {{ popover_from }} {{ nav_origin }}">
+            <div class="popover-content">
+                <div js-include="'{{ link.url | replace:'#','' }}'"></div>
+            </div>
+        </js-popover-content>
+
+    </li>
+
+    {%- elsif linklists[child_list_handle].links != blank -%}
+
+    {%- assign menu_handle = linklists[child_list_handle].handle -%}
+    {%- assign menu_depth = 0 -%}
+
+    <li class="nav-item dropdown-nav-item popover-placement-{{ popover_placement }}"
+        js-popover
+        js-popover-options="{ placement: '{{ popover_placement }}', popoverClasses: '{{ popover_custom_classes }}', appendToBody: true }">
+
+        <div class="nav-link link {{ nav_link_padding_class }} {{ nav_link_align_class }} has-children"
+             js-popover-trigger>
+
+            <a href="{{ link.url }}" class="nav-link-context" style="color: {{ menu_item_title_color }};">
+                {%- if menu_item_extras and menu_item_extras.icon_class != '' -%}
+                    <i class="{{ menu_item_extras.icon_class }} s-4 mr-1"
+                       style="color: {{ menu_item_icon_color }}"></i>
+                {%- endif -%}
+
+                <span class="nav-link-title">
+                    {{ link.title | upcase }}
+                </span>
+            </a>
+
+            {%- if menu_item_extras and menu_item_extras.badge_text != '' -%}
+                <div class="badge"
+                     style="background-color:{{ menu_item_extras.badge_bg_color | default: jasper_color_primary }};color:{{ menu_item_extras.badge_fg_color }}">
+                    <span>{{ menu_item_extras.badge_text }}</span>
+                    <span class="arrow"
+                          style="border-color:{{ menu_item_extras.badge_bg_color | default: jasper_color_primary }}"></span>
+                </div>
+            {%- endif -%}
+
+        </div>
+
+        <js-popover-content class="popover dropdown-style {{ popover_from }} {{ nav_origin }}">
+            <div class="popover-content">
+                {%- if section.id == 'header' -%}
+                    {%- assign popover_dir = 'right-start' -%}
+                {%- else -%}
+                    {%- assign popover_dir = popover_placement -%}
+                {%- endif -%}
+                {%- include 'nav-item-popover-subitems' menu_handle: menu_handle, menu_depth: menu_depth, popover_placement: popover_dir -%}
+            </div>
+        </js-popover-content>
+
+    </li>
+
+{%- else -%}
+
+    <li class="nav-item">
+        <a class="nav-link link {{ nav_link_padding_class }} {{ nav_link_align_class }} {% if link.active %}active{% endif %}"
+           href="{% if link.url contains '#' %}{{ shop.url }}{% endif %}{{ link.url }}"
+           {% if template == "index" %}js-scroll-to-section{% endif %}>
+
+            {%- if menu_item_extras and menu_item_extras.icon_class != '' -%}
+                <i class="{{ menu_item_extras.icon_class }} s-4 mr-1"
+                   style="color: {{ menu_item_icon_color }}"></i>
+            {%- endif -%}
+
+            <span class="nav-link-title" style="color: {{ menu_item_title_color }};">
+                {{ link.title | upcase }}
+            </span>
+
+            {%- if menu_item_extras and menu_item_extras.badge_text != '' -%}
+                <div class="badge"
+                     style="background-color:{{ menu_item_extras.badge_bg_color | default: jasper_color_primary }};color:{{ menu_item_extras.badge_fg_color }}">
+                    <span>{{ menu_item_extras.badge_text }}</span>
+                    <span class="arrow"
+                          style="border-color:{{ menu_item_extras.badge_bg_color | default: jasper_color_primary }}"></span>
+                </div>
+            {%- endif -%}
+        </a>
+    </li>
+
+{%- endif -%}

@@ -1,0 +1,13 @@
+{%- assign enabled_payment_types = shop.enabled_payment_types -%}
+
+{%- assign enabled_payment_types = 'visa,master,american_express,paypal' | remove: ' ' | split: ',' -%}
+
+{%- unless enabled_payment_types == empty -%}
+
+<div class="payment-type-icons">
+    {%- for type in enabled_payment_types -%}
+        <img class="payment-type-img px-1" src="{{ type | payment_type_img_url }}">
+    {%- endfor -%}
+</div>
+
+{%- endunless -%}

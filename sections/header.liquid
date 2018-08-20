@@ -1,0 +1,2302 @@
+{%- assign content_width = section.settings.content_width | default: settings.content_width -%}
+
+{%- assign show_aside_toggle_button = true -%}
+{%- if settings.aside == 'no-aside' -%}
+    {%- assign show_aside_toggle_button = false -%}
+{%- endif -%}
+
+{%- comment -%}
+    {# @ CPT: Navigation #}
+{%- endcomment -%}
+{%- capture navigation -%}
+    <nav class="main-nav px-2" role="navigation">
+        {%- include 'nav' menu: section.settings.menu, menu_extras: section.blocks, popover_direction:'bottom-start' -%}
+    </nav>
+{%- endcapture -%}
+
+{%- comment -%}
+    {# @ CPT: Secondary Navigation #}
+{%- endcomment -%}
+{%- capture secondary_navigation -%}
+{%- if section.settings.show_my_account_as_secondary_menu -%}
+<div class="secondary-navigation my-account-navigation px-2">
+    {%- include 'my-account-header-menu' -%}
+</div>
+{%- else -%}
+<nav class="secondary-navigation px-2"
+     role="navigation">
+    {%- include 'nav' menu: section.settings.secondary_menu, menu_extras: section.blocks, popover_direction:'bottom-start' -%}
+</nav>
+{%- endif -%}
+{%- endcapture -%}
+
+{%- comment -%}
+    {# @ CPT: Header Top #}
+{%- endcomment -%}
+{%- capture header_top -%}
+
+{%- include 'util-color-transparentize' color: section.settings.top_bg_color, opacity: section.settings.top_bg_opacity -%}
+{%- include 'util-color-brightness' color: color_transparentized, append: '-bg' -%}
+{%- assign top_bg_color_brightness = color_brightness -%}
+{%- assign top_bg_color = color_transparentized -%}
+
+{%- if show_aside_toggle_button or section.settings.show_welcome_text or section.settings.show_secondary_menu -%}
+    <div class="header-top {{ top_bg_color_brightness }}" style="background: {{ top_bg_color }}"
+         data-fg-class="{{ top_bg_color_brightness }}">
+        <div class="{{ content_width }}">
+            <div class="row flex-items-middle">
+
+                <!-- ASIDE TOGGLE BUTTON -->
+                {%- if show_aside_toggle_button -%}
+                    <div
+                        class="col flex-nogrow {% if settings.aside == 'left-aside' %}pl-6 pr-0{% else %}pr-6 pl-0 ml-auto flex-last{% endif %}">
+                        <div class="js-aside-toggle-button py-3">
+                            <span class="icon icon-backburger link" js-aside-toggle></span>
+                        </div>
+                    </div>
+                {%- endif -%}
+                <!-- / ASIDE TOGGLE BUTTON -->
+
+                {%- if section.settings.show_welcome_text or section.settings.show_secondary_menu -%}
+                    <div class="col py-3">
+                        <div class="row flex-items-middle">
+
+                            <div class="col flex-items-left">
+
+                                <!-- WELCOME TEXT -->
+                                {%- if section.settings.show_welcome_text -%}
+                                    <div class="px-2">
+                                        {{ section.settings.welcome_text }}
+                                    </div>
+                                {%- endif -%}
+                                <!-- / WELCOME TEXT -->
+
+                            </div>
+
+                            <div class="col flex-items-right">
+
+                                <!-- SECONDARY MENU -->
+                                {%- if section.settings.show_secondary_menu -%}
+                                    {{ secondary_navigation }}
+                                {%- endif -%}
+                                <!-- / SECONDARY MENU -->
+
+                            </div>
+
+                        </div>
+                    </div>
+                {%- endif -%}
+
+            </div>
+        </div>
+    </div>
+{%- endif -%}
+
+{%- endcapture -%}
+
+{%- unless section.settings.hide_header -%}
+
+{%- include 'util-color-transparentize' color: section.settings.middle_bg_color, opacity: section.settings.middle_bg_opacity -%}
+{%- include 'util-color-brightness' color: color_transparentized, append: '-bg' -%}
+{%- assign middle_bg_color_brightness = color_brightness -%}
+{%- assign middle_bg_color = color_transparentized -%}
+
+{%- include 'util-color-transparentize' color: section.settings.bottom_bg_color, opacity: section.settings.bottom_bg_opacity -%}
+{%- include 'util-color-brightness' color: color_transparentized, append: '-bg' -%}
+{%- assign bottom_bg_color_brightness = color_brightness -%}
+{%- assign bottom_bg_color = color_transparentized -%}
+
+{%- include 'util-color-transparentize' color: section.settings.sticky_bg_color, opacity: section.settings.sticky_bg_opacity -%}
+{%- include 'util-color-brightness' color: color_transparentized, append: '-bg' -%}
+{%- assign sticky_bg_color_brightness = color_brightness -%}
+{%- assign sticky_bg_color = color_transparentized -%}
+
+<!-- HEADER -->
+<header class="{% if section.settings.absolute_header %}absolute-header{% endif %}">
+
+    <div id="site-header"
+         class="{{ section.settings.style }} {{ section.settings.header }} {{ section.settings.additional_classes }} hidden-sm-down"
+         role="banner">
+
+        {%- case section.settings.style -%}
+
+        {%- when 'header-1' -%}
+            {%- comment -%}
+                {# @ Header 1 #}
+            {%- endcomment -%}
+
+            <!-- HEADER STYLE 1 -->
+            {{ header_top }}
+
+            {%- if section.settings.show_currency_selector or section.settings.show_search or section.settings.show_logo or section.settings.show_my_account or section.settings.show_cart -%}
+                <div class="header-middle {{ middle_bg_color_brightness }}" style="background: {{ middle_bg_color }}"
+                     data-fg-class="{{ middle_bg_color_brightness }}">
+                    <div class="{{ content_width }}">
+                        <div class="row flex-items-middle py-8">
+
+                            <div class="col flex-items-middle flex-items-left">
+
+                                <!-- CURRENCY SELECTOR -->
+                                {%- if section.settings.show_currency_selector -%}
+                                    {%- include 'currency-selector', icon_mode: section.settings.use_icons -%}
+                                {%- endif -%}
+                                <!-- / CURRENCY SELECTOR -->
+
+                                <!-- SEARCH -->
+                                {%- if section.settings.show_search -%}
+                                    {%- include 'search' search_style: section.settings.search_style, icon_mode: section.settings.use_icons -%}
+                                {%- endif -%}
+                                <!-- / SEARCH -->
+
+                            </div>
+
+                            <div class="col flex-items-center">
+
+                                <!-- LOGO -->
+                                {%- if section.settings.show_logo -%}
+                                    {%- include 'logo' image_size: section.settings.logo_max_width -%}
+                                {%- endif -%}
+                                <!-- / LOGO -->
+
+                            </div>
+
+                            <div class="col flex-items-middle flex-items-right">
+
+                                <!-- MY ACCOUNT -->
+                                {%- if section.settings.show_my_account -%}
+                                    {%- include 'my-account-dropdown' icon_mode: section.settings.use_icons -%}
+                                {%- endif -%}
+                                <!-- / MY ACCOUNT -->
+
+                                <!-- CART -->
+                                {%- if section.settings.show_cart -%}
+                                    {%- include 'cart' cart_style: section.settings.cart_style, icon_mode: section.settings.use_icons, tag_border_color: section.settings.middle_bg_color -%}
+                                {%- endif -%}
+                                <!-- / CART -->
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            {%- endif -%}
+
+            {%- if section.settings.show_menu -%}
+                <div class="header-bottom {{ bottom_bg_color_brightness }}" style="background: {{ bottom_bg_color }}"
+                     data-fg-class="{{ bottom_bg_color_brightness }}">
+                    <div class="{{ content_width }}">
+                        <div class="flex-items-center">
+
+                            <!-- NAVIGATION -->
+                            {{ navigation }}
+                            <!-- / NAVIGATION -->
+
+                        </div>
+                    </div>
+                </div>
+            {%- endif -%}
+            <!-- / HEADER STYLE 1 -->
+
+        {%- when 'header-2' -%}
+            {%- comment -%}
+                {# @ Header 2 #}
+            {%- endcomment -%}
+
+            <!-- HEADER STYLE 2 -->
+            {{ header_top }}
+
+            {%- if section.settings.show_logo -%}
+                <div class="header-middle {{ middle_bg_color_brightness }}" style="background: {{ middle_bg_color }}"
+                     data-fg-class="{{ middle_bg_color_brightness }}">
+                    <div class="{{ content_width }}">
+                        <div class="row p-relative">
+
+                            <div class="col-12 flex-items-center py-8">
+
+                                <!-- LOGO -->
+                                {%- include 'logo' image_size: section.settings.logo_max_width -%}
+                                <!-- / LOGO -->
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            {%- endif -%}
+
+            {%- if section.settings.show_menu or section.settings.show_search or section.settings.show_currency_selector or section.settings.show_my_account or section.settings.show_cart -%}
+                <div class="header-bottom {{ bottom_bg_color_brightness }}" style="background: {{ bottom_bg_color }}"
+                     data-fg-class="{{ bottom_bg_color_brightness }}">
+                    <div class="{{ content_width }} py-2 py-lg-0">
+                        <div class="row flex-items-middle">
+
+                            <div class="col-12 col-lg flex-items-center flex-items-lg-left">
+
+                                <!-- NAVIGATION -->
+                                {%- if section.settings.show_menu -%}
+                                    {{ navigation }}
+                                {%- endif -%}
+                                <!-- / NAVIGATION -->
+
+                            </div>
+
+                            <div
+                                class="col-12 col-lg flex-nogrow flex-items-middle flex-items-center flex-items-lg-right py-3">
+
+                                <!-- CURRENCY SELECTOR -->
+                                {%- if section.settings.show_currency_selector -%}
+                                    {%- include 'currency-selector', icon_mode: section.settings.use_icons -%}
+                                {%- endif -%}
+                                <!-- / CURRENCY SELECTOR -->
+
+                                <!-- SEARCH -->
+                                {%- if section.settings.show_search -%}
+                                    {%- include 'search' search_style: section.settings.search_style, icon_mode: section.settings.use_icons -%}
+                                {%- endif -%}
+                                <!-- / SEARCH -->
+
+                                <!-- MY ACCOUNT -->
+                                {%- if section.settings.show_my_account -%}
+                                    {%- include 'my-account-dropdown' icon_mode: section.settings.use_icons -%}
+                                {%- endif -%}
+                                <!-- / MY ACCOUNT -->
+
+                                <!-- CART -->
+                                {%- if section.settings.show_cart -%}
+                                    {%- include 'cart' cart_style: section.settings.cart_style, icon_mode: section.settings.use_icons, tag_border_color: section.settings.bottom_bg_color -%}
+                                {%- endif -%}
+                                <!-- / CART -->
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            {%- endif -%}
+            <!-- / HEADER STYLE 2 -->
+
+        {%- when 'header-3' -%}
+            {%- comment -%}
+                {# @ Header 3 #}
+            {%- endcomment -%}
+
+            <!-- HEADER STYLE 3 -->
+            {{ header_top }}
+
+            {%- if section.settings.show_logo or section.settings.show_search or section.settings.show_currency_selector or section.settings.show_my_account or section.settings.show_cart -%}
+                <div class="header-middle {{ middle_bg_color_brightness }}" style="background: {{ middle_bg_color }}"
+                     data-fg-class="{{ middle_bg_color_brightness }}">
+                    <div class="{{ content_width }}">
+                        <div class="row flex-items-middle py-8">
+
+                            <div class="col flex-items-middle flex-items-left">
+
+                                <!-- LOGO -->
+                                {%- if section.settings.show_logo -%}
+                                    {%- include 'logo' image_size: section.settings.logo_max_width -%}
+                                {%- endif -%}
+                                <!-- / LOGO -->
+
+                            </div>
+
+                            <div class="col flex-items-middle flex-items-right">
+
+                                <!-- CURRENCY SELECTOR -->
+                                {%- if section.settings.show_currency_selector -%}
+                                    {%- include 'currency-selector', icon_mode: section.settings.use_icons -%}
+                                {%- endif -%}
+                                <!-- / CURRENCY SELECTOR -->
+
+                                <!-- SEARCH -->
+                                {%- if section.settings.show_search -%}
+                                    {%- include 'search' search_style: section.settings.search_style, icon_mode: section.settings.use_icons -%}
+                                {%- endif -%}
+                                <!-- / SEARCH -->
+
+                                <!-- MY ACCOUNT -->
+                                {%- if section.settings.show_my_account -%}
+                                    {%- include 'my-account-dropdown' icon_mode: section.settings.use_icons -%}
+                                {%- endif -%}
+                                <!-- / MY ACCOUNT -->
+
+                                <!-- CART -->
+                                {%- if section.settings.show_cart -%}
+                                    {%- include 'cart' cart_style: section.settings.cart_style, icon_mode: section.settings.use_icons, tag_border_color: section.settings.middle_bg_color -%}
+                                {%- endif -%}
+                                <!-- / CART -->
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            {%- endif -%}
+
+            {%- if section.settings.show_menu -%}
+                <div class="header-bottom {{ bottom_bg_color_brightness }}" style="background: {{ bottom_bg_color }}"
+                     data-fg-class="{{ bottom_bg_color_brightness }}">
+                    <div class="{{ content_width }}">
+                        <div class="row">
+
+                            <div class="col-12 flex-items-left">
+
+                                <!-- NAVIGATION -->
+                                {{ navigation }}
+                                <!-- / NAVIGATION -->
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            {%- endif -%}
+            <!-- / HEADER STYLE 3 -->
+
+        {%- when 'header-4' -%}
+            {%- comment -%}
+                {# @ Header 4 #}
+            {%- endcomment -%}
+
+            <!-- HEADER STYLE 4 -->
+            {{ header_top }}
+
+            {%- if section.settings.show_logo or section.settings.show_menu or section.settings.show_search or section.settings.show_currency_selector or section.settings.show_my_account or section.settings.show_cart -%}
+                <div class="header-middle {{ middle_bg_color_brightness }}" style="background: {{ middle_bg_color }}"
+                     data-fg-class="{{ middle_bg_color_brightness }}">
+                    <div class="{{ content_width }}">
+                        <div class="row flex-items-middle py-6 py-lg-0">
+                            <div class="col-12 col-lg">
+                                <div class="row flex-items-middle flex-items-lg-left">
+
+                                    <!-- LOGO -->
+                                    {%- if section.settings.show_logo -%}
+                                        <div
+                                            class="col-12 col-lg flex-lg-nogrow flex-items-middle flex-items-center flex-items-lg-left">
+                                            {%- include 'logo' image_size: section.settings.logo_max_width -%}
+                                        </div>
+                                    {%- endif -%}
+                                    <!-- / LOGO -->
+
+                                    <div class="col-12 col-lg flex-items-center flex-items-lg-left">
+
+                                        <!-- NAVIGATION -->
+                                        {%- if section.settings.show_menu -%}
+                                            {{ navigation }}
+                                        {%- endif -%}
+                                        <!-- / NAVIGATION -->
+
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div
+                                class="col-12 col-lg flex-lg-nogrow flex-items-middle flex-items-center flex-items-lg-right">
+
+                                <!-- CURRENCY SELECTOR -->
+                                {%- if section.settings.show_currency_selector -%}
+                                    {%- include 'currency-selector', icon_mode: section.settings.use_icons -%}
+                                {%- endif -%}
+                                <!-- / CURRENCY SELECTOR -->
+
+                                <!-- SEARCH -->
+                                {%- if section.settings.show_search -%}
+                                    {%- include 'search' search_style: section.settings.search_style, icon_mode: section.settings.use_icons -%}
+                                {%- endif -%}
+                                <!-- / SEARCH -->
+
+                                <!-- MY ACCOUNT -->
+                                {%- if section.settings.show_my_account -%}
+                                    {%- include 'my-account-dropdown' icon_mode: section.settings.use_icons -%}
+                                {%- endif -%}
+                                <!-- / MY ACCOUNT -->
+
+                                <!-- CART -->
+                                {%- if section.settings.show_cart -%}
+                                    {%- include 'cart' cart_style: section.settings.cart_style, icon_mode: section.settings.use_icons, tag_border_color: section.settings.middle_bg_color -%}
+                                {%- endif -%}
+                                <!-- / CART -->
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            {%- endif -%}
+            <!-- / HEADER STYLE 4 -->
+
+        {%- when 'header-5' -%}
+            {%- comment -%}
+                {# @ Header 5 #}
+            {%- endcomment -%}
+
+            <!-- HEADER STYLE 5 -->
+            {{ header_top }}
+
+            {%- if section.settings.show_menu or section.settings.show_logo or section.settings.show_search or section.settings.show_currency_selector or section.settings.show_my_account or section.settings.show_cart -%}
+                <div class="header-middle {{ middle_bg_color_brightness }}" style="background: {{ middle_bg_color }}"
+                     data-fg-class="{{ middle_bg_color_brightness }}">
+                    <div class="{{ content_width }} py-4 py-lg-0">
+                        <div class="row flex-items-middle">
+
+                            <div class="col-12 col-lg flex-items-middle flex-items-center flex-items-lg-left">
+
+                                <!-- NAVIGATION -->
+                                {%- if section.settings.show_menu -%}
+                                    {{ navigation }}
+                                {%- endif -%}
+                                <!-- / NAVIGATION -->
+
+                            </div>
+
+                            <div class="col-12 col-lg flex-items-center flex-nogrow pt-3 pb-6 pt-lg-0 pb-lg-0">
+
+                                <!-- LOGO -->
+                                {%- if section.settings.show_logo -%}
+                                    {%- include 'logo' image_size: section.settings.logo_max_width -%}
+                                {%- endif -%}
+                                <!-- / LOGO -->
+
+                            </div>
+
+                            <div class="col-12 col-lg flex-items-middle flex-items-center flex-items-lg-right">
+
+                                <!-- CURRENCY SELECTOR -->
+                                {%- if section.settings.show_currency_selector -%}
+                                    {%- include 'currency-selector', icon_mode: section.settings.use_icons -%}
+                                {%- endif -%}
+                                <!-- / CURRENCY SELECTOR -->
+
+                                <!-- SEARCH -->
+                                {%- if section.settings.show_search -%}
+                                    {%- include 'search' search_style: section.settings.search_style, icon_mode: section.settings.use_icons -%}
+                                {%- endif -%}
+                                <!-- / SEARCH -->
+
+                                <!-- MY ACCOUNT -->
+                                {%- if section.settings.show_my_account -%}
+                                    {%- include 'my-account-dropdown' icon_mode: section.settings.use_icons -%}
+                                {%- endif -%}
+                                <!-- / MY ACCOUNT -->
+
+                                <!-- CART -->
+                                {%- if section.settings.show_cart -%}
+                                    {%- include 'cart' cart_style: section.settings.cart_style, icon_mode: section.settings.use_icons, tag_border_color: section.settings.middle_bg_color -%}
+                                {%- endif -%}
+                                <!-- / CART -->
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            {%- endif -%}
+            <!-- / HEADER STYLE 5 -->
+
+        {%- when 'header-6' -%}
+            {%- comment -%}
+                {# @ Header 6 #}
+            {%- endcomment -%}
+
+            <!-- HEADER STYLE 6 -->
+            {{ header_top }}
+
+            {%- if section.settings.show_logo or section.settings.show_search or section.settings.show_currency_selector or section.settings.show_my_account or section.settings.show_cart -%}
+                <div class="header-middle {{ middle_bg_color_brightness }}" style="background: {{ middle_bg_color }}"
+                     data-fg-class="{{ middle_bg_color_brightness }}">
+                    <div class="{{ content_width }}">
+                        <div class="row flex-items-middle py-8">
+
+                            <div class="p-relative col-12 flex-items-middle flex-items-center">
+
+                                <!-- LOGO -->
+                                {%- if section.settings.show_logo -%}
+                                    {%- include 'logo' image_size: section.settings.logo_max_width -%}
+                                {%- endif -%}
+                                <!-- / LOGO -->
+
+                                <div class="align-middle-right flex-items-middle flex-items-center pr-4">
+
+                                    <!-- CURRENCY SELECTOR -->
+                                    {%- if section.settings.show_currency_selector -%}
+                                        {%- include 'currency-selector', icon_mode: section.settings.use_icons -%}
+                                    {%- endif -%}
+                                    <!-- / CURRENCY SELECTOR -->
+
+                                    <!-- SEARCH -->
+                                    {%- if section.settings.show_search -%}
+                                        {%- include 'search' search_style: section.settings.search_style, icon_mode: section.settings.use_icons -%}
+                                    {%- endif -%}
+                                    <!-- / SEARCH -->
+
+                                    <!-- MY ACCOUNT -->
+                                    {%- if section.settings.show_my_account -%}
+                                        {%- include 'my-account-dropdown' icon_mode: section.settings.use_icons -%}
+                                    {%- endif -%}
+                                    <!-- / MY ACCOUNT -->
+
+                                    <!-- CART -->
+                                    {%- if section.settings.show_cart -%}
+                                        {%- include 'cart' cart_style: section.settings.cart_style, icon_mode: section.settings.use_icons, tag_border_color: section.settings.middle_bg_color -%}
+                                    {%- endif -%}
+                                    <!-- / CART -->
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            {%- endif -%}
+
+            {%- if section.settings.show_menu -%}
+                <div class="header-bottom {{ bottom_bg_color_brightness }}" style="background: {{ bottom_bg_color }}"
+                     data-fg-class="{{ bottom_bg_color_brightness }}">
+                    <div class="{{ content_width }}">
+                        <div class="flex-items-center">
+
+                            <!-- NAVIGATION -->
+                            {{ navigation }}
+                            <!-- / NAVIGATION -->
+
+                        </div>
+                    </div>
+                </div>
+            {%- endif -%}
+            <!-- / HEADER STYLE 6 -->
+
+        {%- when 'header-7' -%}
+            {%- comment -%}
+                {# @ Header 7 #}
+            {%- endcomment -%}
+
+            <!-- HEADER STYLE 7 -->
+            {{ header_top }}
+
+            {%- if section.settings.show_logo or section.settings.show_search or section.settings.show_currency_selector or section.settings.show_my_account or section.settings.show_cart -%}
+                <div class="header-middle {{ middle_bg_color_brightness }}" style="background: {{ middle_bg_color }}"
+                     data-fg-class="{{ middle_bg_color_brightness }}">
+                    <div class="{{ content_width }}">
+                        <div class="row flex-items-middle py-8">
+
+                            <div class="p-relative col-12 flex-items-middle flex-items-center">
+
+                                <!-- LOGO -->
+                                {%- if section.settings.show_logo -%}
+                                    {%- include 'logo' image_size: section.settings.logo_max_width -%}
+                                {%- endif -%}
+                                <!-- / LOGO -->
+
+                                <div class="align-middle-left flex-items-middle flex-items-center pl-4">
+
+                                    <!-- CURRENCY SELECTOR -->
+                                    {%- if section.settings.show_currency_selector -%}
+                                        {%- include 'currency-selector', icon_mode: section.settings.use_icons -%}
+                                    {%- endif -%}
+                                    <!-- / CURRENCY SELECTOR -->
+
+                                    <!-- SEARCH -->
+                                    {%- if section.settings.show_search -%}
+                                        {%- include 'search' search_style: section.settings.search_style, icon_mode: section.settings.use_icons -%}
+                                    {%- endif -%}
+                                    <!-- / SEARCH -->
+
+                                    <!-- MY ACCOUNT -->
+                                    {%- if section.settings.show_my_account -%}
+                                        {%- include 'my-account-dropdown' icon_mode: section.settings.use_icons -%}
+                                    {%- endif -%}
+                                    <!-- / MY ACCOUNT -->
+
+                                    <!-- CART -->
+                                    {%- if section.settings.show_cart -%}
+                                        {%- include 'cart' cart_style: section.settings.cart_style, icon_mode: section.settings.use_icons, tag_border_color: section.settings.middle_bg_color -%}
+                                    {%- endif -%}
+                                    <!-- / CART -->
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            {%- endif -%}
+
+            {%- if section.settings.show_menu -%}
+                <div class="header-bottom {{ bottom_bg_color_brightness }}" style="background: {{ bottom_bg_color }}"
+                     data-fg-class="{{ bottom_bg_color_brightness }}">
+                    <div class="{{ content_width }}">
+                        <div class="flex-items-center">
+
+                            <!-- NAVIGATION -->
+                            {{ navigation }}
+                            <!-- / NAVIGATION -->
+
+                        </div>
+                    </div>
+                </div>
+            {%- endif -%}
+            <!-- / HEADER STYLE 7 -->
+
+        {%- when 'header-8' -%}
+            {%- comment -%}
+                {# @ Header 8 #}
+            {%- endcomment -%}
+
+            <!-- HEADER STYLE 8 -->
+            {{ header_top }}
+
+            {%- if section.settings.show_logo or section.settings.show_search or section.settings.show_currency_selector or section.settings.show_my_account or section.settings.show_cart -%}
+                <div class="header-middle {{ middle_bg_color_brightness }}" style="background: {{ middle_bg_color }}"
+                     data-fg-class="{{ middle_bg_color_brightness }}">
+                    <div class="{{ content_width }}">
+                        <div class="row flex-items-middle py-8">
+
+                            <div class="col-12 col-md flex-items-middle flex-items-left">
+
+                                <!-- LOGO -->
+                                {%- if section.settings.show_logo -%}
+                                    {%- include 'logo' image_size: section.settings.logo_max_width -%}
+                                {%- endif -%}
+                                <!-- / LOGO -->
+
+                            </div>
+
+                            <div class="col-12 col-md flex-items-middle flex-items-right">
+
+                                <!-- CURRENCY SELECTOR -->
+                                {%- if section.settings.show_currency_selector -%}
+                                    {%- include 'currency-selector', icon_mode: section.settings.use_icons -%}
+                                {%- endif -%}
+                                <!-- / CURRENCY SELECTOR -->
+
+                                <!-- SEARCH -->
+                                {%- if section.settings.show_search -%}
+                                    {%- include 'search' search_style: section.settings.search_style, icon_mode: section.settings.use_icons -%}
+                                {%- endif -%}
+                                <!-- / SEARCH -->
+
+                                <!-- MY ACCOUNT -->
+                                {%- if section.settings.show_my_account -%}
+                                    {%- include 'my-account-dropdown' icon_mode: section.settings.use_icons -%}
+                                {%- endif -%}
+                                <!-- / MY ACCOUNT -->
+
+                                <!-- CART -->
+                                {%- if section.settings.show_cart -%}
+                                    {%- include 'cart' cart_style: section.settings.cart_style, icon_mode: section.settings.use_icons, tag_border_color: section.settings.middle_bg_color -%}
+                                {%- endif -%}
+                                <!-- / CART -->
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            {%- endif -%}
+
+            {%- if section.settings.show_menu -%}
+                <div class="header-bottom {{ bottom_bg_color_brightness }}" style="background: {{ bottom_bg_color }}"
+                     data-fg-class="{{ bottom_bg_color_brightness }}">
+                    <div class="{{ content_width }}">
+                        <div class="row">
+
+                            <div class="col-12 flex-items-center">
+
+                                <!-- NAVIGATION -->
+                                {{ navigation }}
+                                <!-- / NAVIGATION -->
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            {%- endif -%}
+            <!-- / HEADER STYLE 8 -->
+
+        {%- when 'header-9' -%}
+            {%- comment -%}
+                {# @ Header 9 #}
+            {%- endcomment -%}
+
+            <!-- HEADER STYLE 9 -->
+            {%- include 'util-color-transparentize' color: section.settings.top_bg_color, opacity: section.settings.top_bg_opacity -%}
+            {%- include 'util-color-brightness' color: color_transparentized, append: '-bg' -%}
+        {%- assign top_bg_color_brightness = color_brightness -%}
+        {%- assign top_bg_color = color_transparentized -%}
+
+            {%- if show_aside_toggle_button or section.settings.show_welcome_text or section.settings.show_secondary_menu or section.settings.show_currency_selector or section.settings.show_my_account -%}
+                <div class="header-top {{ top_bg_color_brightness }}" style="background: {{ top_bg_color }}"
+                     data-fg-class="{{ top_bg_color_brightness }}">
+                    <div class="{{ content_width }}">
+                        <div class="row flex-items-middle">
+
+                            <!-- ASIDE TOGGLE BUTTON -->
+                            {%- if show_aside_toggle_button -%}
+                                <div
+                                    class="col flex-nogrow {% if settings.aside == 'left-aside' %}pl-6 pr-0{% else %}pr-6 pl-0 ml-auto flex-last{% endif %}">
+                                    <div class="js-aside-toggle-button py-3">
+                                        <span class="icon icon-backburger link" js-aside-toggle></span>
+                                    </div>
+                                </div>
+                            {%- endif -%}
+                            <!-- / ASIDE TOGGLE BUTTON -->
+
+                            {%- if section.settings.show_welcome_text or section.settings.show_secondary_menu or section.settings.show_currency_selector or section.settings.show_my_account -%}
+                                <div class="col py-1">
+                                    <div class="row flex-items-middle">
+
+                                        <div class="col flex-items-left">
+
+                                            <!-- WELCOME TEXT -->
+                                            {%- if section.settings.show_welcome_text -%}
+                                                <div class="px-2">
+                                                    {{ section.settings.welcome_text }}
+                                                </div>
+                                            {%- endif -%}
+                                            <!-- / WELCOME TEXT -->
+
+                                        </div>
+
+                                        <div class="col flex-items-middle flex-items-right">
+
+                                            <!-- SECONDARY MENU -->
+                                            {%- if section.settings.show_secondary_menu -%}
+                                                {{ secondary_navigation }}
+                                            {%- endif -%}
+                                            <!-- / SECONDARY MENU -->
+
+                                            <!-- CURRENCY SELECTOR -->
+                                            {%- if section.settings.show_currency_selector -%}
+                                                {%- include 'currency-selector', icon_mode: section.settings.use_icons -%}
+                                            {%- endif -%}
+                                            <!-- / CURRENCY SELECTOR -->
+
+                                            <!-- MY ACCOUNT -->
+                                            {%- if section.settings.show_my_account -%}
+                                                {%- include 'my-account-dropdown' icon_mode: section.settings.use_icons -%}
+                                            {%- endif -%}
+                                            <!-- / MY ACCOUNT -->
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            {%- endif -%}
+
+                        </div>
+                    </div>
+                </div>
+            {%- endif -%}
+
+            {%- if section.settings.show_logo or section.settings.show_menu or section.settings.show_search or section.settings.show_cart -%}
+                <div class="header-middle {{ middle_bg_color_brightness }}" style="background: {{ middle_bg_color }}"
+                     data-fg-class="{{ middle_bg_color_brightness }}">
+                    <div class="{{ content_width }}">
+                        <div class="row flex-items-middle flex-items-lg-between py-6 py-lg-0">
+
+                            <div
+                                class="col-12 col-lg flex-lg-nogrow flex-items-center flex-items-middle flex-items-lg-left">
+
+                                <!-- LOGO -->
+                                {%- if section.settings.show_logo -%}
+                                    {%- include 'logo' image_size: section.settings.logo_max_width -%}
+                                {%- endif -%}
+                                <!-- / LOGO -->
+
+                            </div>
+
+                            <div class="col-12 col-lg pt-md-3 pt-lg-0">
+                                <div class="row flex-items-middle flex-items-center flex-items-lg-right">
+
+                                    <!-- NAVIGATION -->
+                                    {%- if section.settings.show_menu -%}
+                                        {{ navigation }}
+                                    {%- endif -%}
+                                    <!-- / NAVIGATION -->
+
+                                    <div
+                                        class="col-12 col-lg flex-lg-grow flex-items-middle flex-items-center flex-items-lg-right pl-lg-8">
+
+                                        <!-- SEARCH -->
+                                        {%- if section.settings.show_search -%}
+                                            {%- include 'search' search_style: section.settings.search_style, icon_mode: section.settings.use_icons -%}
+                                        {%- endif -%}
+                                        <!-- / SEARCH -->
+
+                                        <!-- CART -->
+                                        {%- if section.settings.show_cart -%}
+                                            {%- include 'cart' cart_style: section.settings.cart_style, icon_mode: section.settings.use_icons, tag_border_color: section.settings.middle_bg_color -%}
+                                        {%- endif -%}
+                                        <!-- / CART -->
+
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            {%- endif -%}
+            <!-- / HEADER STYLE 9 -->
+
+        {%- when 'header-10' -%}
+            {%- comment -%}
+                {# @ Header 10 #}
+            {%- endcomment -%}
+
+            <!-- HEADER STYLE 10 -->
+            {{ header_top }}
+
+            {%- if section.settings.show_menu or section.settings.show_logo or section.settings.show_search or section.settings.show_currency_selector or section.settings.show_my_account or section.settings.show_cart -%}
+                <div class="header-middle {{ middle_bg_color_brightness }}" style="background: {{ middle_bg_color }}"
+                     data-fg-class="{{ middle_bg_color_brightness }}">
+                    <div class="{{ content_width }} py-4 py-lg-0">
+                        <div class="row flex-items-middle">
+
+                            <div class="col-12 col-lg flex-items-middle flex-items-center flex-items-lg-left">
+
+                                <!-- CURRENCY SELECTOR -->
+                                {%- if section.settings.show_currency_selector -%}
+                                    {%- include 'currency-selector', icon_mode: section.settings.use_icons -%}
+                                {%- endif -%}
+                                <!-- / CURRENCY SELECTOR -->
+
+                                <!-- SEARCH -->
+                                {%- if section.settings.show_search -%}
+                                    {%- include 'search' search_style: section.settings.search_style, icon_mode: section.settings.use_icons -%}
+                                {%- endif -%}
+                                <!-- / SEARCH -->
+
+                                <!-- MY ACCOUNT -->
+                                {%- if section.settings.show_my_account -%}
+                                    {%- include 'my-account-dropdown' icon_mode: section.settings.use_icons -%}
+                                {%- endif -%}
+                                <!-- / MY ACCOUNT -->
+
+                                <!-- CART -->
+                                {%- if section.settings.show_cart -%}
+                                    {%- include 'cart' cart_style: section.settings.cart_style, icon_mode: section.settings.use_icons, tag_border_color: section.settings.middle_bg_color -%}
+                                {%- endif -%}
+                                <!-- / CART -->
+
+                            </div>
+
+                            <div class="col-12 col-lg flex-items-center flex-nogrow py-3 py-lg-0">
+
+                                <!-- LOGO -->
+                                {%- if section.settings.show_logo -%}
+                                    {%- include 'logo' image_size: section.settings.logo_max_width -%}
+                                {%- endif -%}
+                                <!-- / LOGO -->
+
+                            </div>
+
+                            <div class="col-12 col-lg flex-items-middle flex-items-center flex-items-lg-right">
+
+                                <!-- NAVIGATION -->
+                                {%- if section.settings.show_menu -%}
+                                    {{ navigation }}
+                                {%- endif -%}
+                                <!-- / NAVIGATION -->
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            {%- endif -%}
+            <!-- / HEADER STYLE 10 -->
+
+        {%- when 'header-11' -%}
+            {%- comment -%}
+                {# @ Header 11 #}
+            {%- endcomment -%}
+
+            <!-- HEADER STYLE 11 -->
+            {%- include 'util-color-transparentize' color: section.settings.top_bg_color, opacity: section.settings.top_bg_opacity -%}
+            {%- include 'util-color-brightness' color: color_transparentized, append: '-bg' -%}
+        {%- assign top_bg_color_brightness = color_brightness -%}
+        {%- assign top_bg_color = color_transparentized -%}
+
+            {%- if show_aside_toggle_button or section.settings.show_welcome_text or section.settings.show_secondary_menu or section.settings.show_search or section.settings.show_currency_selector or section.settings.show_my_account or section.settings.show_cart -%}
+                <div class="header-top {{ top_bg_color_brightness }}" style="background: {{ top_bg_color }}"
+                     data-fg-class="{{ top_bg_color_brightness }}">
+                    <div class="{{ content_width }}">
+                        <div class="row flex-items-middle">
+
+                            <!-- ASIDE TOGGLE BUTTON -->
+                            {%- if show_aside_toggle_button -%}
+                                <div
+                                    class="col flex-nogrow {% if settings.aside == 'left-aside' %}pl-6 pr-0{% else %}pr-6 pl-0 ml-auto flex-last{% endif %}">
+                                    <div class="js-aside-toggle-button py-3">
+                                        <span class="icon icon-backburger link" js-aside-toggle></span>
+                                    </div>
+                                </div>
+                            {%- endif -%}
+                            <!-- / ASIDE TOGGLE BUTTON -->
+
+                            {%- if section.settings.show_welcome_text or section.settings.show_secondary_menu or section.settings.show_search or section.settings.show_currency_selector or section.settings.show_my_account or section.settings.show_cart -%}
+                                <div class="col py-1">
+                                    <div class="row flex-items-middle">
+
+                                        <div class="col flex-items-left">
+
+                                            <!-- WELCOME TEXT -->
+                                            {%- if section.settings.show_welcome_text -%}
+                                                <div class="px-2">
+                                                    {{ section.settings.welcome_text }}
+                                                </div>
+                                            {%- endif -%}
+                                            <!-- / WELCOME TEXT -->
+
+                                        </div>
+
+                                        <div class="col flex-items-middle flex-items-right">
+
+                                            <!-- SECONDARY MENU -->
+                                            {%- if section.settings.show_secondary_menu -%}
+                                                {{ secondary_navigation }}
+                                            {%- endif -%}
+                                            <!-- / SECONDARY MENU -->
+
+                                            <!-- SEARCH -->
+                                            {%- if section.settings.show_search -%}
+                                                {%- include 'search' search_style: section.settings.search_style, icon_mode: section.settings.use_icons -%}
+                                            {%- endif -%}
+                                            <!-- / SEARCH -->
+
+                                            <!-- CURRENCY SELECTOR -->
+                                            {%- if section.settings.show_currency_selector -%}
+                                                {%- include 'currency-selector', icon_mode: section.settings.use_icons -%}
+                                            {%- endif -%}
+                                            <!-- / CURRENCY SELECTOR -->
+
+                                            <!-- MY ACCOUNT -->
+                                            {%- if section.settings.show_my_account -%}
+                                                {%- include 'my-account-dropdown' icon_mode: section.settings.use_icons -%}
+                                            {%- endif -%}
+                                            <!-- / MY ACCOUNT -->
+
+                                            <!-- CART -->
+                                            {%- if section.settings.show_cart -%}
+                                                {%- include 'cart' cart_style: section.settings.cart_style, icon_mode: section.settings.use_icons, tag_border_color: section.settings.top_bg_color -%}
+                                            {%- endif -%}
+                                            <!-- / CART -->
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            {%- endif -%}
+
+                        </div>
+                    </div>
+                </div>
+            {%- endif -%}
+
+            {%- if section.settings.show_logo or section.settings.show_menu -%}
+                <div class="header-middle {{ middle_bg_color_brightness }}" style="background: {{ middle_bg_color }}"
+                     data-fg-class="{{ middle_bg_color_brightness }}">
+                    <div class="{{ content_width }}">
+                        <div class="row flex-items-middle flex-items-lg-between py-6 py-lg-0">
+
+                            <div
+                                class="col-12 col-lg flex-lg-nogrow flex-items-center flex-items-middle flex-items-lg-left">
+
+                                <!-- LOGO -->
+                                {%- if section.settings.show_logo -%}
+                                    {%- include 'logo' image_size: section.settings.logo_max_width -%}
+                                {%- endif -%}
+                                <!-- / LOGO -->
+
+                            </div>
+
+                            <div
+                                class="col-12 col-lg pt-md-4 pt-lg-0 flex-items-middle flex-items-center flex-items-lg-right">
+
+                                <!-- NAVIGATION -->
+                                {%- if section.settings.show_menu -%}
+                                    {{ navigation }}
+                                {%- endif -%}
+                                <!-- / NAVIGATION -->
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            {%- endif -%}
+            <!-- / HEADER STYLE 11 -->
+
+        {%- when 'header-12' -%}
+            {%- comment -%}
+                {# @ Header 12 #}
+            {%- endcomment -%}
+
+            <!-- HEADER STYLE 12 -->
+            {{ header_top }}
+
+            {%- if section.settings.show_logo or section.settings.show_search or section.settings.show_currency_selector or section.settings.show_my_account or section.settings.show_cart -%}
+                <div class="header-middle {{ middle_bg_color_brightness }}" style="background: {{ middle_bg_color }}"
+                     data-fg-class="{{ middle_bg_color_brightness }}">
+                    <div class="{{ content_width }}">
+                        <div class="row flex-items-middle py-8">
+
+                            <div class="col flex-items-middle flex-items-left">
+
+                                <!-- LOGO -->
+                                {%- if section.settings.show_logo -%}
+                                    {%- include 'logo' image_size: section.settings.logo_max_width -%}
+                                {%- endif -%}
+                                <!-- / LOGO -->
+
+                            </div>
+
+                            <!-- SEARCH -->
+                            {%- if section.settings.show_search -%}
+                                <div class="col">
+                                    {%- include 'search' search_style: 'input-field', icon_mode: section.settings.use_icons -%}
+                                </div>
+                            {%- endif -%}
+                            <!-- / SEARCH -->
+
+                            <div class="col flex-items-middle flex-items-right">
+
+                                <!-- CURRENCY SELECTOR -->
+                                {%- if section.settings.show_currency_selector -%}
+                                    {%- include 'currency-selector', icon_mode: section.settings.use_icons -%}
+                                {%- endif -%}
+                                <!-- / CURRENCY SELECTOR -->
+
+                                <!-- MY ACCOUNT -->
+                                {%- if section.settings.show_my_account -%}
+                                    {%- include 'my-account-dropdown' icon_mode: section.settings.use_icons -%}
+                                {%- endif -%}
+                                <!-- / MY ACCOUNT -->
+
+                                <!-- CART -->
+                                {%- if section.settings.show_cart -%}
+                                    {%- include 'cart' cart_style: section.settings.cart_style, icon_mode: section.settings.use_icons, tag_border_color: section.settings.middle_bg_color -%}
+                                {%- endif -%}
+                                <!-- / CART -->
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            {%- endif -%}
+
+            {%- if section.settings.show_menu -%}
+                <div class="header-bottom {{ bottom_bg_color_brightness }}" style="background: {{ bottom_bg_color }}"
+                     data-fg-class="{{ bottom_bg_color_brightness }}">
+                    <div class="{{ content_width }}">
+                        <div class="row">
+
+                            <div class="col-12 flex-items-left">
+
+                                <!-- NAVIGATION -->
+                                {{ navigation }}
+                                <!-- / NAVIGATION -->
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            {%- endif -%}
+            <!-- / HEADER STYLE 12 -->
+
+        {%- when 'header-13' -%}
+            {%- comment -%}
+                {# @ Header 13 #}
+            {%- endcomment -%}
+
+            <!-- HEADER STYLE 13 -->
+
+            {%- if show_aside_toggle_button or section.settings.show_welcome_text or section.settings.show_search or section.settings.show_currency_selector or section.settings.show_my_account or section.settings.show_cart -%}
+                <div class="header-top {{ top_bg_color_brightness }}" style="background: {{ top_bg_color }}"
+                     data-fg-class="{{ top_bg_color_brightness }}">
+                    <div class="{{ content_width }}">
+                        <div class="row flex-items-middle">
+
+                            <!-- ASIDE TOGGLE BUTTON -->
+                            {%- if show_aside_toggle_button -%}
+                                <div
+                                    class="col flex-nogrow {% if settings.aside == 'left-aside' %}pl-6 pr-0{% else %}pr-6 pl-0 ml-auto flex-last{% endif %}">
+                                    <div class="js-aside-toggle-button py-3">
+                                        <span class="icon icon-backburger link" js-aside-toggle></span>
+                                    </div>
+                                </div>
+                            {%- endif -%}
+                            <!-- / ASIDE TOGGLE BUTTON -->
+
+                            {%- if section.settings.show_welcome_text or section.settings.show_secondary_menu or section.settings.show_search or section.settings.show_currency_selector or section.settings.show_my_account or section.settings.show_cart -%}
+                                <div class="col py-1">
+                                    <div class="row flex-items-middle">
+
+                                        <div class="col flex-items-left">
+
+                                            <!-- WELCOME TEXT -->
+                                            {%- if section.settings.show_welcome_text -%}
+                                                <div class="px-2">
+                                                    {{ section.settings.welcome_text }}
+                                                </div>
+                                            {%- endif -%}
+                                            <!-- / WELCOME TEXT -->
+
+                                        </div>
+
+                                        <div class="col flex-items-middle flex-items-right">
+
+                                            <!-- SEARCH -->
+                                            {%- if section.settings.show_search -%}
+                                                {%- include 'search' search_style: section.settings.search_style, icon_mode: section.settings.use_icons -%}
+                                            {%- endif -%}
+                                            <!-- / SEARCH -->
+
+                                            <!-- CURRENCY SELECTOR -->
+                                            {%- if section.settings.show_currency_selector -%}
+                                                {%- include 'currency-selector', icon_mode: section.settings.use_icons -%}
+                                            {%- endif -%}
+                                            <!-- / CURRENCY SELECTOR -->
+
+                                            <!-- MY ACCOUNT -->
+                                            {%- if section.settings.show_my_account -%}
+                                                {%- include 'my-account-dropdown' icon_mode: section.settings.use_icons -%}
+                                            {%- endif -%}
+                                            <!-- / MY ACCOUNT -->
+
+                                            <!-- CART -->
+                                            {%- if section.settings.show_cart -%}
+                                                {%- include 'cart' cart_style: section.settings.cart_style, icon_mode: section.settings.use_icons, tag_border_color: section.settings.top_bg_color -%}
+                                            {%- endif -%}
+                                            <!-- / CART -->
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            {%- endif -%}
+
+                        </div>
+                    </div>
+                </div>
+            {%- endif -%}
+
+            {%- if section.settings.show_menu or section.settings.show_logo or section.settings.show_search or section.settings.show_currency_selector or section.settings.show_my_account or section.settings.show_cart -%}
+                <div class="header-middle {{ middle_bg_color_brightness }}" style="background: {{ middle_bg_color }}"
+                     data-fg-class="{{ middle_bg_color_brightness }}">
+                    <div class="{{ content_width }} py-6 py-lg-0">
+                        <div class="row flex-items-middle">
+
+                            <div class="col-12 col-lg flex-items-middle flex-items-center flex-items-lg-left">
+
+                                <!-- NAVIGATION -->
+                                {%- if section.settings.show_menu -%}
+                                    {{ navigation }}
+                                {%- endif -%}
+                                <!-- / NAVIGATION -->
+
+                            </div>
+
+                            <div class="col-12 col-lg flex-items-center flex-nogrow pt-3 pb-6 pt-lg-0 pb-lg-0">
+
+                                <!-- LOGO -->
+                                {%- if section.settings.show_logo -%}
+                                    {%- include 'logo' image_size: section.settings.logo_max_width -%}
+                                {%- endif -%}
+                                <!-- / LOGO -->
+
+                            </div>
+
+                            <div class="col-12 col-lg flex-items-middle flex-items-center flex-items-lg-right">
+
+                                <!-- NAVIGATION -->
+                                {%- if section.settings.show_secondary_menu -%}
+                                    {{ secondary_navigation }}
+                                {%- endif -%}
+                                <!-- / NAVIGATION -->
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            {%- endif -%}
+            <!-- / HEADER STYLE 13 -->
+
+        {%- endcase -%}
+    </div>
+
+    {%- comment -%}
+        {# @ Full Page Search #}
+    {%- endcomment -%}
+    <!-- SEARCH -->
+    {%- if section.settings.search_style == 'full-page' -%}
+
+        <js-bar id="search-bar" class="full-page-search-bar"
+                options='{"fixed":true, "position":"fade-in-out", "bodyAppend":true, "activeClasses":"light-bg"}'
+                ng-cloak>
+
+            <js-quick-search options="{
+                    formClass:'search-form',
+                    inputClass:'h3 search-input auto-focus p-8 pr-16',
+                    inputPlaceholder:'{{ 'general.search.placeholder' | t }}'}"></js-quick-search>
+
+            <i js-bar-toggle="search-bar" just-close
+               class="align-top-right s-6 m-8 search-bar-close-button link icon-close"></i>
+
+        </js-bar>
+
+    {%- endif -%}
+    <!-- / SEARCH -->
+
+    {%- comment -%}
+        {# @ Sticky Header #}
+    {%- endcomment -%}
+
+    {%- if section.settings.sticky_header -%}
+
+        <!-- STICKY HEADER -->
+        <js-sticky-header id="sticky-site-header" class="{{ sticky_bg_color_brightness }} hidden-md-down"
+                          style="background: {{ sticky_bg_color }}">
+
+            <div class="container-fluid">
+
+                <div class="sticky-site-header-content row flex-items-middle">
+
+                    {%- if section.settings.sticky_header_show_logo -%}
+                        <div class="col flex-nogrow">
+                            <!-- LOGO -->
+                            {%- include 'logo' image_size: section.settings.sticky_header_logo_max_width -%}
+                            <!-- / LOGO -->
+                        </div>
+                    {%- endif -%}
+
+                    <div class="col pl-4">
+                        <!-- NAVIGATION -->
+                        <nav class="main-nav px-2" role="navigation">
+                            {%- include 'nav' menu: section.settings.menu, menu_extras: section.blocks, popover_direction:'bottom-start', popover_classes:'from-sticky-header' -%}
+                        </nav>
+                        <!-- / NAVIGATION -->
+                    </div>
+
+                    <div class="flex-items-middle flex-nogrow">
+
+                        {%- if section.settings.sticky_header_show_currency_selector -%}
+                            <!-- CURRENCY SELECTOR -->
+                            {%- include 'currency-selector', icon_mode: true, popover_classes:'from-sticky-header' -%}
+                            <!-- / CURRENCY SELECTOR -->
+                        {%- endif -%}
+
+                        {%- if section.settings.sticky_header_show_search -%}
+                            <!-- SEARCH -->
+                            {%- include 'search' search_style: 'mobile-search', icon_mode: true -%}
+                            <!-- / SEARCH -->
+                        {%- endif -%}
+
+                        {%- if section.settings.sticky_header_show_my_account -%}
+                            <!-- MY ACCOUNT -->
+                            {%- include 'my-account-dropdown' icon_mode: true, popover_classes:'from-sticky-header' -%}
+                            <!-- / MY ACCOUNT -->
+                        {%- endif -%}
+
+                        {%- if section.settings.sticky_header_show_cart -%}
+                            <!-- CART -->
+                            {%- include 'cart' cart_style: section.settings.cart_style, icon_mode: true, id: 'sticky', tag_border_color: section.settings.sticky_bg_color, popover_classes:'from-sticky-header' -%}
+                            <!-- / CART -->
+                        {%- endif -%}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </js-sticky-header>
+        <!-- / STICKY HEADER -->
+    {%- endif -%}
+
+    {%- comment -%}
+        {# @ CPT: Mobile Header Aside Toggler #}
+    {%- endcomment -%}
+
+    {%- capture mobile_header_aside_toggler -%}
+        <div
+            class="js-aside-toggle-button px-3 py-3">
+            <span class="icon icon-backburger link" js-aside-toggle></span>
+        </div>
+    {%- endcapture -%}
+
+    {%- comment -%}
+        {# @ Mobile Header #}
+    {%- endcomment -%}
+
+    <!-- MOBILE HEADER -->
+    <div id="mobile-site-header"
+         class="hidden-md-up {% if section.settings.fixed_header_top_mobile %}fixed-header-top{% endif %} {% if show_aside_toggle_button or section.settings.show_welcome_text %}pt-21{% endif %}">
+
+        <div class="header-top {{ top_bg_color_brightness }}" style="background: {{ section.settings.top_bg_color }}"
+             data-fg-class="{{ top_bg_color_brightness }}">
+
+            <div class="container-fluid">
+
+                <div class="row flex-items-middle">
+                    {%- if show_aside_toggle_button or section.settings.show_welcome_text -%}
+
+                        <div class="col-12 col-sm flex-items-center flex-items-sm-left">
+
+                            {%- if show_aside_toggle_button and settings.aside == 'left-aside' -%}
+                                <!-- ASIDE TOGGLE BUTTON -->
+                                {{ mobile_header_aside_toggler }}
+                                <!-- / ASIDE TOGGLE BUTTON -->
+                            {%- endif -%}
+
+                            {%- if section.settings.show_welcome_text -%}
+                                <!-- WELCOME TEXT -->
+                                <div class="p-3 pl-sm-0">
+                                    {{ section.settings.welcome_text }}
+                                </div>
+                                <!-- / WELCOME TEXT -->
+                            {%- endif -%}
+
+                        </div>
+
+                    {%- endif -%}
+
+                    <div
+                        class="action-buttons col-12 col-sm flex-items-middle flex-items-center {% if section.settings.show_welcome_text %} flex-items-sm-right{% endif %}">
+
+                        {%- if section.settings.show_menu and section.settings.mobile_header_style == 'mobile-header-2' -%}
+                            <div class="link flex-items-middle flex-items-left flex-grow"
+                                 js-bar-toggle="mobile-menu-sidebar">
+                                <i class="icon-menu"></i>
+                            </div>
+                        {%- endif -%}
+
+                        <!-- SEARCH -->
+                        {%- include 'search' search_style: 'mobile-search', icon_mode: true -%}
+                        <!-- / SEARCH -->
+
+                        <!-- CURRENCY SELECTOR -->
+                        {%- include 'currency-selector', icon_mode: true, trigger: 'click' -%}
+                        <!-- / CURRENCY SELECTOR -->
+
+                        <!-- MY ACCOUNT -->
+                        {%- include 'my-account-dropdown' icon_mode: true, trigger: 'click' -%}
+                        <!-- / MY ACCOUNT -->
+
+                        <!-- CART -->
+                        {%- include 'cart' cart_style: 'right-bar', icon_mode: true, id: 'mobile', tag_border_color: section.settings.top_bg_color -%}
+                        <!-- / CART -->
+
+                        {%- if show_aside_toggle_button and settings.aside == 'right-aside' -%}
+                            <!-- ASIDE TOGGLE BUTTON -->
+                            {{ mobile_header_aside_toggler }}
+                            <!-- / ASIDE TOGGLE BUTTON -->
+                        {%- endif -%}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {%- if section.settings.show_menu and section.settings.mobile_header_style == 'mobile-header-2' -%}
+            <js-bar id="mobile-menu-sidebar"
+                    class="sidebar mobile-menu-sidebar visible-xs"
+                    options='{"fixed":true, "position":"left", "bodyAppend": true}'>
+                <div id="mobile-nav-wrapper" class="jasper-bar-content" js-scroll ng-swipe-left="jb.closeBar()">
+                    <!-- NAVIGATION -->
+                    {%- include 'nav' with 'vertical', nav_item:'nav-item-collapse', menu: section.settings.menu, menu_extras: section.blocks, mobile_header: true -%}
+                    <!-- / NAVIGATION -->
+                </div>
+            </js-bar>
+        {%- endif -%}
+
+        <js-bar id="mobile-search-bar"
+                class="full-page-search-bar"
+                options='{"fixed":true, "position":"fade-in-out","bodyAppend":true}' ng-cloak>
+            <js-quick-search
+                options="{
+                    formClass:'search-form',
+                    inputClass:'h3 search-input auto-focus',
+                    inputPlaceholder:'{{ 'general.search.placeholder' | t }}'
+                    }">
+            </js-quick-search>
+            <i js-bar-toggle="mobile-search-bar" just-close
+               class="align-top-right s-6 m-5 search-bar-close-button link icon-close"></i>
+        </js-bar>
+
+        {%- if section.settings.show_logo -%}
+
+            <div class="header-middle {{ middle_bg_color_brightness }}"
+                 style="background: {{ section.settings.middle_bg_color }}"
+                 data-fg-class="{{ middle_bg_color_brightness }}">
+                <div class="container-fluid">
+                    <div class="flex-items-center py-6">
+                        <!-- LOGO -->
+                        {%- include 'logo' image_size: section.settings.logo_max_width -%}
+                        <!-- / LOGO -->
+                    </div>
+                </div>
+            </div>
+
+        {%- endif -%}
+
+        {%- if section.settings.show_menu and section.settings.mobile_header_style == 'mobile-header-1' -%}
+            <div class="header-bottom text-center text-sm-center {{ bottom_bg_color_brightness }}"
+                 style="background: {{ section.settings.bottom_bg_color }}"
+                 data-fg-class="{{ bottom_bg_color_brightness }}">
+
+                <div class="container-fullwidth">
+
+                    <div class="link p-4 flex-items-middle flex-items-center"
+                         ng-click="isMobileNavOpen = !isMobileNavOpen">
+                        <i class="mr-2 icon-menu"></i>
+                        <span>Menu</span>
+                    </div>
+
+                    <div id="mobile-nav-wrapper" class="vertical-collapse" uib-collapse="!isMobileNavOpen" ng-cloak>
+                        <!-- NAVIGATION -->
+                        {%- include 'nav' with 'vertical', nav_item:'nav-item-collapse', menu: section.settings.menu, menu_extras: section.blocks, mobile_header: true -%}
+                        <!-- / NAVIGATION -->
+                    </div>
+
+                </div>
+            </div>
+        {%- endif -%}
+
+    </div>
+    <!-- / MOBILE HEADER -->
+
+</header>
+<!-- HEADER -->
+
+{%- endunless -%}
+
+<script type="application/json">
+    /*"*/{% schema %}/*"*/
+    {
+        "name": "Header",
+        "settings": [
+            {
+                "type": "header",
+                "content": "General"
+            },
+            {
+                "type": "checkbox",
+                "id": "hide_header",
+                "label": "Hide header completely",
+                "default": false
+            },
+            {
+                "type": "select",
+                "id": "style",
+                "label": "Header style",
+                "options": [
+                    {
+                        "value": "header-1",
+                        "label": "Header 1"
+                    },
+                    {
+                        "value": "header-2",
+                        "label": "Header 2"
+                    },
+                    {
+                        "value": "header-3",
+                        "label": "Header 3"
+                    },
+                    {
+                        "value": "header-4",
+                        "label": "Header 4"
+                    },
+                    {
+                        "value": "header-5",
+                        "label": "Header 5"
+                    },
+                    {
+                        "value": "header-6",
+                        "label": "Header 6"
+                    },
+                    {
+                        "value": "header-7",
+                        "label": "Header 7"
+                    },
+                    {
+                        "value": "header-8",
+                        "label": "Header 8"
+                    },
+                    {
+                        "value": "header-9",
+                        "label": "Header 9"
+                    },
+                    {
+                        "value": "header-10",
+                        "label": "Header 10"
+                    },
+                    {
+                        "value": "header-11",
+                        "label": "Header 11"
+                    },
+                    {
+                        "value": "header-12",
+                        "label": "Header 12"
+                    },
+                    {
+                        "value": "header-13",
+                        "label": "Header 13"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "mobile_header_style",
+                "label": "Mobile Header style",
+                "default": "mobile-header-2",
+                "options": [
+                    {
+                        "value": "mobile-header-1",
+                        "label": "Mobile Header 1"
+                    },
+                    {
+                        "value": "mobile-header-2",
+                        "label": "Mobile Header 2"
+                    }
+                ]
+            },
+            {
+                "type": "checkbox",
+                "id": "fixed_header_top_mobile",
+                "label": "Fixed header-top on mobile",
+                "default": true
+            },
+            {
+                "type": "select",
+                "id": "content_width",
+                "label": "Content width",
+                "options": [
+                    {
+                        "value": "",
+                        "label": "Default"
+                    },
+                    {
+                        "value": "container",
+                        "label": "Container"
+                    },
+                    {
+                        "value": "container-fluid",
+                        "label": "Fluid container"
+                    }
+                ]
+            },
+            {
+                "type": "checkbox",
+                "id": "absolute_header",
+                "label": "Use absolute positioned header on homepage"
+            },
+            {
+                "type": "checkbox",
+                "id": "use_icons",
+                "label": "Use icons in header"
+            },
+            {
+                "type": "header",
+                "content": "Sticky Header"
+            },
+            {
+                "type": "checkbox",
+                "id": "sticky_header",
+                "label": "Enable sticky header",
+                "default": true
+            },
+            {
+                "type": "paragraph",
+                "content": "Elements"
+            },
+            {
+                "type": "checkbox",
+                "id": "sticky_header_show_logo",
+                "label": "Show logo",
+                "default": true
+            },
+            {
+                "type": "text",
+                "id": "sticky_header_logo_max_width",
+                "label": "Sticky Header Logo width (px)",
+                "default": "80",
+                "info": "Images won't be upscaled, so make sure you upload a logo larger than the 'logo width' option. For retina screens, your logo must be at least double the 'logo width' option. For example, if you set the above option to '128', your logo must be at least 256px wide."
+            },
+            {
+                "type": "checkbox",
+                "id": "sticky_header_show_currency_selector",
+                "label": "Show currency selector",
+                "default": true
+            },
+            {
+                "type": "checkbox",
+                "id": "sticky_header_show_search",
+                "label": "Show search",
+                "default": true
+            },
+            {
+                "type": "checkbox",
+                "id": "sticky_header_show_my_account",
+                "label": "Show my account",
+                "default": true
+            },
+            {
+                "type": "checkbox",
+                "id": "sticky_header_show_cart",
+                "label": "Show cart",
+                "default": true
+            },
+            {
+                "type": "paragraph",
+                "content": "Background"
+            },
+            {
+                "type": "color",
+                "id": "sticky_bg_color",
+                "label": "Background color",
+                "default": "#ffffff"
+            },
+            {
+                "type": "select",
+                "id": "sticky_bg_opacity",
+                "label": "Background opacity",
+                "default": "1",
+                "options": [
+                    {
+                        "value": "0",
+                        "label": "0"
+                    },
+                    {
+                        "value": "0.05",
+                        "label": "5"
+                    },
+                    {
+                        "value": "0.10",
+                        "label": "10"
+                    },
+                    {
+                        "value": "0.15",
+                        "label": "15"
+                    },
+                    {
+                        "value": "0.20",
+                        "label": "20"
+                    },
+                    {
+                        "value": "0.25",
+                        "label": "25"
+                    },
+                    {
+                        "value": "0.30",
+                        "label": "30"
+                    },
+                    {
+                        "value": "0.35",
+                        "label": "35"
+                    },
+                    {
+                        "value": "0.40",
+                        "label": "40"
+                    },
+                    {
+                        "value": "0.45",
+                        "label": "45"
+                    },
+                    {
+                        "value": "0.50",
+                        "label": "50"
+                    },
+                    {
+                        "value": "0.55",
+                        "label": "55"
+                    },
+                    {
+                        "value": "0.60",
+                        "label": "60"
+                    },
+                    {
+                        "value": "0.65",
+                        "label": "65"
+                    },
+                    {
+                        "value": "0.70",
+                        "label": "70"
+                    },
+                    {
+                        "value": "0.75",
+                        "label": "75"
+                    },
+                    {
+                        "value": "0.80",
+                        "label": "80"
+                    },
+                    {
+                        "value": "0.85",
+                        "label": "85"
+                    },
+                    {
+                        "value": "0.90",
+                        "label": "90"
+                    },
+                    {
+                        "value": "0.95",
+                        "label": "95"
+                    },
+                    {
+                        "value": "1",
+                        "label": "100"
+                    }
+                ]
+            },
+            {
+                "type": "header",
+                "content": "Header Backgrounds"
+            },
+            {
+                "type": "paragraph",
+                "content": "Top"
+            },
+            {
+                "type": "color",
+                "id": "top_bg_color",
+                "label": "Background color",
+                "default": "#ffffff"
+            },
+            {
+                "type": "select",
+                "id": "top_bg_opacity",
+                "label": "Background opacity",
+                "default": "1",
+                "options": [
+                    {
+                        "value": "0",
+                        "label": "0"
+                    },
+                    {
+                        "value": "0.05",
+                        "label": "5"
+                    },
+                    {
+                        "value": "0.10",
+                        "label": "10"
+                    },
+                    {
+                        "value": "0.15",
+                        "label": "15"
+                    },
+                    {
+                        "value": "0.20",
+                        "label": "20"
+                    },
+                    {
+                        "value": "0.25",
+                        "label": "25"
+                    },
+                    {
+                        "value": "0.30",
+                        "label": "30"
+                    },
+                    {
+                        "value": "0.35",
+                        "label": "35"
+                    },
+                    {
+                        "value": "0.40",
+                        "label": "40"
+                    },
+                    {
+                        "value": "0.45",
+                        "label": "45"
+                    },
+                    {
+                        "value": "0.50",
+                        "label": "50"
+                    },
+                    {
+                        "value": "0.55",
+                        "label": "55"
+                    },
+                    {
+                        "value": "0.60",
+                        "label": "60"
+                    },
+                    {
+                        "value": "0.65",
+                        "label": "65"
+                    },
+                    {
+                        "value": "0.70",
+                        "label": "70"
+                    },
+                    {
+                        "value": "0.75",
+                        "label": "75"
+                    },
+                    {
+                        "value": "0.80",
+                        "label": "80"
+                    },
+                    {
+                        "value": "0.85",
+                        "label": "85"
+                    },
+                    {
+                        "value": "0.90",
+                        "label": "90"
+                    },
+                    {
+                        "value": "0.95",
+                        "label": "95"
+                    },
+                    {
+                        "value": "1",
+                        "label": "100"
+                    }
+                ]
+            },
+            {
+                "type": "paragraph",
+                "content": "Middle"
+            },
+            {
+                "type": "color",
+                "id": "middle_bg_color",
+                "label": "Background color",
+                "default": "#ffffff"
+            },
+            {
+                "type": "select",
+                "id": "middle_bg_opacity",
+                "label": "Background opacity",
+                "default": "1",
+                "options": [
+                    {
+                        "value": "0",
+                        "label": "0"
+                    },
+                    {
+                        "value": "0.05",
+                        "label": "5"
+                    },
+                    {
+                        "value": "0.10",
+                        "label": "10"
+                    },
+                    {
+                        "value": "0.15",
+                        "label": "15"
+                    },
+                    {
+                        "value": "0.20",
+                        "label": "20"
+                    },
+                    {
+                        "value": "0.25",
+                        "label": "25"
+                    },
+                    {
+                        "value": "0.30",
+                        "label": "30"
+                    },
+                    {
+                        "value": "0.35",
+                        "label": "35"
+                    },
+                    {
+                        "value": "0.40",
+                        "label": "40"
+                    },
+                    {
+                        "value": "0.45",
+                        "label": "45"
+                    },
+                    {
+                        "value": "0.50",
+                        "label": "50"
+                    },
+                    {
+                        "value": "0.55",
+                        "label": "55"
+                    },
+                    {
+                        "value": "0.60",
+                        "label": "60"
+                    },
+                    {
+                        "value": "0.65",
+                        "label": "65"
+                    },
+                    {
+                        "value": "0.70",
+                        "label": "70"
+                    },
+                    {
+                        "value": "0.75",
+                        "label": "75"
+                    },
+                    {
+                        "value": "0.80",
+                        "label": "80"
+                    },
+                    {
+                        "value": "0.85",
+                        "label": "85"
+                    },
+                    {
+                        "value": "0.90",
+                        "label": "90"
+                    },
+                    {
+                        "value": "0.95",
+                        "label": "95"
+                    },
+                    {
+                        "value": "1",
+                        "label": "100"
+                    }
+                ]
+            },
+            {
+                "type": "paragraph",
+                "content": "Bottom"
+            },
+            {
+                "type": "color",
+                "id": "bottom_bg_color",
+                "label": "Background color",
+                "default": "#ffffff"
+            },
+            {
+                "type": "select",
+                "id": "bottom_bg_opacity",
+                "label": "Background opacity",
+                "default": "1",
+                "options": [
+                    {
+                        "value": "0",
+                        "label": "0"
+                    },
+                    {
+                        "value": "0.05",
+                        "label": "5"
+                    },
+                    {
+                        "value": "0.10",
+                        "label": "10"
+                    },
+                    {
+                        "value": "0.15",
+                        "label": "15"
+                    },
+                    {
+                        "value": "0.20",
+                        "label": "20"
+                    },
+                    {
+                        "value": "0.25",
+                        "label": "25"
+                    },
+                    {
+                        "value": "0.30",
+                        "label": "30"
+                    },
+                    {
+                        "value": "0.35",
+                        "label": "35"
+                    },
+                    {
+                        "value": "0.40",
+                        "label": "40"
+                    },
+                    {
+                        "value": "0.45",
+                        "label": "45"
+                    },
+                    {
+                        "value": "0.50",
+                        "label": "50"
+                    },
+                    {
+                        "value": "0.55",
+                        "label": "55"
+                    },
+                    {
+                        "value": "0.60",
+                        "label": "60"
+                    },
+                    {
+                        "value": "0.65",
+                        "label": "65"
+                    },
+                    {
+                        "value": "0.70",
+                        "label": "70"
+                    },
+                    {
+                        "value": "0.75",
+                        "label": "75"
+                    },
+                    {
+                        "value": "0.80",
+                        "label": "80"
+                    },
+                    {
+                        "value": "0.85",
+                        "label": "85"
+                    },
+                    {
+                        "value": "0.90",
+                        "label": "90"
+                    },
+                    {
+                        "value": "0.95",
+                        "label": "95"
+                    },
+                    {
+                        "value": "1",
+                        "label": "100"
+                    }
+                ]
+            },
+            {
+                "type": "header",
+                "content": "Header Elements"
+            },
+            {
+                "type": "paragraph",
+                "content": "Logo"
+            },
+            {
+                "type": "checkbox",
+                "id": "show_logo",
+                "label": "Show logo",
+                "default": true
+            },
+            {
+                "type": "text",
+                "id": "logo_max_width",
+                "label": "Logo width (px)",
+                "default": "128",
+                "info": "Images won't be upscaled, so make sure you upload a logo larger than the 'logo width' option. For retina screens, your logo must be at least double the 'logo width' option. For example, if you set the above option to '128', your logo must be at least 256px wide."
+            },
+            {
+                "type": "paragraph",
+                "content": "Currency"
+            },
+            {
+                "type": "checkbox",
+                "id": "show_currency_selector",
+                "label": "Show currency selector",
+                "default": true
+            },
+            {
+                "type": "paragraph",
+                "content": "Search"
+            },
+            {
+                "type": "checkbox",
+                "id": "show_search",
+                "label": "Show search",
+                "default": true
+            },
+            {
+                "type": "select",
+                "id": "search_style",
+                "label": "Search style",
+                "default": "full-page",
+                "info": "Except for Header 12",
+                "options": [
+                    {
+                        "value": "basic",
+                        "label": "Basic"
+                    },
+                    {
+                        "value": "full-page",
+                        "label": "Full page"
+                    },
+                    {
+                        "value": "dropdown",
+                        "label": "Dropdown"
+                    }
+                ]
+            },
+            {
+                "type": "paragraph",
+                "content": "My Account"
+            },
+            {
+                "type": "checkbox",
+                "id": "show_my_account",
+                "label": "Show my account",
+                "default": true
+            },
+            {
+                "type": "paragraph",
+                "content": "Cart"
+            },
+            {
+                "type": "checkbox",
+                "id": "show_cart",
+                "label": "Show cart",
+                "default": true
+            },
+            {
+                "type": "select",
+                "id": "cart_style",
+                "label": "Cart style",
+                "default": "right-bar",
+                "options": [
+                    {
+                        "value": "link",
+                        "label": "Link to the Cart page"
+                    },
+                    {
+                        "group": "Ajax Quick Cart",
+                        "value": "top-bar",
+                        "label": "Top bar"
+                    },
+                    {
+                        "group": "Ajax Quick Cart",
+                        "value": "bottom-bar",
+                        "label": "Bottom bar"
+                    },
+                    {
+                        "group": "Ajax Quick Cart",
+                        "value": "right-bar",
+                        "label": "Right bar"
+                    },
+                    {
+                        "group": "Ajax Quick Cart",
+                        "value": "left-bar",
+                        "label": "Left bar"
+                    },
+                    {
+                        "group": "Ajax Quick Cart",
+                        "value": "popover-small",
+                        "label": "Popover small"
+                    },
+                    {
+                        "group": "Ajax Quick Cart",
+                        "value": "popover-big",
+                        "label": "Popover big"
+                    }
+                ]
+            },
+            {
+                "type": "paragraph",
+                "content": "Primary menu"
+            },
+            {
+                "type": "checkbox",
+                "id": "show_menu",
+                "label": "Show primary menu",
+                "default": true
+            },
+            {
+                "type": "link_list",
+                "id": "menu",
+                "label": "Primary menu",
+                "default": "main-menu"
+            },
+            {
+                "type": "paragraph",
+                "content": "Secondary Menu"
+            },
+            {
+                "type": "checkbox",
+                "id": "show_secondary_menu",
+                "label": "Show secondary menu",
+                "default": true
+            },
+            {
+                "type": "link_list",
+                "id": "secondary_menu",
+                "label": "Secondary menu"
+            },
+            {
+                "type": "checkbox",
+                "id": "show_my_account_as_secondary_menu",
+                "label": "Show My Account as secondary menu",
+                "default": true
+            },
+            {
+                "type": "paragraph",
+                "content": "Welcome Text"
+            },
+            {
+                "type": "checkbox",
+                "id": "show_welcome_text",
+                "label": "Show welcome text",
+                "default": true
+            },
+            {
+                "type": "textarea",
+                "id": "welcome_text",
+                "label": "Welcome text",
+                "default": "Welcome to the <a class=\"text-primary\" href=\"http://jasper-theme.myshopify.com\">Jasper</a> store!"
+            },
+            {
+                "type": "header",
+                "content": "Extra"
+            },
+            {
+                "type": "text",
+                "id": "additional_classes",
+                "label": "Additional classes"
+            }
+        ],
+        "blocks": [
+            {
+                "type": "icon_and_badge",
+                "name": "Color, Icon & Badge",
+                "settings": [
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Title",
+                        "info": "Use this field to target a menu item by title"
+                    },
+                    {
+                        "type": "color",
+                        "id": "title_color",
+                        "label": "Title color"
+                    },
+                    {
+                        "type": "text",
+                        "id": "icon_class",
+                        "label": "Icon class"
+                    },
+                    {
+                        "type": "color",
+                        "id": "icon_color",
+                        "label": "Icon color"
+                    },
+                    {
+                        "type": "text",
+                        "id": "badge_text",
+                        "label": "Badge text"
+                    },
+                    {
+                        "type": "color",
+                        "id": "badge_fg_color",
+                        "label": "Badge text color"
+                    },
+                    {
+                        "type": "color",
+                        "id": "badge_bg_color",
+                        "label": "Badge background color"
+                    }
+                ]
+            }
+        ]
+    }
+    /*"*/{% endschema %}/*"*/
+</script>

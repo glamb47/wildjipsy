@@ -1,0 +1,82 @@
+<div class="container">
+
+    <div class="row flex-items-center">
+
+        <div class="col-12 form-content">
+
+            <!-- PAGE HEADER -->
+            <div class="page-header pt-14 {% if page.content == blank %}pb-14{% endif %}">
+                <h1 class="text-center text-bold">{{ page.title }}</h1>
+            </div>
+            <!-- / PAGE HEADER -->
+
+            <!-- PAGE CONTENT -->
+            {%- if page.content != blank -%}
+                <div class="pt-6 pb-14">
+                    {{ page.content }}
+                </div>
+            {%- endif -%}
+            <!-- / PAGE CONTENT -->
+
+            <!-- CONTACT FORM -->
+            {%- form 'contact' -%}
+
+            {%- if form.posted_successfully? -%}
+
+                <!-- POSTED MESSAGE -->
+                <p class="note form-success">
+                    {{ 'contact.form.post_success' | t }}
+                </p>
+                <!-- / POSTED MESSAGE -->
+
+            {%- endif -%}
+
+            {%- include 'form-errors' -%}
+
+            {%- assign name_attr = 'contact.form.name' | t | handle -%}
+
+            <div class="form-group">
+
+                <input class="form-control" type="text" id="ContactFormName" name="contact[name]"
+                       placeholder="{{ 'contact.form.name' | t }}" autocapitalize="words"
+                       value="{% if form[name] %}{{ form[name] }}{% elsif customer %}{{ customer.name }}{% endif %}">
+
+            </div>
+
+            <div class="form-group">
+
+                <input class="form-control" type="email" id="ContactFormEmail" name="contact[email]"
+                       placeholder="{{ 'contact.form.email' | t }}"
+                       autocorrect="off" autocapitalize="off"
+                       value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}">
+
+            </div>
+
+            <div class="form-group">
+
+                <input class="form-control" type="tel" id="ContactFormPhone" name="contact[phone]"
+                       placeholder="{{ 'contact.form.phone' | t }}" pattern="[0-9\-]*"
+                       value="{% if form[phone] %}{{ form[phone] }}{% elsif customer %}{{ customer.phone }}{% endif %}">
+
+            </div>
+
+            <div class="form-group">
+
+                <textarea class="form-control" rows="10" id="ContactFormMessage" name="contact[body]"
+                          placeholder="{{ 'contact.form.message' | t }}">
+                    {% if form.body %}{{ form.body }}{% endif %}
+                </textarea>
+
+            </div>
+
+            <div class="flex-items-center">
+                <input type="submit" class="btn btn-primary center-block submit-button text-uppercase mt-8 mb-12"
+                       value="{{ 'contact.form.send' | t }}">
+            </div>
+
+            {%- endform -%}
+            <!-- / CONTACT FORM -->
+
+        </div>
+    </div>
+</div>

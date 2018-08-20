@@ -1,0 +1,21 @@
+{%- assign tags = '' -%}
+
+{%- assign _tags = tags_string | split:',' -%}
+
+{%- if _tags.size > 0 -%}
+
+    {%- for _tag_raw in _tags -%}
+
+        {%- assign _tag = _tag_raw | downcase | strip | replace: '&amp;', '&' -%}
+
+        {%- if tags == '' -%}
+            {%- assign tags = tags | append: _tag -%}
+        {%- else -%}
+            {%- assign tags = tags | append:',' | append: _tag -%}
+        {%- endif -%}
+
+    {%- endfor -%}
+
+{%- endif -%}
+
+{%- assign tags =  tags | split:',' -%}

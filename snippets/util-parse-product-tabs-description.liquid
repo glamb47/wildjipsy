@@ -1,0 +1,15 @@
+{%- capture descriptionRaw -%}{{- product.description | replace: '<!--[', '[' -}}{%- endcapture -%}
+{%- capture descriptionRaw -%}{{- descriptionRaw | replace: ']-->', ']' -}}{%- endcapture -%}
+{%- capture descriptionRaw -%}{{- descriptionRaw | replace: ']</p>', ']' -}}{%- endcapture -%}
+{%- capture descriptionRaw -%}{{- descriptionRaw | replace: '<p>[', '[' -}}{%- endcapture -%}
+
+{%- assign descriptionArr = descriptionRaw | split: '[js-tabs]' -%}
+{%- capture productTabsRaw -%}{{- descriptionArr[1] | replace: '[/js-tabs]', '' -}}{%- endcapture -%}
+
+{%- assign description = descriptionArr[0] -%}
+{%- capture product_tabs -%}{{- productTabsRaw | replace: '[', '<' | replace: ']', '>' -}}{%- endcapture -%}
+
+{% if create_accordion %}
+    {%- capture product_accordion -%}{{- product_tabs | replace: 'js-tab', 'div uib-accordion-group' | replace: '/js-tab', '/div' -}}{%- endcapture -%}
+    {%- capture product_accordion -%}{{- product_accordion | replace: 'title', 'heading' -}}{%- endcapture -%}
+{% endif %}

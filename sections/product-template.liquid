@@ -1,0 +1,1768 @@
+{% if product.template_suffix == "pre-order" %}
+    {%- assign product_style = section.settings.product_page_style -%}
+    {% elsif product.template_suffix == "no-offers" %}
+    {%- assign product_style = section.settings.product_page_style -%}
+{% else %}
+    {%- assign product_style = template.suffix | default: section.settings.product_page_style -%}
+{% endif %}
+
+{%- assign content_width = settings.product_content_width | default: settings.content_width -%}
+{%- assign current_variant = product.selected_or_first_available_variant -%}
+{%- assign featured_image = current_variant.featured_image | default: product.featured_image -%}
+
+{%- include 'util-parse-product-tabs-description' create_accordion: true -%}
+
+{% assign video = product.metafields.video %}
+
+{%- comment -%}
+    {# @ CPT: Page Header #}
+{%- endcomment -%}
+{%- capture 'page_header' -%}
+
+    <!-- PAGE HEADER -->
+    <div id="page-header" class="page-header w-100 py-8">
+
+        <div class="row">
+
+            {%- if section.settings.show_breadcrumb -%}
+                <div class="col-12 col-md flex-items-middle flex-items-center flex-items-md-left py-3 py-md-4">
+                    <!-- BREADCRUMB -->
+                    {%- include 'breadcrumb' -%}
+                    <!-- / BREADCRUMB -->
+                </div>
+            {%- endif -%}
+
+            {%- if section.settings.show_previous_next_product_links -%}
+
+                {%- if collection.previous_product or collection.next_product -%}
+
+                    <div
+                        class="col-12 col-md flex-items-middle flex-items-center flex-items-md-right product-previous-next-links {{ section.settings.product_previous_next_links_style }} py-4">
+
+                        {%- if collection.previous_product -%}
+
+                            <div class="previous-product light-bg" js-popover
+                                 js-popover-options="{ placement: 'bottom-end', trigger: 'hover' }">
+
+                                <a href="{{ collection.previous_product.url }}" class="flex-items-middle"
+                                   js-popover-trigger>
+                                    <span class="icon icon-arrow-left s-5"></span>
+                                    <span class="product-title">{{ collection.previous_product.title }}</span>
+                                </a>
+
+                                <js-popover-content>
+                                    <a href="{{ collection.previous_product.url }}" class="flex-items-top">
+                                        <img src="{{ collection.previous_product.featured_image | img_url: '60x' }}">
+                                        <div class="ml-4">
+                                            <div
+                                                class="h4 text-bold text-left">{{ collection.previous_product.title }}</div>
+                                            <div class="flex-items-middle">
+                                                {%- if collection.previous_product.compare_at_price > collection.previous_product.price -%}
+                                                    <div class="h5 text-light text-linethrough js-money mr-2"
+                                                         value="{{ collection.previous_product.compare_at_price }}">
+                                                        {{ collection.previous_product.compare_at_price }}
+                                                    </div>
+                                                {%- endif -%}
+                                                <div class="h5 text-danger js-money"
+                                                     value="{{ collection.previous_product.price }}">
+                                                    {{ collection.previous_product.price }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </js-popover-content>
+
+                            </div>
+
+                        {% endif %}
+
+                        {%- if collection.next_product -%}
+
+                            <div class="next-product light-bg" js-popover
+                                 js-popover-options="{ placement: 'bottom-end', trigger: 'hover' }">
+
+                                <a href="{{ collection.next_product.url }}" class="flex-items-middle"
+                                   js-popover-trigger>
+                                    <span class="product-title">{{ collection.next_product.title }}</span>
+                                    <span class="icon icon-arrow-right s-5"></span>
+                                </a>
+
+                                <js-popover-content>
+                                    <a href="{{ collection.next_product.url }}" class="flex-items-top">
+                                        <img src="{{ collection.next_product.featured_image | img_url: '60x' }}">
+                                        <div class="ml-4">
+                                            <div
+                                                class="h4 text-bold text-left">{{ collection.next_product.title }}</div>
+                                            <div class="flex-items-middle">
+                                                {%- if collection.next_product.compare_at_price > collection.next_product.price -%}
+                                                    <div class="h5 text-light text-linethrough js-money mr-2"
+                                                         value="{{ collection.next_product.compare_at_price }}">
+                                                        {{ collection.next_product.compare_at_price }}
+                                                    </div>
+                                                {%- endif -%}
+                                                <div class="h5 text-danger js-money"
+                                                     value="{{ collection.next_product.price }}">
+                                                    {{ collection.next_product.price }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </js-popover-content>
+
+                            </div>
+                        {%- endif -%}
+
+                    </div>
+
+                {%- endif -%}
+
+            {%- endif -%}
+
+        </div>
+
+    </div>
+    <!-- / PAGE HEADER -->
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {# @ CPT: Product Sale Badge #}
+{%- endcomment -%}
+{%- capture 'product_sale_badge' -%}
+
+    <!-- PRODUCT SALE BADGE-->
+    <span class="product-sale-badge tag tag-danger px-3" ng-cloak
+          ng-if="ps.selectedVariant.compare_at_price && ps.selectedVariant.compare_at_price > ps.selectedVariant.price">
+    {%- if section.settings.product_sale_badge_style == 'percentage' -%}
+        <span>-{[{ ((ps.selectedVariant.compare_at_price - ps.selectedVariant.price) / ps.selectedVariant.compare_at_price * 100 ) | number:0 }]}
+            %</span>
+    {%- endif -%}
+
+        {%- if section.settings.product_sale_badge_style == 'text' -%}
+            <span class="badge-text">{{ 'products.product.sale' | t }}</span>
+        {%- endif -%}
+</span>
+    <!-- / PRODUCT SALE BADGE-->
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {# @ CPT: Product New Badge #}
+{%- endcomment -%}
+
+{%- capture 'product_new_badge' -%}
+    {%- include "util-product-is-new" -%}
+    {%- if settings.product_new_badge_enabled and is_new -%}
+        <!-- PRODUCT NEW BADGE-->
+        <span class="product-new-badge tag tag-default px-3">
+         <span class="badge-text">{{ 'products.product.new' | t }}</span>
+    </span>
+        <!-- / PRODUCT NEW BADGE-->
+    {%- endif -%}
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Product Image Zoom #}
+{%- endcomment -%}
+{%- capture 'product_image_zoom' -%}
+
+    <div class="product-image">
+
+        {{ product_sale_badge }}{{ product_new_badge }}
+
+        <img class="img-fluid" src="{{ featured_image | img_url: '600x' }}"
+             alt="{{ featured_image.alt | escape }}" ng-cloak
+             wip-image-zoom="{ zoomLevel: 0,
+                       disableZoom: {{ section.settings.img_zoom_disable }},
+                       style:'{{ section.settings.img_zoom_style }}',
+                       lens:{{ section.settings.img_zoom_lens }},
+                       cursor:'{{ section.settings.img_zoom_cursor }}',
+                       thumbsPos:'{{ section.settings.img_zoom_thumbs_pos }}',
+                       thumbCol:{{ section.settings.img_zoom_thumb_col_count }},
+                       thumbColPadding:{{ section.settings.img_zoom_thumb_pad }},
+                       prevThumbButton: '<i class=\'icon icon-chevron-left text-light s-8\'></i>',
+                       nextThumbButton: '<i class=\'icon icon-chevron-right text-light s-8\'></i>',
+                       immersiveMode:'{{ section.settings.img_zoom_immersive_mode }}',
+                       immersiveModeMessage:'{{ 'products.product.click_to_zoom' | t }}',
+                       images: [
+                        {%- if product.images.size >= 1 -%}
+                            {%- for image in product.images -%}
+                            {
+                                thumb : '{{ image.src | img_url: '200x' }}',
+                                medium: '{{ image.src | img_url: '600x' }}',
+                                large : '{{ image.src | img_url: '2048x' }}',
+                            },
+                            {%- endfor -%}
+                        {%- endif -%}
+                        ]}"
+             selected-index="ps.productImageIndex" selected-model="ps.productSelectedImageModel">
+    </div>
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {# @ CPT: Product Image Slide #}
+{%- endcomment -%}
+{%- capture 'product_image_slide' -%}
+
+    {%- if product.images.size > 1 -%}
+
+        <!-- PRODUCT IMAGE SLIDE -->
+        <div class="js-images-loaded product-image-slider-wrapper arrows-light-rectangle">
+
+            {{ product_sale_badge }}
+            {{ product_new_badge }}
+
+            {%- include 'spinner' -%}
+
+            <div class="product-image-slider" bc-flickity='{
+                          "draggable": true,
+                          "dragThreshold": 15,
+                          "wrapAround": true,
+                          "prevNextButtons": true,
+                          "pageDots": true,
+                          "imagesLoaded": true
+                          }'
+                 js-flickity-select="{[{ ps.productImageIndex }]}">
+
+                {%- for image in product.images -%}
+                    <div class="img-wrapper w-100">
+                        <img class="img-fluid"
+                             src="{{ image.src | img_url: '1024x' }}"
+                             srcset="
+                            {{ image.src | img_url: '100x' }} 100w,
+                            {{ image.src | img_url: '160x' }} 160w,
+                            {{ image.src | img_url: '240x' }} 240w,
+                            {{ image.src | img_url: '480x' }} 480w,
+                            {{ image.src | img_url: '600x' }} 600w,
+                            {{ image.src | img_url: '1024x' }} 1024w,
+                            "
+                             alt="{{ image.alt | escape }}">
+                        {% if section.settings.show_lightbox_button %}
+                            <div class="light-box-button p-2 align-bottom-right"
+                                 ng-click="ps.lightBox('{{ image.src | img_url: '2048x' }}')">
+                                <i class="icon link s-7 icon-fullscreen"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                {%- endfor -%}
+
+            </div>
+        </div>
+        <!-- / PRODUCT IMAGE SLIDE  -->
+
+    {%- else -%}
+        <div class="img-wrapper p-relative w-100">
+            <img class="img-fluid w-100"
+                 src="{{ product.featured_image.src | img_url: '1024x' }}"
+                 srcset="
+                        {{ product.featured_image.src | img_url: '100x' }} 100w,
+                        {{ product.featured_image.src | img_url: '160x' }} 160w,
+                        {{ product.featured_image.src | img_url: '240x' }} 240w,
+                        {{ product.featured_image.src | img_url: '480x' }} 480w,
+                        {{ product.featured_image.src | img_url: '600x' }} 600w,
+                        {{ product.featured_image.src | img_url: '1024x' }} 1024w,
+                        "
+                 alt="{{ product.featured_image.alt | escape }}">
+
+            {% if section.settings.show_lightbox_button %}
+                <div class="light-box-button p-2 align-bottom-right"
+                     ng-click="ps.lightBox('{{ product.featured_image.src | img_url: '2048x' }}')">
+                    <i class="icon link s-7 icon-fullscreen"></i>
+                </div>
+            {% endif %}
+        </div>
+    {%- endif -%}
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {# @ CPT: Product Image Carousel #}
+{%- endcomment -%}
+{%- capture 'product_image_carousel' -%}
+
+    {%- if product.images.size > 2 -%}
+
+        <!-- PRODUCT IMAGE CAROUSEL -->
+        <div class="js-images-loaded product-image-slider-wrapper arrows-light-rectangle">
+
+            {%- include 'spinner' -%}
+
+            <div ng-cloak class="product-image-slider" bc-flickity='{
+                          "draggable": true,
+                          "dragThreshold": 15,
+                          "wrapAround": true,
+                          "prevNextButtons": true,
+                          "pageDots": false,
+                          "cellAlign" : "center",
+                          "imagesLoaded": true
+                          }' js-flickity-select="{[{ ps.productImageIndex }]}">
+
+                {%- for image in product.images -%}
+                    <div class="img-wrapper col-md-4 col-sm-6 col-12 p-0">
+                        <img class="img-fluid w-100"
+                             src="{{ image.src | img_url: '1024x' }}"
+                             srcset="
+                            {{ image.src | img_url: '100x' }} 100w,
+                            {{ image.src | img_url: '160x' }} 160w,
+                            {{ image.src | img_url: '240x' }} 240w,
+                            {{ image.src | img_url: '480x' }} 480w,
+                            {{ image.src | img_url: '600x' }} 600w,
+                            {{ image.src | img_url: '1024x' }} 1024w,
+                            "
+                             alt="{{ image.alt | escape }}">
+                        {% if section.settings.show_lightbox_button %}
+                            <div class="light-box-button p-2 align-bottom-right"
+                                 ng-click="ps.lightBox('{{ image.src | img_url: '2048x' }}')">
+                                <i class="icon link s-7 icon-fullscreen"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                {%- endfor -%}
+
+            </div>
+
+        </div>
+        <!-- / PRODUCT IMAGE CAROUSEL -->
+
+        {%- elsif product.images.size == 2 -%}
+
+        <div class="flex-items-center flex-items-top">
+
+            {%- for image in product.images -%}
+                <div class="img-wrapper p-relative col-6 p-0">
+                    <img class="img-fluid w-100"
+                         src="{{ image.src | img_url: '1024x' }}"
+                         srcset="
+                            {{ image.src | img_url: '100x' }} 100w,
+                            {{ image.src | img_url: '160x' }} 160w,
+                            {{ image.src | img_url: '240x' }} 240w,
+                            {{ image.src | img_url: '480x' }} 480w,
+                            {{ image.src | img_url: '600x' }} 600w,
+                            {{ image.src | img_url: '1024x' }} 1024w,
+                            "
+                         alt="{{ image.alt | escape }}">
+
+                    {% if section.settings.show_lightbox_button %}
+                        <div class="light-box-button p-2 align-bottom-right"
+                             ng-click="ps.lightBox('{{ image.src| img_url: '2048x' }}')">
+                            <i class="icon link s-7 icon-fullscreen"></i>
+                        </div>
+                    {% endif %}
+                </div>
+            {%- endfor -%}
+
+        </div>
+
+    {%- else -%}
+
+        <div class="flex-items-center flex-items-top">
+            <div class="img-wrapper p-relative col-6 p-0">
+                <img class="img-fluid w-100"
+                     src="{{ product.featured_image.src | img_url: '1024x' }}"
+                     srcset="
+                            {{ product.featured_image.src | img_url: '100x' }} 100w,
+                            {{ product.featured_image.src | img_url: '160x' }} 160w,
+                            {{ product.featured_image.src | img_url: '240x' }} 240w,
+                            {{ product.featured_image.src | img_url: '480x' }} 480w,
+                            {{ product.featured_image.src | img_url: '600x' }} 600w,
+                            {{ product.featured_image.src | img_url: '1024x' }} 1024w,
+                            "
+                     alt="{{ product.featured_image.alt | escape }}">
+                {% if section.settings.show_lightbox_button %}
+                    <div class="light-box-button p-2 align-bottom-right"
+                         ng-click="ps.lightBox('{{ product.featured_image.src | img_url: '2048x' }}')">
+                        <i class="icon link s-7 icon-fullscreen"></i>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+    {%- endif -%}
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {# @ CPT: Product Image Vertical with Zoom #}
+{%- endcomment -%}
+{%- capture 'product_image_vertical_with_zoom' -%}
+
+    <!-- PRODUCT IMAGE VERTICAL WITH ZOOM -->
+    <div class="product-image">
+
+        {%- if product.images.size >= 1 -%}
+
+            {%- for image in product.images -%}
+                <img class="img-fluid" src="{{ featured_image | img_url: '600x' }}"
+                     alt="{{ featured_image.alt | escape }}" ng-cloak
+                     wip-image-zoom="{ zoomLevel: 0,
+                       style:'{{ section.settings.img_zoom_style }}',
+                       lens:{{ section.settings.img_zoom_lens }},
+                       cursor:'{{ section.settings.img_zoom_cursor }}',
+                       thumbsPos:'{{ section.settings.img_zoom_thumbs_pos }}',
+                       thumbCol:{{ section.settings.img_zoom_thumb_col_count }},
+                       thumbColPadding:{{ section.settings.img_zoom_thumb_pad }},
+                       prevThumbButton: '<i class=\'icon icon-chevron-left text-light s-8\'></i>',
+                       nextThumbButton: '<i class=\'icon icon-chevron-right text-light s-8\'></i>',
+                       images: [
+                            {
+                                thumb : '{{ image.src | img_url: '200x' }}',
+                                medium: '{{ image.src | img_url: '600x' }}',
+                                large : '{{ image.src | img_url: '2048x' }}',
+                            }
+                        ]}">
+            {%- endfor -%}
+
+        {%- endif -%}
+
+    </div>
+    <!-- / PRODUCT IMAGE VERTICAL WITH ZOOM -->
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {# @ CPT: Product Title #}
+{%- endcomment -%}
+{%- capture 'product_title' -%}
+
+    <!-- PRODUCT TITLE -->
+    <h1 class="text-bold product-title">
+        {{ product.title }}
+    </h1>
+    <!-- / PRODUCT TITLE -->
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {# @ CPT: Product Price #}
+{%- endcomment -%}
+{%- capture 'product_price' -%}
+
+    <meta itemprop="url" content="{{ shop.url }}{{ current_variant.url }}">
+    <meta itemprop="priceCurrency" content="{{ shop.currency }}"/>
+    <meta itemprop="price"
+          content="{{ product.selected_or_first_available_variant.price | money_without_currency | remove: ',' }}"/>
+    <meta itemprop="itemCondition" itemtype="http://schema.org/OfferItemCondition"
+          content="http://schema.org/NewCondition"/>
+    {%- if product.selected_or_first_available_variant.available -%}
+        <link itemprop="availability" href="http://schema.org/InStock"/>
+    {%- else -%}
+        <link itemprop="availability" href="http://schema.org/OutOfStock"/>
+    {%- endif -%}
+
+    <!-- / PRODUCT PRICES -->
+    <div class="prices py-2" ng-show="ps.selectedVariant" ng-cloak>
+
+        <!-- / PRICE -->
+        <span class="price h2">
+            <span class="js-money" value="{[{ps.selectedVariant.price}]}">
+                {{ current_variant.price | money }}
+            </span>
+         </span>
+        <!-- / PRICE -->
+
+        <!-- SALE PRICE -->
+        <span class="sale-price text-light text-linethrough"
+              ng-show="ps.selectedVariant.compare_at_price > ps.selectedVariant.price"
+              ng-cloak>
+            <span class="js-money" value="{[{ps.selectedVariant.compare_at_price}]}">
+                {{ current_variant.compare_at_price | money }}
+            </span>
+         </span>
+        <!-- /SALE PRICE -->
+
+    </div>
+
+    <div class="h2 py-2 text-light" ng-show="!ps.selectedVariant" ng-cloak>
+        {{ 'products.product.unavailable' | t }}
+    </div>
+
+    <!-- / PRODUCT PRICES -->
+{%- endcapture -%}
+
+{%- comment -%}
+    {# @ CPT: Product Stars #}
+{%- endcomment -%}
+{%- capture 'product_stars' -%}
+    {%- if section.settings.show_star_rating -%}
+        <!-- PRODUCT STARS -->
+        <div class="product-stars" js-scroll-to="#product-blocks">
+            <span class="shopify-product-reviews-badge" data-id="{{ product.id }}"></span>
+        </div>
+        <!-- / PRODUCT STARS -->
+    {%- endif -%}
+{%- endcapture -%}
+
+{%- comment -%}
+    {# @ CPT: Product Form #}
+{%- endcomment -%}
+{%- capture 'product_form' -%}
+
+    <!-- CART FORM -->
+    <form class="cart-form" action="/cart/add" method="post" enctype="multipart/form-data" id="AddToCartForm">
+
+        <!-- VARIANTS SELECT -->
+        <div ng-if="ps.product.variants.length > 0 && ps.options[0].values[0] !== 'Default Title'"
+             class="variants {{ section.settings.product_option_select_style }}">
+            <div ng-repeat="option in ::ps.options" class="option" ng-cloak>
+
+                <label class="text-uppercase">
+                    {[{option.name}]}
+                </label>
+
+                <div>
+                    {%- case section.settings.product_option_select_style -%}
+                    {%- when 'swatch' -%}
+
+                        <button type="button" class="btn swatch"
+                                ng-repeat="value in ::option.values"
+                                tooltip-placement="top" tooltip-popup-delay="300"
+                                uib-tooltip="{[{value}]}"
+                                tooltip-enable="ps.isInSwatches(option.name) || ps.isInProductImageAsSwatches(option.name)"
+                            {% unless section.settings.show_unavailable_variant_options %}
+                                ng-show="ps.checkExist(option.name, value)"
+                            {% endunless %}
+                                ng-click="ps.selected.options[option.name] = value;ps.updateSelectedVariant()"
+                                ng-class="{'active':ps.selected.options[option.name] == value,'p-0 color': ps.isInSwatches(option.name) || ps.isInProductImageAsSwatches(option.name),'not-exist': !ps.checkExist(option.name, value)}">
+
+                    <span ng-if="!ps.isInSwatches(option.name) && !ps.isInProductImageAsSwatches(option.name)">
+                        {[{ value }]}
+                    </span>
+
+                            <div class="color-image-preview" ng-if="ps.isInSwatches(option.name)"
+                                 ng-style="{'background-color':ps.variantColor(value), 'background-image':ps.variantImage(value)}">
+                            </div>
+
+                            <div class="color-image-preview" ng-if="ps.isInProductImageAsSwatches(option.name)"
+                                 ng-style="{'background-image':ps.variantProductImage(value)}">
+                            </div>
+
+                        </button>
+
+                    {%- when 'select-box' -%}
+
+                        <select name="" id="" class="form-control custom-select"
+                                ng-model="ps.selected.options[option.name]"
+                                ng-change="ps.updateSelectedVariant()">
+
+                            <option
+                                {% unless section.settings.show_unavailable_variant_options %}
+                                    ng-show="ps.checkExist(option.name, value)"
+                                {% endunless %}
+                                value="{[{ value }]}"
+                                ng-repeat="value in ::option.values">{[{ value }]}
+                            </option>
+
+                        </select>
+
+                    {%- endcase -%}
+                </div>
+            </div>
+        </div>
+
+        <select name="id" class="form-control hidden" ng-model="ps.selectedVariantId">
+            {% for variant in product.variants %}
+                {% if variant.available %}
+                    <option value="{{ variant.id }}">
+                        {{ variant.title }}
+                    </option>
+                {% else %}
+                    <option disabled="disabled">{{ variant.title }} - {{ 'products.product.sold_out' | t }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+        <!-- / VARIANTS SELECT -->
+
+        {% unless product.template_suffix == "no-offers" %}
+            <div class="quantity-buttons-wrapper row pb-1" ng-show="ps.selectedVariant" ng-cloak>
+
+                <!-- QUANTITY -->
+                <div
+                    class="form-group col-12 flex-nogrow m-0 mb-6 quantity {% unless section.settings.show_quantity_selector %}hidden-always{% endunless %}">
+
+                    <label for="Quantity" class="text-uppercase">{{ 'products.product.quantity' | t }}</label>
+                    <js-number-input
+                        class="bordered {% if section.settings.product_option_select_style == 'select-box' %} match-to-form-controls{% endif %}"
+                        step="1"
+                        min="1"
+                        max="ps.selectedVariant.inventory_quantity"
+                        limit-max="ps.selectedVariant.inventory_management"
+                        input-id="Quantity"
+                        input-name="quantity"
+                        value="ps.selected.quantity"
+                        disabled="!ps.selectedVariant.available">
+                    </js-number-input>
+                </div>
+                <!-- / QUANTITY -->
+
+                <div class="buttons-wrapper col-12 mt-2">
+
+                    <!-- ADD TO CART BUTTON -->
+                    <button type="submit" name="add" id="AddToCart2" ng-cloak
+                            class="btn btn-primary cart-button text-uppercase px-4"
+                            ng-disabled="!ps.selectedVariant.available"
+                            js-add-to-cart>
+                <span ng-show="ps.selectedVariant.available"
+                      id="AddToCartText">
+                 {% if product.template_suffix == "pre-order" %}
+                     {{ 'products.product.pre_order' | t }}
+                 {% else %}
+                     {{ 'products.product.add_to_cart' | t }}
+                 {% endif %}
+                </span>
+                        <span ng-show="!ps.selectedVariant.available">{{ 'products.product.sold_out' | t }}</span>
+                    </button>
+                    <!-- / ADD TO CART BUTTON -->
+
+                    {%- if pages.wishlist != empty and settings.product_wishlist_disabled != true -%}
+                        <!-- WISHLIST BUTTON -->
+                        <button ng-cloak type="button" class="btn wishlist-button swatch mb-0"
+                                ng-click="ps.toggleWishlist($event)" ng-class="{'active': ps.checkInTheWishList()}"
+                                tooltip-placement="top" tooltip-popup-delay="300"
+                                uib-tooltip="{[{ps.checkInTheWishList()? '{{ 'products.product.remove_from_wishlist' | t }}' : '{{ 'products.product.add_to_wishlist' | t }}'}]}">
+                            <i ng-if="ps.checkInTheWishList()" class="icon-heart text-light s-3"></i>
+                            <i ng-if="!ps.checkInTheWishList()" class="icon-heart-outline text-light s-3"></i>
+                        </button>
+
+                        <button ng-cloak type="button" class="btn btn-link wishlist-text-button"
+                                ng-click="ps.toggleWishlist($event)">
+                            <i ng-if="ps.checkInTheWishList()" class="icon-heart text-light s-4 mr-1"></i>
+                            <span
+                                ng-if="ps.checkInTheWishList()">{{ 'products.product.remove_from_wishlist' | t }}</span>
+                            <i ng-if="!ps.checkInTheWishList()" class="icon-heart-outline text-light s-4 mr-1"></i>
+                            <span ng-if="!ps.checkInTheWishList()">{{ 'products.product.add_to_wishlist' | t }}</span>
+                        </button>
+                        <!-- / WISHLIST BUTTON -->
+                    {%- endif -%}
+
+                </div>
+
+            </div>
+        {% endunless %}
+
+    </form>
+    <!-- / CART FORM -->
+{%- endcapture -%}
+
+{%- comment -%}
+    {# @ CPT: Product Info #}
+{%- endcomment -%}
+{%- capture 'product_info' -%}
+
+    <div class="product-info">
+
+        {%- if section.settings.show_product_sku and current_variant.sku != blank -%}
+            <hr class="my-6 w-10">
+            {%- elsif section.settings.show_product_barcode and current_variant.barcode != blank -%}
+            <hr class="my-6 w-10">
+            {%- elsif section.settings.show_product_type and product.type != blank -%}
+            <hr class="my-6 w-10">
+            {%- elsif section.settings.show_product_vendor and product.vendor != blank -%}
+            <hr class="my-6 w-10">
+            {%- elsif section.settings.show_product_availability -%}
+            <hr class="my-6 w-10">
+        {%- endif -%}
+
+        {% unless product.template_suffix == "no-offers" %}
+            {%- if section.settings.show_product_availability -%}
+                <div class="product-availability my-2" ng-cloak>
+                    <label class="mb-0">{{ 'products.product.availability' | t }}:</label>
+                    <span class="text-light">
+                    <span
+                        ng-show="!ps.selectedVariant">{{ 'products.product.unavailable' | t }}</span>
+                    <span
+                        ng-show="(ps.selectedVariant &&  !ps.selectedVariant.inventory_management) || (ps.selectedVariant &&  ps.selectedVariant.inventory_management && ps.selectedVariant.available && ps.selectedVariant.inventory_quantity > 5)">{{ 'products.product.available' | t }}</span>
+                    <span
+                        ng-show="(ps.selectedVariant.inventory_management && ps.selectedVariant.available && ps.selectedVariant.inventory_quantity > 0 && ps.selectedVariant.inventory_quantity <= 5)">{{ 'products.product.only_few_left' | t }}</span>
+                    <span
+                        ng-show="(ps.selectedVariant.inventory_management && !ps.selectedVariant.available && ps.selectedVariant.inventory_quantity <= 0)">{{ 'products.product.out_of_stock' | t }}</span>
+                    <span
+                        ng-show="(ps.selectedVariant.inventory_management && ps.selectedVariant.available && ps.selectedVariant.inventory_quantity <= 0)">{{ 'products.product.pre_order' | t }}</span>
+                    </span>
+                </div>
+            {%- endif -%}
+        {% endunless %}
+
+        {%- if section.settings.show_product_sku -%}
+            <div class="product-sku my-2" ng-cloak ng-if="ps.selectedVariant.sku && ps.selectedVariant.sku !== ''">
+                <label class="mb-0">{{ 'products.product.sku' | t }}:</label>
+                <span class="text-light" ng-bind="ps.selectedVariant.sku">{{ current_variant.sku }}</span>
+            </div>
+        {%- endif -%}
+
+        {%- if section.settings.show_product_barcode -%}
+            <div class="product-barcode my-2" ng-cloak
+                 ng-if="ps.selectedVariant.barcode && ps.selectedVariant.barcode !== ''">
+                <label class="mb-0">{{ 'products.product.barcode' | t }}:</label>
+                <span class="text-light" ng-bind="ps.selectedVariant.barcode">{{ current_variant.barcode }}</span>
+            </div>
+        {%- endif -%}
+
+        {%- if section.settings.show_product_type and product.type != blank -%}
+            <div class="product-type my-2">
+                <label class="mb-0">{{ 'products.product.type' | t }}:</label>
+                <span class="text-light">{{ product.type | capitalize }}</span>
+            </div>
+        {%- endif -%}
+
+        {%- if section.settings.show_product_vendor and product.vendor != blank -%}
+            <div class="product-vendor my-2">
+                <label class="mb-0">{{ 'products.product.vendor' | t }}:</label>
+                <a class="text-light text-underline"
+                   href="/collections/vendors?q={{ product.vendor | handelize }}">{{ product.vendor }}</a>
+            </div>
+        {%- endif -%}
+
+    </div>
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {# @ CPT: Product Share #}
+{%- endcomment -%}
+{%- capture 'product_share' -%}
+    {%- if settings.social_sharing_products -%}
+        <!-- SOCIAL SHARING -->
+        <div class="product-share">
+            <hr class="my-6 w-10">
+
+            <div class="product-share-icons flex-items-middle flex-items-center flex-items-md-left my-2">
+                <label class="mb-0">Share:</label>
+                {%- include 'social-sharing' colorize: section.settings.colorize_social_sharing_buttons -%}
+            </div>
+        </div>
+        <!-- / SOCIAL SHARING -->
+    {%- endif -%}
+{%- endcapture -%}
+
+{%- comment -%}
+    {# @ CPT: Product Short Description #}
+{%- endcomment -%}
+{%- capture 'product_short_description' -%}
+
+    <!-- DESCRIPTION -->
+    <div class="description rte">
+
+        {%- case section.settings.product_description_excerpt -%}
+
+        {%- when 'no-excerpt' -%}
+            {{ description }}
+
+        {%- when 'auto-trim' -%}
+            {{ description | strip_html | truncatewords: 30 }}
+
+        {%- when 'meta-description' -%}
+            {{ product.metafields.global.description_tag }}
+
+        {%- endcase -%}
+
+    </div>
+    <!-- / DESCRIPTION -->
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {# @ CPT: Product Details Tabs #}
+{%- endcomment -%}
+{%- capture 'product_details_tabs' -%}
+
+    {%- if section.blocks.size > 0 -%}
+        <js-tabs id="product-blocks" class="product-tabs" ng-cloak>
+
+            {%- for block in section.blocks -%}
+
+                {%- case block.type -%}
+
+                {%- when 'description' -%}
+                    <js-tab title="{{ block.settings.title }}">
+                        {{ description }}
+                    </js-tab>
+
+                {%- when 'reviews' -%}
+                    <js-tab title="{{ block.settings.title }}">
+                        <div id="shopify-product-reviews" class="jasper-product-reviews"
+                             data-id="{{ product.id }}">{{ product.metafields.spr.reviews }}</div>
+                    </js-tab>
+
+                {%- when 'product_specific_tabs' -%}
+                    {{ product_tabs }}
+
+                {%- when 'product_tags' -%}
+                    <js-tab title="{{ block.settings.title }}">
+                        {%- for tag in product.tags -%}
+                            <a class="btn btn-bordered mr-1 mb-2"
+                               href="/collections/all/{{ tag | handle }}">{{ tag }}</a>
+                        {%- endfor -%}
+                    </js-tab>
+
+                {%- when 'custom' -%}
+                    <js-tab title="{{ block.settings.title }}">
+                        {{ block.settings.html }}
+                    </js-tab>
+
+                {%- endcase -%}
+
+            {%- endfor -%}
+        </js-tabs>
+    {%- endif -%}
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {# @ CPT: Product Details Accordion #}
+{%- endcomment -%}
+{%- capture 'product_details_accordion' -%}
+
+    {%- if section.blocks.size > 0 -%}
+
+        <uib-accordion id="product-blocks" class="product-accordion" close-others="true" ng-cloak>
+
+            {%- for block in section.blocks -%}
+
+                {%- case block.type -%}
+
+                {%- when 'description' -%}
+                    <div uib-accordion-group class="panel-default" heading="{{ block.settings.title }}" is-open="true">
+                        {{ description }}
+                    </div>
+
+                {%- when 'reviews' -%}
+                    <div uib-accordion-group class="panel-default" heading="{{ block.settings.title }}">
+                        <div id="shopify-product-reviews" class="jasper-product-reviews"
+                             data-id="{{ product.id }}">{{ product.metafields.spr.reviews }}</div>
+                    </div>
+
+                {%- when 'product_specific_tabs' -%}
+                    {{ product_accordion }}
+
+                {%- when 'product_tags' -%}
+                    <div uib-accordion-group class="panel-default" heading="{{ block.settings.title }}">
+                        {%- for tag in product.tags -%}
+                            <a class="btn btn-bordered mr-1 mb-2"
+                               href="/collections/all/{{ tag | handle }}">{{ tag }}</a>
+                        {%- endfor -%}
+                    </div>
+
+                {%- when 'custom' -%}
+                    <div uib-accordion-group class="panel-default" heading="{{ block.settings.title }}">
+                        {{ block.settings.html }}
+                    </div>
+
+                {%- endcase -%}
+
+            {%- endfor -%}
+
+        </uib-accordion>
+    {%- endif -%}
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {# @ CPT: Product Tabs or Accordion #}
+{%- endcomment -%}
+{%- capture 'product_details_tabs_or_accordion' -%}
+
+    {%- if section.settings.product_page_tab_style == 'tabs' -%}
+        {{ product_details_tabs }}
+    {%- else -%}
+        {{ product_details_accordion }}
+    {%- endif -%}
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {# @ CPT: Product Video Button #}
+{%- endcomment -%}
+{%- capture 'product_video_button' -%}
+    {% if video.dialog %}
+        <button type="button" class="btn btn-link px-0" ng-click="ps.videoDialog({{ video.dialog | json| escape }})">
+            <div class="flex-items-middle">
+                <i class="icon-video s-8 mr-1"></i>
+                <span class="h3 text-medium">{{ 'products.product.video' | t }}</span>
+            </div>
+        </button>
+    {% endif %}
+{%- endcapture -%}
+
+<!-- BEGIN PRODUCT ITEMSCOPE -->
+<div itemscope itemtype="http://schema.org/Product"
+     class="{{ product_style }} product-single product-main product-tab-{{ section.settings.product_page_tab_style }}"
+     js-product-single="{{ product | json | escape }}"
+     current-variant-id="{{ current_variant.id }}">
+    <meta itemprop="name"
+          content="{{ product.title | strip_html | escape }}{% unless current_variant.title == 'Default Title' %} - {{ current_variant.title }}{% endunless %}">
+    <meta itemprop="description" content="{{ description | strip_html  | escape }}">
+    <meta itemprop="image" content="{{ featured_image | img_url: '1024x' }}">
+    <meta itemprop="brand" content="{{ product.vendor }}">
+    <meta itemprop="productID" content="{{ product.id }}">
+
+    <!-- PRODUCT SINGLE -->
+    {%- case product_style -%}
+        {%- comment -%}
+            {# @ Product Style 1 #}
+        {%- endcomment -%}
+    {%- when 'style1' -%}
+
+        <div class="{{ content_width }}">
+
+            {{ page_header }}
+
+            <div class="row">
+
+                <div class="col-12 col-md-5 center-block images product-left">
+                    {{ product_image_zoom }}
+                    {{ product_video_button }}
+                </div>
+
+                <div class="col-12 col-md-7 product-right text-center text-md-left pl-md-20 pt-8 pt-md-0">
+                    {{ product_title }}
+
+                    <!-- PRODUCT OFFERS -->
+                    <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+
+                        {% unless product.template_suffix == "no-offers" %}
+                            {{ product_price }}
+                        {% endunless %}
+
+                        {{ product_stars }}
+
+                        {{ product_form }}
+
+                        {{ product_info }}
+                        {{ product_share }}
+
+                    </div>
+                    <!-- / PRODUCT OFFERS -->
+
+                </div>
+
+                <div class="product-bottom col-12 pt-14">
+                    {{ product_details_tabs_or_accordion }}
+                </div>
+
+            </div>
+
+        </div>
+
+        {%- comment -%}
+            {# @ Product Style 2 #}
+        {%- endcomment -%}
+    {%- when 'style2' -%}
+
+        <div class="{{ content_width }}">
+
+            {{ page_header }}
+
+            <div class="row" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+
+                <div class="col-12 col-md-4 center-block images product-left">
+                    {{ product_image_zoom }}
+                    {{ product_video_button }}
+                </div>
+
+                <div
+                    class="col-12 col-md-4 col-lg-5 product-center text-center text-md-left pl-md-6 pl-lg-12 pt-8 pt-md-0">
+                    {{ product_title }}
+                    {{ product_stars }}
+
+                    <div class="mt-4">
+                        {{ product_short_description }}
+                        {{ product_info }}
+                        {{ product_share }}
+                    </div>
+                </div>
+
+                <div
+                    class="product-right col-12 col-md-4 col-lg-3 flex-items-top flex-items-center mt-8 mt-md-0 pl-md-6 pl-lg-8">
+
+                    <!-- PRODUCT OFFERS -->
+                    <div class="product-form-box p-6 text-center">
+                        {% unless product.template_suffix == "no-offers" %}
+                            {{ product_price }}
+                            <hr class="my-6 w-10 mx-auto">
+                        {% endunless %}
+
+                        {{ product_form }}
+                    </div>
+                    <!-- / PRODUCT OFFERS -->
+
+                </div>
+
+                <div class="product-bottom col-12 pt-14">
+                    {{ product_details_tabs_or_accordion }}
+                </div>
+
+            </div>
+
+        </div>
+
+        {%- comment -%}
+            {# @ Product Style 3 #}
+        {%- endcomment -%}
+
+    {%- when 'style3' -%}
+
+        <div class="{{ content_width }}">
+
+            {{ page_header }}
+
+            <div class="row mb-0 mb-sm-8">
+
+                <div class="col-12 col-md-5 center-block images product-left">
+                    {{ product_image_zoom }}
+                    {{ product_video_button }}
+                </div>
+
+                <div class="col-12 col-md-7 product-right text-center text-md-left pl-md-20 pt-8 pt-md-0">
+                    {{ product_title }}
+
+                    <!-- PRODUCT OFFERS -->
+                    <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+
+                        {% unless product.template_suffix == "no-offers" %}
+                            {{ product_price }}
+                        {% endunless %}
+
+                        {{ product_stars }}
+
+                        {{ product_form }}
+
+                        {{ product_info }}
+
+                    </div>
+                    <!-- / PRODUCT OFFERS -->
+
+                    <div class="product-bottom py-6">
+                        <div class="text-left">
+                            {{ product_details_tabs_or_accordion }}
+                        </div>
+
+                        {{ product_share }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {%- comment -%}
+            {# @ Product Style 4 #}
+        {%- endcomment -%}
+    {%- when 'style4' -%}
+
+        <div class="{{ content_width }}">
+
+            {{ page_header }}
+
+            <div class="row mb-0 mb-sm-8">
+
+                <div class="col-12 col-md-8 col-lg-6 center-block images product-left">
+                    <div js-sticky js-sticky-options="{parent: '.row', mobile: 'md'}">
+                        {{ product_image_slide }}
+                        {{ product_video_button }}
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-6 product-right pl-lg-20 pt-8 pt-lg-0">
+
+                    <div class="text-center mb-8">
+
+                        {{ product_title }}
+                        {{ product_stars }}
+
+                        <!-- PRODUCT OFFERS -->
+                        <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+
+                            {% unless product.template_suffix == "no-offers" %}
+                                {{ product_price }}
+                                <hr class="w-12 mt-4 mb-6">
+                            {% endunless %}
+
+                            {{ product_description }}
+
+                            <div class="mt-8">
+                                {{ product_form }}
+                                {{ product_info }}
+                            </div>
+
+                        </div>
+                        <!-- / PRODUCT OFFERS -->
+
+                    </div>
+
+                    {{ product_details_tabs_or_accordion }}
+                    {{ product_share }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {%- comment -%}
+            {# @ Product Style 5 #}
+        {%- endcomment -%}
+    {%- when 'style5' -%}
+
+        <div class="{{ content_width }}">
+            <div class="row my-10">
+                <div class="col-12 text-center p-relative">
+                    <div class="flex-items-center">
+                        {{ page_header }}
+                    </div>
+                    {{ product_title }}
+                    {{ product_stars }}
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fullwidth">
+            <div class="row">
+                <div class="col-12">
+                    {{ product_image_carousel }}
+                </div>
+            </div>
+        </div>
+
+        <div class="{{ content_width }}">
+
+            <div class="row mb-13">
+
+                <div class="col-12">
+
+                    <div class="product-detail text-center">
+
+                        {{ product_video_button }}
+
+                        <!-- PRODUCT OFFERS -->
+                        <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+
+                            {% unless product.template_suffix == "no-offers" %}
+                                {{ product_price }}
+                                {{ product_sale_badge }}
+                                {{ product_new_badge }}
+
+                                <hr class="w-12 my-6">
+                            {% endunless %}
+
+                            {{ product_description }}
+
+                            <div class="mt-8">
+                                {{ product_form }}
+                                {{ product_info }}
+                            </div>
+
+                        </div>
+                        <!-- / PRODUCT OFFERS -->
+
+                    </div>
+
+                    <div class="pt-10">
+                        {{ product_details_tabs_or_accordion }}
+                    </div>
+
+                    {{ product_share }}
+                </div>
+
+            </div>
+
+        </div>
+
+        {%- comment -%}
+            {# @ Product Style 6 #}
+        {%- endcomment -%}
+    {%- when 'style6' -%}
+
+        {%- include 'util-color-brightness' color: settings.color_secondary_bg, append: '-bg' -%}
+
+        <div class="product-page-top secondary-bg">
+
+            <div class="{{ content_width }}">
+
+                {{ page_header }}
+
+                <div class="row">
+
+                    <div class="col-12 col-md-8 col-lg-6 product-left center-block images">
+                        {{ product_image_slide }}
+                        {{ product_video_button }}
+                    </div>
+
+                    <div class="col-12 col-md-8 col-lg-6 product-right center-block pl-lg-12 pt-12 pt-lg-0">
+
+                        <div class="product-info-wrapper text-center mb-8 p-8 p-md-12 {{ color_brightness }}">
+
+                            {{ product_title }}
+                            {{ product_stars }}
+
+                            <!-- PRODUCT OFFERS -->
+                            <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+
+                                {% unless product.template_suffix == "no-offers" %}
+                                    {{ product_price }}
+                                    <hr class="w-12 mt-4 mb-6">
+                                {% endunless %}
+
+                                {{ product_description }}
+
+                                <div class="mt-8">
+                                    {{ product_form }}
+
+                                    {{ product_info }}
+                                </div>
+
+                            </div>
+                            <!-- / PRODUCT OFFERS -->
+
+                            {{ product_share }}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="{{ content_width }} product-page-bottom">
+
+            <div class="row">
+
+                <div class="col-12">
+                    {{ product_details_tabs_or_accordion }}
+                </div>
+
+            </div>
+
+        </div>
+
+        {%- comment -%}
+            {# @ Product Style 7 #}
+        {%- endcomment -%}
+
+    {%- when 'style7' -%}
+
+        <div class="{{ content_width }}">
+
+            {{ page_header }}
+
+            <div class="row mb-0 mb-sm-8">
+
+                <div class="col-12 col-md-5 center-block images product-left">
+                    {{ product_image_vertical_with_zoom }}
+                    {{ product_video_button }}
+                </div>
+
+                <div class="col-12 col-md-7 product-right text-center text-md-left pl-md-20 pt-8 pt-md-0">
+
+                    <div js-sticky js-sticky-options="{parent: '.row', mobile: 'sm'}">
+
+                        {{ product_title }}
+
+                        <!-- PRODUCT OFFERS -->
+                        <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+
+                            {% unless product.template_suffix == "no-offers" %}
+                                <div class="flex-items-middle flex-items-center flex-items-md-left">
+                                    {{ product_sale_badge }}
+                                    {{ product_new_badge }}
+                                    {{ product_price }}
+                                </div>
+                            {% endunless %}
+
+                            {{ product_stars }}
+
+                            {{ product_form }}
+
+                            {{ product_info }}
+
+                        </div>
+                        <!-- / PRODUCT OFFERS -->
+
+                        <div class="product-bottom pt-6">
+                            <div class="text-left">
+                                {{ product_details_tabs_or_accordion }}
+                            </div>
+
+                            {{ product_share }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    {%- endcase -%}
+    <!-- / PRODUCT SINGLE -->
+
+</div>
+<!-- END PRODUCT ITEMSCOPE -->
+
+<script type="application/json">
+    /*"*/{% schema %}/*"*/
+    {
+        "name": "Product Detail",
+        "settings": [
+            {
+                "type": "header",
+                "content": "General"
+            },
+            {
+                "type": "checkbox",
+                "id": "show_breadcrumb",
+                "label": "Show breadcrumb",
+                "default": true
+            },
+            {
+                "type": "checkbox",
+                "id": "show_previous_next_product_links",
+                "label": "Show previous/next product links",
+                "default": true
+            },
+            {
+                "type": "checkbox",
+                "id": "show_unavailable_variant_options",
+                "label": "Show unavailable variant options",
+                "default": false
+            },
+            {
+                "type": "select",
+                "id": "product_page_style",
+                "label": "Product page style",
+                "options": [
+                    {
+                        "value": "style1",
+                        "label": "Style 1"
+                    },
+                    {
+                        "value": "style2",
+                        "label": "Style 2"
+                    },
+                    {
+                        "value": "style3",
+                        "label": "Style 3"
+                    },
+                    {
+                        "value": "style4",
+                        "label": "Style 4"
+                    },
+                    {
+                        "value": "style5",
+                        "label": "Style 5"
+                    },
+                    {
+                        "value": "style6",
+                        "label": "Style 6"
+                    },
+                    {
+                        "value": "style7",
+                        "label": "Style 7"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "product_previous_next_links_style",
+                "label": "Previous/next product links style",
+                "options": [
+                    {
+                        "value": "arrows-only",
+                        "label": "Arrows only"
+                    },
+                    {
+                        "value": "product-titles-arrows",
+                        "label": "Product titles & arrows"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "product_sale_badge_style",
+                "label": "Sale badge style",
+                "options": [
+                    {
+                        "value": "text",
+                        "label": "\"Sale\" text"
+                    },
+                    {
+                        "value": "percentage",
+                        "label": "Discount percentage"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "product_option_select_style",
+                "label": "Options selection style",
+                "default": "swatch",
+                "options": [
+                    {
+                        "value": "swatch",
+                        "label": "Swatch"
+                    },
+                    {
+                        "value": "select-box",
+                        "label": "Select box"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "product_page_tab_style",
+                "label": "Product page tab style",
+                "options": [
+                    {
+                        "value": "tabs",
+                        "label": "Tabs"
+                    },
+                    {
+                        "value": "accordion",
+                        "label": "Accordion"
+                    }
+                ]
+            },
+            {
+                "type": "header",
+                "content": "Product short description"
+            },
+            {
+                "type": "select",
+                "id": "product_description_excerpt",
+                "label": "Description excerpt",
+                "default": "no-excerpt",
+                "options": [
+                    {
+                        "value": "no-excerpt",
+                        "label": "No excerpt"
+                    },
+                    {
+                        "value": "auto-trim",
+                        "label": "Trim automatically"
+                    },
+                    {
+                        "value": "meta-description",
+                        "label": "Use Meta Description field"
+                    }
+                ]
+            },
+            {
+                "type": "paragraph",
+                "content": "Description excerpt allows you to specify a smaller version of the description to show."
+            },
+            {
+                "type": "paragraph",
+                "content": "Note: If you use styling in your descriptions (bold texts, colors etc.) 'Trim automatically' option will remove them to prevent product layout to be breaking!"
+            },
+            {
+                "type": "header",
+                "content": "Product page elements"
+            },
+            {
+                "type": "checkbox",
+                "id": "show_star_rating",
+                "label": "Show star rating",
+                "default": true
+            },
+            {
+                "type": "paragraph",
+                "content": "This option requires [Product Reviews App](https://apps.shopify.com/product-reviews)"
+            },
+            {
+                "type": "checkbox",
+                "id": "show_quantity_selector",
+                "label": "Show quantity selector",
+                "default": true
+            },
+            {
+                "type": "checkbox",
+                "id": "show_product_availability",
+                "label": "Show product availability",
+                "default": true
+            },
+            {
+                "type": "checkbox",
+                "id": "show_product_sku",
+                "label": "Show product SKU",
+                "default": true
+            },
+            {
+                "type": "checkbox",
+                "id": "show_product_barcode",
+                "label": "Show product barcode",
+                "default": true
+            },
+            {
+                "type": "checkbox",
+                "id": "show_product_type",
+                "label": "Show product type",
+                "default": true
+            },
+            {
+                "type": "checkbox",
+                "id": "show_product_vendor",
+                "label": "Show product vendor",
+                "default": true
+            },
+            {
+                "type": "paragraph",
+                "content": "To change the visibility of the sharing buttons, see General Settings > Social Media"
+            },
+            {
+                "type": "checkbox",
+                "id": "colorize_social_sharing_buttons",
+                "label": "Use colored social sharing buttons",
+                "default": false
+            },
+            {
+                "type": "checkbox",
+                "id": "show_lightbox_button",
+                "label": "Show lightbox button for product images",
+                "default": true,
+                "info": "Only available for products page style 4,5,6"
+            },
+            {
+                "type": "header",
+                "content": "Image Zoom"
+            },
+            {
+                "type": "checkbox",
+                "id": "img_zoom_disable",
+                "label": "Disable Zoom",
+                "default": false
+            },
+            {
+                "type": "select",
+                "id": "img_zoom_style",
+                "label": "Zoom style",
+                "default": "inner",
+                "options": [
+                    {
+                        "value": "inner",
+                        "label": "Inner"
+                    },
+                    {
+                        "value": "box",
+                        "label": "Box"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "img_zoom_thumbs_pos",
+                "label": "Thumb position",
+                "default": "bottom",
+                "options": [
+                    {
+                        "value": "bottom",
+                        "label": "Bottom"
+                    },
+                    {
+                        "value": "top",
+                        "label": "Top"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "img_zoom_thumb_col_count",
+                "label": "Thumb count",
+                "default": "4",
+                "options": [
+                    {
+                        "value": "6",
+                        "label": "6"
+                    },
+                    {
+                        "value": "5",
+                        "label": "5"
+                    },
+                    {
+                        "value": "4",
+                        "label": "4"
+                    },
+                    {
+                        "value": "3",
+                        "label": "3"
+                    },
+                    {
+                        "value": "2",
+                        "label": "2"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "img_zoom_thumb_pad",
+                "label": "Thumb padding (px)",
+                "default": "4",
+                "options": [
+                    {
+                        "value": "8",
+                        "label": "8"
+                    },
+                    {
+                        "value": "6",
+                        "label": "6"
+                    },
+                    {
+                        "value": "4",
+                        "label": "4"
+                    },
+                    {
+                        "value": "2",
+                        "label": "2"
+                    },
+                    {
+                        "value": "0",
+                        "label": "0"
+                    }
+                ]
+            },
+            {
+                "type": "select",
+                "id": "img_zoom_cursor",
+                "label": "Zoom cursor",
+                "default": "crosshair",
+                "options": [
+                    {
+                        "value": "none",
+                        "label": "None"
+                    },
+                    {
+                        "value": "default",
+                        "label": "Default"
+                    },
+                    {
+                        "value": "crosshair",
+                        "label": "Crosshair"
+                    },
+                    {
+                        "value": "pointer",
+                        "label": "Pointer"
+                    },
+                    {
+                        "value": "move",
+                        "label": "Move"
+                    },
+                    {
+                        "value": "zoom-in",
+                        "label": "Zoom in"
+                    }
+                ]
+            },
+            {
+                "type": "checkbox",
+                "id": "img_zoom_lens",
+                "label": "Show zoom lens",
+                "default": true
+            },
+            {
+                "type": "text",
+                "id": "img_zoom_immersive_mode",
+                "label": "Mobile mode max width(px)",
+                "default": "769",
+                "info": "Give 0 to disable"
+            }
+        ],
+        "blocks": [
+            {
+                "type": "description",
+                "name": "Description",
+                "settings": [
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Tab title",
+                        "default": "Description"
+                    }
+                ]
+            },
+            {
+                "type": "reviews",
+                "name": "Reviews",
+                "settings": [
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Tab title",
+                        "default": "Reviews"
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": "This block requires [Product Reviews App](https://apps.shopify.com/product-reviews)"
+                    }
+                ]
+            },
+            {
+                "type": "product_specific_tabs",
+                "name": "Product specific tabs",
+                "settings": [
+                ]
+            },
+            {
+                "type": "product_tags",
+                "name": "Product tags",
+                "settings": [
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Tab title",
+                        "default": "Tags"
+                    }
+                ]
+            },
+            {
+                "type": "custom",
+                "name": "Custom",
+                "settings": [
+                    {
+                        "type": "text",
+                        "id": "title",
+                        "label": "Tab title",
+                        "default": "Custom Tab"
+                    },
+                    {
+                        "type": "textarea",
+                        "id": "html",
+                        "label": "HTML"
+                    }
+                ]
+            }
+        ],
+        "default": {
+            "settings": {},
+            "blocks": [
+                {
+                    "type": "description",
+                    "settings": {}
+                },
+                {
+                    "type": "reviews",
+                    "settings": {}
+                },
+                {
+                    "type": "product_tags",
+                    "settings": {}
+                },
+                {
+                    "type": "product_specific_tabs",
+                    "settings": {}
+                },
+                {
+                    "type": "custom",
+                    "settings": {
+                        "title": "Sizes",
+                        "html": "<table class='table'> <thead> <tr> <th> S-M-L </th> <th> USA </th> <th> UK/AU/NZ</th> <th> Italy </th> <th> France </th> <th> Germany</th> <th> Japan </th> <th> Russia </th> </tr> </thead> <tbody> <tr class='odd'> <td>S</td> <td>2</td> <td>6</td> <td>38</td> <td>34</td> <td>32</td> <td>7</td> <td>40</td> </tr> <tr class='even'> <td>S</td> <td>4</td> <td>8</td> <td>40</td> <td>36</td> <td>34</td> <td>9</td> <td>42</td> </tr> <tr class='odd'> <td>M</td> <td>6</td> <td>10</td> <td>42</td> <td>38</td> <td>36</td> <td>11</td> <td>44</td> </tr> <tr class='even'> <td>M</td> <td>8</td> <td>12</td> <td>44</td> <td>40</td> <td>38</td> <td>13</td> <td>46</td> </tr> <tr class='odd'> <td>L</td> <td>10</td> <td>14</td> <td>46</td> <td>42</td> <td>40</td> <td>15</td> <td>48</td> </tr> <tr class='even'> <td>L</td> <td>12</td> <td>16</td> <td>48</td> <td>44</td> <td>42</td> <td>17</td> <td>50</td> </tr> <tr class='odd'> <td>XL / 1X</td> <td>14</td> <td>18</td> <td>50</td> <td>46</td> <td>44</td> <td>19</td> <td>52</td> </tr> <tr class='even'> <td>1X / 2X</td> <td>16</td> <td>20</td> <td>52</td> <td>48</td> <td>46</td> <td>21</td> <td>54</td> </tr> <tr class='odd'> <td>2X</td> <td>18</td> <td>22</td> <td>54</td> <td>50</td> <td>48</td> <td>23</td> <td>56</td> </tr> <tr class='even'> <td>3X</td> <td>20</td> <td>24</td> <td>56</td> <td>52</td> <td>50</td> <td>25</td> <td>24</td> </tr> <tr class='odd'> <td>3X</td> <td>22</td> <td>26</td> <td>58</td> <td>54</td> <td>52</td> <td>27</td> <td>26</td> </tr> <tr class='even'> <td>4X</td> <td>24</td> <td>28</td> <td>60</td> <td>56</td> <td>54</td> <td>29</td> <td>28</td> </tr> </tbody> </table>"
+                    }
+                }
+            ]
+        }
+    }
+    /*"*/{% endschema %}/*"*/
+</script>

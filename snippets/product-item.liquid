@@ -1,0 +1,857 @@
+{%- assign item_style = style | default: settings.product_style -%}
+{%- assign item_sale_badge_style = sale_badge_style | default: settings.product_sale_badge_style -%}
+{%- assign item_hover_buttons_style = hover_buttons_style | default: settings.product_hover_buttons_style -%}
+{%- assign item_hover_background = hover_bg | default: settings.product_hover_background -%}
+{%- assign item_show_star_rating = show_star_rating | default: settings.product_show_star_rating -%}
+
+{%- assign item_image_size = image_size | default: '1024x' -%}
+
+{%- assign current_variant = product.selected_or_first_available_variant -%}
+{%- assign on_sale = false -%}
+
+{%- assign sale_percentage = 0 -%}
+
+{%- for variant in product.variants -%}
+    {%- assign test_sale_percentage = variant.compare_at_price | minus: variant.price | times: 100 | divided_by: variant.compare_at_price | floor -%}
+    {%- if test_sale_percentage > sale_percentage -%}
+        {%- assign sale_percentage = test_sale_percentage -%}
+    {%- endif -%}
+{%- endfor -%}
+
+{%- if sale_percentage > 0 -%}
+    {%- assign on_sale = true -%}
+{%- endif -%}
+
+{%- assign sold_out = true -%}
+{%- if product.available -%}
+    {%- assign sold_out = false -%}
+{%- endif -%}
+{%- comment -%}
+    {#@ CPT: Product Badges #}
+{%- endcomment -%}
+{%- capture product_badges -%}
+
+    {%- unless product.empty? or product.template_suffix == "no-offers" -%}
+
+        {%- if on_sale -%}
+
+            <!-- SALE BADGE-->
+            <span class="badge-sale tag tag-primary">
+            {%- if item_sale_badge_style == 'percentage' -%}
+                <span>-{{ sale_percentage }}%</span>
+            {%- endif -%}
+
+                {%- if item_sale_badge_style == 'text' -%}
+                    <span class="badge-text">{{ 'products.product.sale' | t }}</span>
+                {%- endif -%}
+        </span>
+            <!-- / SALE BADGE-->
+
+        {%- endif -%}
+
+        {%- include "util-product-is-new" -%}
+        {%- if settings.product_new_badge_enabled and is_new -%}
+            <!-- NEW BADGE-->
+            <span class="badge-new tag tag-default">
+             <span class="badge-text">{{ 'products.product.new' | t }}</span>
+        </span>
+            <!-- / NEW BADGE-->
+        {%- endif -%}
+
+        {%- if sold_out -%}
+            <!-- SOLD OUT BADGE-->
+            <span class="badge-sold-out tag align-middle-center p-3">
+        <span class="badge-text">{{ 'products.product.sold_out' | t }}</span>
+    </span>
+            <!-- / SOLD OUT BADGE-->
+        {%- endif -%}
+    {%- endunless -%}
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Product Image #}
+{%- endcomment -%}
+{%- capture product_image -%}
+
+    <!-- PRODUCT IMAGE -->
+    <div class="image-wrapper">
+        {%- if product.empty? -%}
+
+            {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+            <a href="#">
+                {{ 'product-' | append: current | placeholder_svg_tag: 'product-image img-fluid' }}
+            </a>
+
+        {%- else -%}
+
+            <a href="{{ product.url | within: collection }}">
+                <img class="product-image img-fluid {% if sold_out %}sold-out{% endif %}"
+                     src="{{ product.featured_image.src | img_url: item_image_size, crop: settings.product_image_crop }}"
+                     srcset="{{ product.featured_image.src | img_url: item_image_size, crop: settings.product_image_crop }} 1x,
+                         {{ product.featured_image.src | img_url: item_image_size, scale:2 , crop: settings.product_image_crop }} 2x"
+                     alt="{{ product.featured_image.alt | escape }}">
+            </a>
+
+        {%- endif -%}
+    </div>
+    <!-- / PRODUCT IMAGE -->
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Product Image With Hover #}
+{%- endcomment -%}
+{%- capture product_image_with_hover -%}
+
+    <!-- PRODUCT IMAGE -->
+    <div class="image-wrapper">
+        {%- if product.empty? -%}
+
+            {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+            <a href="#">
+                {{ 'product-' | append: current | placeholder_svg_tag: 'product-image img-fluid' }}
+            </a>
+
+        {%- else -%}
+
+            <a href="{{ product.url | within: collection }}">
+
+                {%- if product.images.size > 1 -%}
+
+                    <img class="product-image listen-hover img-fluid {% if sold_out %}sold-out{% endif %}"
+                         src="{{ product.images[0].src | img_url: item_image_size, crop: settings.product_image_crop }}"
+                         srcset="{{ product.images[0].src | img_url: item_image_size, crop: settings.product_image_crop }} 1x,
+                         {{ product.images[0].src | img_url: item_image_size, scale:2 , crop: settings.product_image_crop }} 2x"
+                         alt="{{ product.images[0].alt | escape }}">
+
+                    <img class="product-image listen-hover img-fluid {% if sold_out %}sold-out{% endif %}"
+                         src="{{ product.images[1].src | img_url: item_image_size, crop: settings.product_image_crop }}"
+                         srcset="{{ product.images[1].src | img_url: item_image_size, crop: settings.product_image_crop }} 1x,
+                         {{ product.images[1].src | img_url: item_image_size, scale:2 , crop: settings.product_image_crop }} 2x"
+                         alt="{{ product.images[1].alt | escape }}">
+
+                {%- else -%}
+                    <img class="product-image img-fluid {% if sold_out %}sold-out{% endif %}"
+                         src="{{ product.featured_image.src | img_url: item_image_size, crop: settings.product_image_crop }}"
+                         srcset="{{ product.featured_image.src | img_url: item_image_size, crop: settings.product_image_crop }} 1x,
+                         {{ product.featured_image.src | img_url: item_image_size, scale:2 , crop: settings.product_image_crop }} 2x"
+                         alt="{{ product.featured_image.alt | escape }}">
+                {%- endif -%}
+            </a>
+
+        {%- endif -%}
+    </div>
+    <!-- / PRODUCT IMAGE -->
+
+{%- endcapture -%}
+
+
+{%- comment -%}
+    {#@ CPT: Product Image Slider #}
+{%- endcomment -%}
+{%- capture product_image_slider -%}
+
+    <!-- PRODUCT IMAGE SLIDER -->
+    <div class="image-wrapper">
+        {%- if product.empty? -%}
+
+            {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+            <a href="#">
+                {{ 'product-' | append: current | placeholder_svg_tag: 'product-image img-fluid' }}
+            </a>
+
+        {%- else -%}
+
+            {%- if product.images.size > 1 -%}
+
+                <!-- PRODUCT IMAGE SLIDE -->
+                {{ product_sale_badge }}
+                {{ product_new_badge }}
+
+                <slick class="product-image-slider arrows-light-rectangle" settings="ps.slickConfig">
+                    {%- for image in product.images -%}
+                        <a class="W-100" href="{{ product.url | within: collection }}">
+                            {% if forloop.first == true %}
+                                <img class="product-image img-fluid w-100 {% if sold_out %}sold-out{% endif %}"
+                                     src="{{ image.src | img_url: item_image_size, crop: settings.product_image_crop }}"
+                                     srcset="{{ image.src | img_url: item_image_size, crop: settings.product_image_crop }} 1x,
+                                    {{ image.src | img_url: item_image_size, scale:2 , crop: settings.product_image_crop }} 2x"
+                                     alt="{{ image.alt | escape }}">
+                            {% else %}
+                                <img class="product-image img-fluid w-100 {% if sold_out %}sold-out{% endif %}"
+                                     data-lazy="{{ image.src | img_url: item_image_size, crop: settings.product_image_crop }}"
+                                     data-srcset="{{ image.src | img_url: item_image_size, crop: settings.product_image_crop }} 1x,
+                                    {{ image.src | img_url: item_image_size, scale:2 , crop: settings.product_image_crop }} 2x"
+                                     alt="{{ image.alt | escape }}">
+                            {% endif %}
+                        </a>
+                    {%- endfor -%}
+                </slick>
+                <!-- / PRODUCT IMAGE SLIDE  -->
+
+            {%- else -%}
+                <a href="{{ product.url | within: collection }}">
+                    <img class="product-image w-100 img-fluid {% if sold_out %}sold-out{% endif %}"
+                         src="{{ product.featured_image.src | img_url: item_image_size, crop: settings.product_image_crop }}"
+                         srcset="{{ product.featured_image.src | img_url: item_image_size, crop: settings.product_image_crop }} 1x,
+                         {{ product.featured_image.src | img_url: item_image_size, scale:2 , crop: settings.product_image_crop }} 2x"
+                         alt="{{ product.featured_image.alt | escape }}">
+                </a>
+            {%- endif -%}
+
+        {%- endif -%}
+    </div>
+    <!-- / PRODUCT IMAGE SLIDER -->
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Product Title #}
+{%- endcomment -%}
+{%- capture product_title -%}
+
+    <!-- PRODUCT TITLE -->
+    {%- if product.empty? -%}
+        <a href="#" class="product-title pt-4 mb-1 text-medium text-center">
+            {{ 'home_page.onboarding.product_title' | t }}
+        </a>
+    {%- else -%}
+        <a href="{{ product.url | within: collection }}" class="product-title mt-4 mb-1 text-medium text-center">
+            {{ product.title }}
+        </a>
+    {%- endif -%}
+    <!-- / PRODUCT TITLE -->
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Product Price #}
+{%- endcomment -%}
+{%- capture product_price -%}
+
+    {%- unless product.empty? -%}
+
+        <!-- PRODUCT PRICE -->
+        <div class="product-price text-light flex-items-center flex-items-middle pb-3">
+            {%- unless product.template_suffix == "no-offers" -%}
+                {% capture price %}{{ product.price | money }}{% endcapture %}
+                {%- if product.price_varies -%}
+                    <div class="price {% if on_sale %} text-danger{% endif %}">
+                        {{ 'products.general.from_html' | t: price: price, priceRaw: product.price }}
+                    </div>
+                {%- else -%}
+                    <div class="price js-money {% if on_sale %} text-danger{% endif %}" value="{{ product.price }}">
+                        {{ price }}
+                    </div>
+                {%- endif -%}
+
+                {%- if on_sale -%}
+                    <div class="js-money sale-price pl-1 text-linethrough" value="{{ product.compare_at_price }}">
+                        {{ product.compare_at_price | money }}
+                    </div>
+                {%- endif -%}
+            {%- endunless -%}
+        </div>
+        <!-- / PRODUCT PRICE -->
+
+    {%- endunless -%}
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Product Stars #}
+{%- endcomment -%}
+{%- capture product_stars -%}
+
+    {%- unless product.empty? -%}
+        {%- if item_show_star_rating == 'show' -%}
+            <!-- PRODUCT STARS -->
+            <div class="product-stars">
+                <span class="shopify-product-reviews-badge" data-id="{{ product.id }}"></span>
+            </div>
+            <!-- / PRODUCT STARS -->
+        {%- endif -%}
+    {%- endunless -%}
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Product Vendor #}
+{%- endcomment -%}
+{%- capture product_vendor -%}
+
+    {%- unless product.empty? -%}
+
+        <!-- PRODUCT VENDOR -->
+        <div class="product-vendor pb-2">
+            {{ product.vendor }}
+        </div>
+        <!-- / PRODUCT VENDOR -->
+
+    {%- endunless -%}
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Product Description #}
+{%- endcomment -%}
+{%- capture product_description -%}
+
+    {%- include 'util-parse-product-tabs-description' -%}
+
+    <div class="product-description pt-6">
+        {{ description | strip_html | truncatewords: 50 }}
+    </div>
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Text Action Button - Quickview #}
+{%- endcomment -%}
+{%- capture text_action_button_quickview -%}
+    {%- unless settings.product_quickview_disabled -%}
+        <div class="col-12 flex-items-center">
+            <button class="btn btn-bordered quick-view-button"
+                    ng-click="ps.quickView($event)">{{ 'products.product.quick_view' | t | upcase }}</button>
+        </div>
+    {%- endunless -%}
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Text Action Button - Wishlist #}
+{%- endcomment -%}
+{%- capture text_action_button_wishlist -%}
+
+    {%- if pages.wishlist != empty and settings.product_wishlist_disabled != true -%}
+        <div class="col-12 flex-items-center">
+            <button class="btn btn-bordered add-to-wishlist-button mt-2 flex-items-center"
+                    ng-click="ps.toggleWishlist($event)">
+            <span ng-if="!ps.checkInTheWishList()" class="flex-items-middle">
+                <i class="icon-heart-outline s-4 mr-1"></i>
+                <span>{{ 'products.product.wishlist' | t | upcase }}</span>
+            </span>
+                <span ng-if="ps.checkInTheWishList()" class="flex-items-middle">
+                <i class="icon-heart s-4 mr-1"></i>
+                <span>{{ 'products.product.wishlist' | t | upcase }}</span>
+            </span>
+            </button>
+        </div>
+    {%- endif -%}
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Text Action Button - Cart #}
+{%- endcomment -%}
+{%- capture text_action_button_cart -%}
+
+    <div class="add-to-cart-button-wrapper col-12 flex-items-center">
+
+        {%- if sold_out or product.template_suffix == "no-offers" -%}
+
+            <a href="{{ product.url | within: collection }}"
+               class="btn btn-bordered btn-primary select-options-button mt-2 hover-primary-bg flex-items-center flex-items-middle">
+                {{ 'products.product.view_product' | t | upcase }}
+            </a>
+
+        {%- else -%}
+
+            {%- if product.variants.size > 1 -%}
+
+                <a href="{{ product.url | within: collection }}"
+                   class="btn btn-bordered btn-primary select-options-button mt-2 hover-primary-bg flex-items-center flex-items-middle">
+                    {{ 'products.product.select_options' | t | upcase }}
+                </a>
+
+            {%- else -%}
+
+                <button type="submit" class="btn btn-bordered btn-primary add-to-cart-button mt-2 hover-primary-bg"
+                        ng-click="ps.addToCart($event)">
+                    {% if product.template_suffix == "pre-order" %}
+                        {{ 'products.product.pre_order' | t | upcase }}
+                    {% else %}
+                        {{ 'products.product.add_to_cart' | t | upcase }}
+                    {% endif %}
+                </button>
+
+            {%- endif -%}
+
+        {%- endif -%}
+
+    </div>
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Text Action Buttons #}
+{%- endcomment -%}
+{%- capture text_action_buttons -%}
+
+    {%- unless product.empty? -%}
+        {{ text_action_button_quickview }}
+        {{ text_action_button_wishlist }}
+        {{ text_action_button_cart }}
+    {%- endunless -%}
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Icon Action Button - Quickview #}
+{%- endcomment -%}
+{%- capture icon_action_button_quickview -%}
+
+    {%- unless settings.product_quickview_disabled -%}
+        <button class="btn btn-bordered quick-view-button icon-button" ng-click="ps.quickView($event)">
+            <i class="icon-magnify s-4" uib-tooltip="{{ 'products.product.quick_view' | t }}" tooltip-popup-delay="300"
+               tooltip-append-to-body="true"></i>
+        </button>
+    {%- endunless -%}
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Icon Action Button - Wishlist #}
+{%- endcomment -%}
+{%- capture icon_action_button_wishlist -%}
+
+    {%- if pages.wishlist != empty and settings.product_wishlist_disabled != true -%}
+        <button class="btn btn-bordered add-to-wishlist-button icon-button"
+                ng-click="ps.toggleWishlist($event)">
+            <i ng-if="ps.checkInTheWishList()" class="icon-heart s-4"
+               uib-tooltip="{{ 'products.product.remove_from_wishlist' | t }}"
+               tooltip-popup-delay="300" tooltip-append-to-body="true"></i>
+
+            <i ng-if="!ps.checkInTheWishList()" class="icon-heart-outline s-4"
+               uib-tooltip="{{ 'products.product.add_to_wishlist' | t }}"
+               tooltip-popup-delay="300" tooltip-append-to-body="true"></i>
+        </button>
+    {%- endif -%}
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Icon Action Button - Cart #}
+{%- endcomment -%}
+{%- capture icon_action_button_cart -%}
+
+    {%- unless sold_out or product.template_suffix == "no-offers" -%}
+
+        {%- if product.variants.size > 1 -%}
+
+            <a href="{{ product.url | within: collection }}"
+               class="btn btn-bordered select-options-button icon-button hover-primary-bg">
+                <i class="icon-shopping s-4" uib-tooltip="{{ 'products.product.select_options' | t }}"
+                   tooltip-popup-delay="300" tooltip-append-to-body="true"></i>
+            </a>
+
+        {%- else -%}
+
+            <button type="submit" class="btn btn-bordered add-to-cart-button icon-button hover-primary-bg"
+                    ng-click="ps.addToCart($event)">
+                <i class="icon-shopping s-4" uib-tooltip="{{ 'products.product.add_to_cart' | t }}"
+                   tooltip-popup-delay="300" tooltip-append-to-body="true"></i>
+            </button>
+
+        {%- endif -%}
+
+    {%- endunless -%}
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Icon Action Buttons #}
+{%- endcomment -%}
+{%- capture icon_action_buttons -%}
+
+    {%- unless product.empty? -%}
+        {{ icon_action_button_quickview }}
+        {{ icon_action_button_wishlist }}
+        {{ icon_action_button_cart }}
+    {%- endunless -%}
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: List Action Buttons #}
+{%- endcomment -%}
+{%- capture list_action_buttons -%}
+
+    {%- unless product.empty? -%}
+
+        <div class="flex-items-center">
+
+            {%- if sold_out or product.template_suffix == "no-offers" -%}
+
+                <a href="{{ product.url | within: collection }}"
+                   class="btn btn-primary add-to-cart-button mr-2 hover-primary-bg">
+                    {{ 'products.product.view_product' | t | upcase }}
+                </a>
+
+            {%- else -%}
+
+                {%- if product.variants.size > 1 -%}
+
+                    <a href="{{ product.url | within: collection }}"
+                       class="btn btn-primary add-to-cart-button mr-2 hover-primary-bg">
+                        {{ 'products.product.select_options' | t | upcase }}
+                    </a>
+
+                {%- else -%}
+
+                    <button type="submit" class="btn btn-primary add-to-cart-button mr-2 hover-primary-bg"
+                            js-add-to-cart>
+                        {% if product.template_suffix == "pre-order" %}
+                            {{ 'products.product.pre_order' | t | upcase }}
+                        {% else %}
+                            {{ 'products.product.add_to_cart' | t | upcase }}
+                        {% endif %}
+                    </button>
+
+                {%- endif -%}
+
+            {%- endif -%}
+
+        </div>
+
+        {%- unless settings.product_quickview_disabled -%}
+            <button class="btn btn-bordered quick-view-button icon-button mr-2" ng-click="ps.quickView($event)">
+                <i class="icon-magnify s-4" uib-tooltip="{{ 'products.product.quick_view' | t }}"
+                   tooltip-popup-delay="300"
+                   tooltip-append-to-body="true"></i>
+            </button>
+        {%- endunless -%}
+
+        {%- if pages.wishlist != empty and settings.product_wishlist_disabled != true -%}
+            <button class="btn btn-bordered add-to-favorites icon-button mr-2"
+                    ng-click="ps.toggleWishlist($event)">
+                <i ng-if="ps.checkInTheWishList()" class="icon-heart s-4"
+                   uib-tooltip="{{ 'products.product.remove_from_wishlist' | t }}"
+                   tooltip-popup-delay="300" tooltip-append-to-body="true"></i>
+
+                <i ng-if="!ps.checkInTheWishList()" class="icon-heart-outline s-4"
+                   uib-tooltip="{{ 'products.product.add_to_wishlist' | t }}"
+                   tooltip-popup-delay="300" tooltip-append-to-body="true"></i>
+            </button>
+        {%- endif -%}
+
+    {%- endunless -%}
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Product Overlay #}
+{%- endcomment -%}
+{%- capture product_overlay -%}
+
+    <!-- OVERLAY -->
+    <div class="overlay {{ settings.grid_item_overlay_animation }}">
+
+        <div class="overlay-buttons flex-bottom">
+            {%- if item_hover_buttons_style == 'icon-buttons' -%}
+
+                <div class="flex-items-center icon-buttons mb-8">
+                    <div class="flex-items-center">
+                        {{ icon_action_buttons }}
+                    </div>
+                </div>
+
+            {%- endif -%}
+
+            {%- if item_hover_buttons_style == 'text-buttons' -%}
+
+                <div class="row text-buttons mb-8">
+                    {{ text_action_buttons }}
+                </div>
+
+            {%- endif -%}
+        </div>
+
+        <a href="{% if product.empty? %}#{% else %}{{ product.url | within: collection }}{% endif %}"
+           class="overlay-link"></a>
+    </div>
+
+    <!-- / OVERLAY -->
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Product Overlay Alt #}
+{%- endcomment -%}
+{%- capture product_overlay_alt -%}
+
+    <!-- OVERLAY -->
+    <div
+        class="overlay overlay-alt flex-column flex-items-center flex-items-middle {{ settings.grid_item_overlay_animation }}">
+
+        <div class="product-stars-wrapper">
+            {{ product_stars }}
+        </div>
+
+        <div class="overlay-buttons flex-items-middle flex-items-center">
+            {{ text_action_button_quickview }}
+        </div>
+
+        <a href="{% if product.empty? %}#{% else %}{{ product.url | within: collection }}{% endif %}"
+           class="overlay-link">
+        </a>
+    </div>
+
+    <!-- / OVERLAY -->
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Item - List Style #}
+{%- endcomment -%}
+{%- capture item_list_style -%}
+
+    <div class="product-left flex-items-center">
+        {{ product_badges }}
+        {{ product_image }}
+    </div>
+
+    <div class="product-right">
+        {{ product_title }}
+        {% unless product.template_suffix == "no-offers" %}
+            {{ product_price }}
+        {% endunless %}
+
+        {{ product_stars }}
+        {{ product_description }}
+
+        <div class="flex-items-left flex-items-middle">
+            {{ list_action_buttons }}
+        </div>
+    </div>
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Item - Style 1 #}
+{%- endcomment -%}
+{%- capture item_style1 -%}
+
+    <div class="product-top">
+        {{ product_badges }}
+        {{ product_image }}
+        {{ product_overlay }}
+    </div>
+
+    <div class="product-bottom">
+        {{ product_title }}
+        {{ product_price }}
+        {{ product_stars }}
+        <div class="mobile-add-to-cart-button show-when-disable-grid-item-hover-on-mobile">
+            {{ text_action_button_cart }}
+        </div>
+    </div>
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Item - Style 2 #}
+{%- endcomment -%}
+{%- capture item_style2 -%}
+
+    <div class="product-top">
+        {{ product_badges }}
+        {{ product_title }}
+    </div>
+
+    {{ product_image }}
+
+    <div class="product-bottom">
+        {{ product_price }}
+        {{ product_stars }}
+        <div class="mobile-add-to-cart-button show-when-disable-grid-item-hover-on-mobile">
+            {{ text_action_button_cart }}
+        </div>
+        {{ product_overlay }}
+    </div>
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Item - Style 3 #}
+{%- endcomment -%}
+{%- capture item_style3 -%}
+
+    <div class="product-top">
+        {{ product_badges }}
+        {{ product_title }}
+        {{ product_stars }}
+    </div>
+
+    {{ product_image_with_hover }}
+
+    <div class="product-bottom row">
+
+        <div class="col-12">
+            {{ product_price }}
+        </div>
+
+        <div class="col-12 flex-items-middle flex-items-center">
+            {{ icon_action_button_quickview }}
+            {{ icon_action_button_wishlist }}
+            {{ icon_action_button_cart }}
+        </div>
+
+    </div>
+
+{%- endcapture -%}
+
+{%- comment -%}
+    {#@ CPT: Item - Style 4 #}
+{%- endcomment -%}
+{%- capture item_style4 -%}
+
+    <div class="product-top">
+        {{ product_badges }}
+        {{ product_image }}
+        {{ product_overlay_alt }}
+    </div>
+
+    <div class="product-bottom">
+
+        {{ product_title }}
+
+        <div class="product-hover-action-wrapper mb-4">
+
+            {{ product_price }}
+
+            <div class="cart-wishlist-wrapper flex-items-middle">
+                {{ text_action_button_cart }}
+                {{ icon_action_button_wishlist }}
+            </div>
+        </div>
+
+        <div class="mobile-add-to-cart-button show-when-disable-grid-item-hover-on-mobile">
+            {{ text_action_button_cart }}
+        </div>
+
+    </div>
+
+{%- endcapture -%}
+
+
+{%- comment -%}
+    {#@ CPT: Item - Style 4 alt #}
+{%- endcomment -%}
+{%- capture item_style4_alt -%}
+
+    <div class="product-top">
+        {{ product_badges }}
+        {{ product_image_slider }}
+    </div>
+
+    <div class="product-bottom">
+
+        <div ng-if="option.name === 'color' || option.name === 'Color'" ng-repeat="option in ::ps.options"
+             class="option" ng-cloak>
+            <button type="button" class="btn swatch"
+                    ng-repeat="value in ::option.values"
+                    tooltip-placement="top" tooltip-popup-delay="300"
+                    uib-tooltip="{[{value}]}"
+                    tooltip-enable="ps.isInSwatches(option.name) || ps.isInProductImageAsSwatches(option.name)"
+                {% unless section.settings.show_unavailable_variant_options %}
+                    ng-show="ps.checkExist(option.name, value)"
+                {% endunless %}
+                    ng-click="ps.selected.options[option.name] = value;ps.updateSelectedVariant();ps.slickGoTo()"
+                    ng-class="{'active':ps.selected.options[option.name] == value,'p-0 color': ps.isInSwatches(option.name) || ps.isInProductImageAsSwatches(option.name),'not-exist': !ps.checkExist(option.name, value)}">
+
+                    <span ng-if="!ps.isInSwatches(option.name) && !ps.isInProductImageAsSwatches(option.name)">
+                        {[{ value }]}
+                    </span>
+
+                <div class="color-image-preview" ng-if="ps.isInSwatches(option.name)"
+                     ng-style="{'background-color':ps.variantColor(value), 'background-image':ps.variantImage(value)}">
+                </div>
+
+                <div class="color-image-preview" ng-if="ps.isInProductImageAsSwatches(option.name)"
+                     ng-style="{'background-image':ps.variantProductImage(value)}">
+                </div>
+
+            </button>
+        </div>
+
+        <div class="product-title-wrapper flex-items-top flex-items-space-between">
+            {{ product_title }}
+            {{ icon_action_button_quickview }}
+        </div>
+
+        <div class="product-hover-action-wrapper mb-4">
+
+            {{ product_price }}
+
+            <div class="cart-wishlist-wrapper flex-items-middle">
+                {{ text_action_button_cart }}
+                {{ icon_action_button_wishlist }}
+            </div>
+        </div>
+
+        <div class="mobile-add-to-cart-button show-when-disable-grid-item-hover-on-mobile">
+            {{ text_action_button_cart }}
+        </div>
+
+    </div>
+
+{%- endcapture -%}
+
+<!-- PRODUCT -->
+<div
+    class="grid-item product-grid-item {{ item_class | default:'' }} {{ item_style }} {{ item_hover_background }} flex-item mb-8"
+    {{ block.shopify_attributes }}
+    {%- unless product.empty? -%}
+    js-product-single="{{ product | json | escape }}"
+    js-product-template-suffix="{{ product.template_suffix }}"
+    current-variant-id="{{ current_variant.id }}"
+    {%- endunless -%}>
+
+    <form action="/cart/add" method="post" enctype="multipart/form-data"
+          class="grid-item-content {% if sold_out %}product-sold-out{% endif %}">
+
+        <div class="product-grid-view">
+            {%- case item_style -%}
+
+            {%- when 'style1' -%}
+            {{ item_style1 }}
+
+            {%- when 'style2' -%}
+            {{ item_style2 }}
+
+            {%- when 'style3' -%}
+            {{ item_style3 }}
+
+            {%- when 'style4' -%}
+            {{ item_style4 }}
+
+            {%- when 'style4_alt' -%}
+            {{ item_style4_alt }}
+
+            {%- else -%}
+            {{ item_style1 }}
+
+            {%- endcase -%}
+        </div>
+
+        {%- if embed_list_style == true -%}
+            <div class="product-list-view">
+                {{ item_list_style }}
+            </div>
+        {%- endif -%}
+
+        <input name="quantity" type="number" id="Quantity"
+               class="form-control hidden" value="1">
+
+        <select name="id" class="form-control hidden" ng-model="ps.selectedVariantId">
+            {% for variant in product.variants %}
+                {% if variant.available %}
+                    <option value="{{ variant.id }}">
+                        {{ variant.title }}
+                    </option>
+                {% else %}
+                    <option disabled="disabled">{{ variant.title }} - {{ 'products.product.sold_out' | t }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+
+    </form>
+
+</div>
+<!-- / PRODUCT -->

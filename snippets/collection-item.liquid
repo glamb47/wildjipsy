@@ -1,0 +1,247 @@
+{%- assign item_style = style | default: 'classic' -%}
+{%- assign item_hover_bg = hover_bg | default: settings.collection_hover_bg -%}
+{%- assign item_image_size = image_size | default: '1024x' -%}
+
+{%- comment -%}
+{#@ CPT: Collection Title #}
+{%- endcomment -%}
+{%- capture collection_title -%}
+
+<!-- COLLECTION TITLE -->
+<span class="collection-title h4">
+
+    {%- if collection.empty? -%}
+        {{ 'home_page.onboarding.collection_title' | t }}
+    {%- else -%}
+        {{ collection.title }}
+    {%- endif -%}
+
+</span>
+<!-- / COLLECTION TITLE -->
+
+{%- endcapture -%}
+
+{%- comment -%}
+{#@ CPT: Collection Overlay Title #}
+{%- endcomment -%}
+{%- capture collection_overlay_title -%}
+
+<!-- COLLECTION TITLE -->
+<div class="collection-title h4">
+
+    {%- if collection.empty? -%}
+        {{ 'home_page.onboarding.collection_title' | t }}
+    {%- else -%}
+        {{ collection.title }}
+    {%- endif -%}
+
+</div>
+<!-- / COLLECTION TITLE -->
+
+{%- endcapture -%}
+
+{%- comment -%}
+{#@ CPT: Collection Subtitle #}
+{%- endcomment -%}
+{%- capture collection_subtitle -%}
+
+<!-- COLLECTION SUBTITLE -->
+<div
+    class="collection-subtitle h6">{{ 'collections.general.product_count' | t: count: collection.products_count }}</div>
+<!-- / COLLECTION SUBTITLE -->
+
+{%- endcapture -%}
+
+{%- comment -%}
+{#@ CPT: Collection Image #}
+{%- endcomment -%}
+{%- capture collection_image -%}
+
+<!-- COLLECTION IMAGE -->
+{%- if collection.empty? -%}
+
+    {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+    {{ 'collection-' | append: current | placeholder_svg_tag: 'collection-image' }}
+
+{%- else -%}
+
+    {%- comment -%}
+    Bring in the featured image of the first product in the collection if no collection
+    image has been uploaded for it.
+    {%- endcomment -%}
+
+    {%- if collection.image -%}
+
+        <img class="collection-image"
+             src="{{ collection | img_url: item_image_size, crop: settings.collection_image_crop }}"
+             srcset="{{ collection | img_url: item_image_size, crop: settings.collection_image_crop }} 1x, {{ collection | img_url: item_image_size, scale:2, crop: settings.collection_image_crop }} 2x"
+             alt="{{ collection.title | escape }}">
+
+    {%- else -%}
+
+        {%- assign product = collection.products.first -%}
+
+        <img class="collection-image"
+             src="{{ product | img_url: item_image_size, crop: settings.collection_image_crop }}"
+             srcset="{{ product | img_url: item_image_size, crop: settings.collection_image_crop }} 1x, {{ product | img_url: item_image_size, scale:2, crop: settings.collection_image_crop }} 2x"
+             alt="{{ link.title | escape }}">
+
+    {%- endif -%}
+
+{%- endif -%}
+<!-- / COLLECTION IMAGE -->
+
+{%- endcapture -%}
+
+{%- comment -%}
+{#@ CPT: Collection Button #}
+{%- endcomment -%}
+{%- capture collection_button -%}
+
+<button class="btn btn-bordered btn-primary see-collection-button">
+    {{ 'collections.general.see_the_collection' | t }}
+</button>
+
+{%- endcapture -%}
+
+{%- comment -%}
+{#@ Classic Item #}
+{%- endcomment -%}
+{%- capture classic_item -%}
+
+{{ collection_image }}
+
+<!-- COLLECTION TEXT -->
+<div class="collection-text text-uppercase">
+
+    <div class="col-12 flex-items-center py-3">
+        <div class="flex-middle text-center">
+            {{ collection_title }}
+
+            {%- if show_product_counts -%}
+                <div class="mt-1">
+                    {{ collection_subtitle }}
+                </div>
+            {%- endif -%}
+        </div>
+    </div>
+
+</div>
+<!-- / COLLECTION TEXT -->
+
+<!-- OVERLAY -->
+<div class="overlay {{ settings.grid_item_overlay_animation }}">
+
+    <div class="col-12 flex-middle text-center text-uppercase text-wrap px-4">
+        {{ collection_overlay_title }}
+
+        {%- if show_product_counts -%}
+            <hr class="w-16 mt-3 mb-4">
+            {{ collection_subtitle }}
+        {%- endif -%}
+    </div>
+
+    <div class="col-12 text-center align-bottom-center mb-8 hidden-sm-down">
+        {{ collection_button }}
+    </div>
+
+</div>
+<!-- / OVERLAY -->
+
+{%- endcapture -%}
+
+{%- comment -%}
+{#@ Symmetric Item #}
+{%- endcomment -%}
+{%- capture sym_item -%}
+
+<!-- COLLECTION TEXT -->
+<div class="collection-text py-5 py-md-9">
+
+    <div class="col-12 flex-items-center">
+        <div class="flex-middle text-center">
+            <div class="text-uppercase">
+                {{ collection_title }}
+            </div>
+
+            {%- if show_product_counts -%}
+                <div class="mt-1">
+                    {{ collection_subtitle }}
+                </div>
+            {%- endif -%}
+        </div>
+    </div>
+
+</div>
+<!-- / COLLECTION TEXT -->
+
+<div class="p-5 p-md-9 pt-0 pt-md-0">
+    {{ collection_image }}
+</div>
+
+{%- endcapture -%}
+
+{%- comment -%}
+{#@ Asymmetric Item #}
+{%- endcomment -%}
+{%- capture asym_item -%}
+
+<div class="row flex-items">
+
+    <!-- COLLECTION TEXT -->
+    <div class="col-12 col-md-5 collection-text p-5 pt-md-9 pl-md-9">
+
+        <div class="col-12">
+            <div class="text-uppercase">
+                {{ collection_title }}
+            </div>
+
+            <!-- COLLECTION SUBTITLE -->
+            <span class="collection-link text-center h6 text-light text-nowrap">
+                View Products <span class="glyph-icon">&rarr;</span>
+            </span>
+            <!-- / COLLECTION SUBTITLE -->
+        </div>
+
+    </div>
+    <!-- / COLLECTION TEXT -->
+
+    <div class="col-12 col-md-7 pt-md-9">
+        {{ collection_image }}
+    </div>
+
+</div>
+
+{%- endcapture -%}
+
+<!-- COLLECTION -->
+<div
+    class="grid-item collection-grid-item {{ item_class | default:'' }} {{ item_style }} {{ item_hover_bg }} flex-item mb-8"
+    {{ block.shopify_attributes }}>
+
+    <div class="grid-item-content">
+
+        <a href="{% if collection.empty? %}#{% else %}{{ collection.url }}{% endif %}">
+
+            {%- case item_style -%}
+
+            {%- when 'classic' -%}
+            {{ classic_item }}
+
+            {%- when 'sym' -%}
+            {{ sym_item }}
+
+            {%- when 'asym' -%}
+            {{ asym_item }}
+
+            {%- else -%}
+            {{ classic_item }}
+
+            {%- endcase -%}
+
+        </a>
+
+    </div>
+
+</div>
+<!-- / COLLECTION -->
